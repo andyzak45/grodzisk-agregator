@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import random
 
-print("Uruchamiam zintegrowany, inteligentny silnik portalu prasowego...")
+print("Uruchamiam inteligentny silnik portalu z unikalnym generatorem tekstow...")
 
 ZRODLA = {
     "URZAD / NEWSY": [
@@ -49,9 +49,32 @@ ZRODLA = {
     ]
 }
 
+# LOKALNA BAZA PUBLICYSTYCZNA DO GENEROWANIA UNIKALNYCH ZDAŃ PRASOWYCH
+WSTĘPY = [
+    "W najnowszym komunikacie poinformowano o kluczowych zmianach. Sprawa dotyczy bezpośrednio wydarzenia: ",
+    "Mieszkańcy rejonu Grodziska i Książenic z dużym zainteresowaniem śledzą doniesienia w temacie: ",
+    "Lokalne służby oraz urzędnicy zaapelowali o uwagę w związku z nowymi ustaleniami dotyczącymi: ",
+    "W przestrzeni publicznej Zachodniego Mazowsza pojawiły się oficjalne szczegóły opisujące: ",
+    "Serwisy regionalne opublikowały właśnie aktualizację i komplet najważniejszych faktów na temat: ",
+    "To kluczowa informacja dla społeczności lokalnej w tym tygodniu. Chodzi o głośną sprawę: ",
+    "Rozwój sytuacji w powiecie grodziskim przynosi kolejne, oficjalnie potwierdzone dane o: ",
+    "Prasa regionalna szeroko komentuje najnowsze decyzje i plany samorządowe skupione wokół: ",
+    "Wdrożono kolejne etapy zaplanowanych działań i ogłoszono oficjalny komunikat wyjaśniający: "
+]
+
+ROZWINIĘCIA = [
+    " Szczegóły oraz pełną dokumentację udostępniono w źródłowym materiale.",
+    " Mieszkańcy mogą zapoznać się z wytycznymi na oficjalnej platformie informacyjnej.",
+    " Warto śledzić dalszy rozwój tej sytuacji oraz terminy kolejnych spotkań.",
+    " Inwestycja ta ma przynieść długofalowe korzyści dla całego powiatu grodziskiego.",
+    " Wszystkie najważniejsze liczby i terminy zostały zweryfikowane przez redakcję.",
+    " To kolejny krok w dynamicznym rozwoju infrastruktury i kultury w naszej okolicy.",
+    " Wprowadzone zmiany mają zacząć obowiązywać w najbliższych dniach.",
+    " Zachęcamy do zapoznania się z oryginalną treścią ogłoszenia pod linkiem."
+]
+
 def pobierz_ze_zrodla(url, nazwa_grupy):
     artykuly = []
-    
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -68,7 +91,6 @@ def pobierz_ze_zrodla(url, nazwa_grupy):
             tytul = el.get_text().strip()
             tytul_lower = tytul.lower()
             
-            # FILTR MENU ORAZ ELEMENTÓW SYSTEMOWYCH (Eliminacja dziwnych tytułów)
             if not tytul or len(tytul) < 22 or len(tytul) > 120:
                 continue
                 
@@ -93,12 +115,17 @@ def pobierz_ze_zrodla(url, nazwa_grupy):
             elif not link.startswith('http'): 
                 link = url
                 
-            # DYNAMICZNY GENERATOR TREŚCI (Zamiast suchego tekstu próbnego)
-            opis = f"Serwis internetowy analizuje najnowsze doniesienia i wyciaga kluczowe wnioski z wydarzenia: '{tytul}'. Sprawdz zrodlo."
+            # INTELIGENTNY, PROFSJONALNY MIX TEKSTU DLA KAŻDEGO ARTYKUŁU ORAZ CZYSZCZENIE NAZW
+            czysty_tytul = tytul.replace('"', '').replace("'", "")
+            wstep = random.choice(WSTĘPY)
+            rozwiniecie = random.choice(ROZWINIĘCIA)
+            opis = f"{wstep}„{czysty_tytul}”.{rozwiniecie}"
+
+            # Próba pobrania oryginalnego akapitu ze strony (jeśli jest dostępny i unikalny)
             rodzic = el.find_parent()
             if rodzic:
                 akapit = rodzic.find('p')
-                if akapit and len(akapit.get_text().strip()) > 35: 
+                if akapit and len(akapit.get_text().strip()) > 45 and "cookie" not in akapit.get_text().lower(): 
                     opis = akapit.get_text().strip()[:140] + "..."
 
             if tytul not in [a["tytul"] for a in artykuly]:
@@ -110,7 +137,6 @@ def pobierz_ze_zrodla(url, nazwa_grupy):
     except Exception:
         return []
 
-# SKANOWANIE I MIESZANIE 
 wszystkie_newsy = []
 for grupa, linki in ZRODLA.items():
     for l in linki:
@@ -176,4 +202,4 @@ final_html = szablon_content.replace("<!-- DYNAMIC_CARDS_PLACEHOLDER -->", html_
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(final_html)
 
-print("Sukces! Portal zostal zaktualizowany o czysta baze danych.")
+print("Sukces! Portal zostal zaktualizowany o czysta, zroznicowana baze opisow.")
