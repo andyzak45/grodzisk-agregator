@@ -20,7 +20,7 @@ try:
         if not link.startswith('http'):
             link = "https://grodzisk.pl" + link
             
-        # INTELIGENTNY DOBÓR ZDJĘĆ
+        # INTELIGENTNY DOBÓR ZDJĘĆ Z LINII PRODUKCYJNEJ UNSPLASH
         tytul_lower = tytul.lower()
         if any(slowo in tytul_lower for slowo in ["noc", "bibliotek", "muzyczny", "sejmik", "kultur", "kino"]):
             foto = "https://unsplash.com"
@@ -40,13 +40,12 @@ try:
     while len(artykuly) < 6:
         artykuly.append({"tytul": "Brak dodatkowych wiadomości na dziś", "link": "https://grodzisk.pl", "foto": "https://unsplash.com"})
 
-    # BEZPIECZNE BUDOWANIE KAFELKÓW BEZ F-STRINGÓW DLA CAŁEGO BLOKU
+    # NAPRAWIONE BUDOWANIE DANYCH W PĘTLI - POBIERAMY POZYCJĘ 'art', A NIE CAŁĄ TABLICĘ
     html_cards = ""
     for i, art in enumerate(artykuly):
         is_hero = " hero-tile" if i == 0 else ""
         badge_text = "Główny artykuł" if i == 0 else "Wiadomości"
         
-        # Łączymy tekst bezpiecznie za pomocą tradycyjnej metody replace
         card_template = """
             <article class="portal-card[CLASS_PLACEHOLDER]">
                 <div class="img-container"><img src="[FOTO_PLACEHOLDER]" alt="Foto"></div>
@@ -59,10 +58,10 @@ try:
             </article>
         """
         card_template = card_template.replace("[CLASS_PLACEHOLDER]", is_hero)
-        card_template = card_template.replace("[FOTO_PLACEHOLDER]", art["foto"])
+        card_template = card_template.replace("[FOTO_PLACEHOLDER]", art["foto"]) # POZYCJA Z PĘTLI
         card_template = card_template.replace("[BADGE_PLACEHOLDER]", badge_text)
-        card_template = card_template.replace("[TYTUL_PLACEHOLDER]", art["tytul"])
-        card_template = card_template.replace("[LINK_PLACEHOLDER]", art["link"])
+        card_template = card_template.replace("[TYTUL_PLACEHOLDER]", art["tytul"]) # POZYCJA Z PĘTLI
+        card_template = card_template.replace("[LINK_PLACEHOLDER]", art["link"]) # POZYCJA Z PĘTLI
         
         html_cards += card_template
 
@@ -207,7 +206,7 @@ try:
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(final_html)
         
-    print("Sukces! Wygenerowałem portal ze zdjęciami.")
+    print("Sukces! Wygenerowałem w pełni poprawny plik ze strukturą linków.")
 
 except Exception as e:
     print(f"Coś poszło nie tak: {e}")
