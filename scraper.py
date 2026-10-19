@@ -2,10 +2,10 @@ import urllib.request
 from bs4 import BeautifulSoup
 import re
 
-print("Uruchamiam zintegrowany silnik wieloźródłowy portalu...")
+print("Uruchamiam zintegrowany silnik wielozrodlowy portalu...")
 
 ZRODLA = {
-    "URZĄD / NEWSY": [
+    "URZAD / NEWSY": [
         "https://grodzisk.pl",
         "https://grodzisk.pl",
         "https://geoportal-krajowy.pl",
@@ -19,11 +19,11 @@ ZRODLA = {
         "https://wpr24.pl",
         "https://twoje-miasto.pl"
     ],
-    "BEZPIECZEŃSTWO": [
+    "BEZPIECZENSTWO": [
         "https://policja.gov.pl",
         "https://grodzisk.pl"
     ],
-    "KULTURA / SPOŁECZNOŚĆ": [
+    "KULTURA / SPOLECZNOSC": [
         "https://centrumkultury.eu",
         "https://centrumkultury.eumediateka/",
         "https://grodzisk.pl",
@@ -52,11 +52,8 @@ def pobierz_ze_zrodla(url, nazwa_grupy):
     artykuly = []
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Platforms/BentoBot'})
     try:
-        # Niski timeout, aby strona, która długo się ładuje, nie blokowała całego procesu
         html = urllib.request.urlopen(req, timeout=5).read()
         soup = BeautifulSoup(html, 'html.parser')
-        
-        # Szukamy nagłówków wiadomości
         elementy = soup.find_all(['h6', 'h2', 'h3', 'h4'])
         
         for el in elementy:
@@ -77,8 +74,7 @@ def pobierz_ze_zrodla(url, nazwa_grupy):
             elif not link.startswith('http'):
                 link = url
                 
-            # Pobieramy krótki opis ze sasiadujących akapitów, by zapełnić kafelki unikalną treścią
-            opis = "Przegląd prasy i faktów regionalnych z lokalnego serwisu. Kliknij poniższy link, aby zapoznać się ze źródłem."
+            opis = "Przeglad prasy i faktow regionalnych z lokalnego serwisu. Kliknij ponizszy link, aby zapoznac sie ze zrodlem."
             rodzic = el.find_parent()
             if rodzic:
                 akapit = rodzic.find('p')
@@ -86,68 +82,67 @@ def pobierz_ze_zrodla(url, nazwa_grupy):
                     opis = akapit.get_text().strip()[:140] + "..."
 
             artykuly.append({"tytul": tytul, "link": link, "opis": opis, "grupa": nazwa_grupy})
-            if len(artykuly) >= 3: # Pobieramy maksymalnie 3 z jednego źródła dla zachowania różnorodności
+            if len(artykuly) >= 3:
                 break
                 
         return artykuly
     except Exception:
-        # Pancerne ignorowanie błędów — awaria jednej strony nie niszczy działania agregatora
         return []
 
-# URUCHOMIENIE MULTI-SCRAPINGU
 wszystkie_newsy = []
 for grupa, linki in ZRODLA.items():
     for l in linki:
         wpisy = pobierz_ze_zrodla(l, grupa)
         wszystkie_newsy.extend(wpisy)
 
-# Zabezpieczenie na wypadek awarii sieci
+print(f"Zebrano {len(wszystkie_newsy)} wpisow.")
+
+# Stabilna baza awaryjna
 if len(wszystkie_newsy) < 9:
     wszystkie_newsy = [
-        {"tytul": "XII Ogólnopolska Noc Bibliotek za nami! Magia literatury w regionie", "link": "https://grodzisk.pl", "opis": "Wyjątkowe spotkania z czytelnikami, warsztaty i panele dyskusyjne w grodziskich placówkach oświatowych.", "grupa": "KULTURA / SPOŁECZNOŚĆ"},
-        {"tytul": "Trzy duże projekty dla mieszkańców z rekordowym dofinansowaniem UE", "link": "https://grodzisk.pl", "opis": "Nowe ścieżki rowerowe, parkingi przesiadkowe typu Parkuj i Jedź oraz modernizacja lokalnej infrastruktury drogowej.", "grupa": "URZĄD / NEWSY"},
-        {"tytul": "Projekt planu ogólnego Gminy Grodzisk Mazowiecki udostępniony", "link": "https://grodzisk.pl", "opis": "Urzędnicy zakończyli kluczowy etap prac nad planowaniem przestrzennym. Mieszkańcy Książenic i okolic mogą składać wnioski.", "grupa": "URZĄD / NEWSY"}
+        {"tytul": "XII Ogolnopolska Noc Bibliotek za nami! Magia literatury w regionie", "link": "https://grodzisk.pl", "opis": "Wyjatkowe spotkania z czytelnikami, warsztaty i panele dyskusyjne w grodziskich placowkach oswiatowych.", "grupa": "KULTURA / SPOLECZNOSC"},
+        {"tytul": "Trzy duze projekty dla mieszkancow z rekordowym dofinansowaniem UE", "link": "https://grodzisk.pl", "opis": "Nowe sciezki rowerowe, parkingi przesiadkowe typu Parkuj i Jedz oraz modernizacja lokalnej infrastruktury drogowej.", "grupa": "URZAD / NEWSY"},
+        {"tytul": "Projekt planu ogolnego Gminy Grodzisk Mazowiecki udostepniony", "link": "https://grodzisk.pl", "opis": "Urzednicy zakonczyli kluczowy etap prac nad planowaniem przestrzennym. Mieszkancy Ksiazenic i okolic moga skladac wnioski.", "grupa": "URZAD / NEWSY"}
     ] * 3
 
 html_cards = ""
-for i, art in enumerate(wszystkie_newsy[:9]): # Generujemy dokładnie 9 unikalnych kafelków
+for i, art in enumerate(wszystkie_newsy[:9]):
     is_hero = " hero-tile" if i == 0 else ""
-    badge_text = "Jedynka dnia" if i == 0 else "Aktualności"
+    badge_text = "Jedynka dnia" if i == 0 else "Aktualnosci"
     
     title_lower = art["tytul"].lower()
     group_lower = art["grupa"].lower()
     
-    # Kategoryzacja wizualna bento
     if "kultura" in group_lower or any(s in title_lower for s in ["noc", "bibliotek", "kultur", "muzycz", "teatr", "koncert", "wystawa", "cosplay", "targi"]):
         kat = "KULTURA / WYDARZENIA"
         tlo = "bg-kultura"
-    elif "finanse" in group_lower or any(s in title_lower for s in ["projekt", "ue", "pieniądze", "dofinansowanie", "budżet", "ceny", "podatki", "zł"]):
+    elif "finanse" in group_lower or any(s in title_lower for s in ["projekt", "ue", "pieniadze", "dofinansowanie", "budzet", "ceny", "podatki", "zl"]):
         kat = "FINANSE / INWESTYCJE"
         tlo = "bg-finanse"
-    elif "bezpieczeństwo" in group_lower or any(s in title_lower for s in ["policja", "wypadek", "zatrzyman", "oszust", "alarm", "kryzys"]):
-        kat = "BEZPIECZEŃSTWO / ALERT"
+    elif "bezpieczenstwo" in group_lower or any(s in title_lower for s in ["policja", "wypadek", "zatrzyman", "oszust", "alarm", "kryzys"]):
+        kat = "BEZPIECZENSTWO / ALERT"
         tlo = "bg-alert"
-    elif "infrastruktura" in group_lower or any(s in title_lower for s in ["droga", "ul.", "ulica", "remont", "asfalt", "budow", "oświetlenie", "parking", "pociąg", "gpa", "autobus"]):
+    elif "infrastruktura" in group_lower or any(s in title_lower for s in ["droga", "ul.", "ulica", "remont", "asfalt", "budow", "oswietlenie", "parking", "pociag", "gpa", "autobus"]):
         kat = "INFRASTRUKTURA / DROGI"
         tlo = "bg-drogi"
-    elif "edukacja" in group_lower or any(s in title_lower for s in ["szkoł", "edukacj", "nauczyciel", "uczeń", "oświat", "przedszkol"]):
+    elif "edukacja" in group_lower or any(s in title_lower for s in ["szkol", "edukacj", "nauczyciel", "uczen", "oswiat", "przedszkol"]):
         kat = "EDUKACJA / REGION"
         tlo = "bg-edukacja"
-    elif "sport" in group_lower or any(s in title_lower for s in ["mecz", "pogoń", "gol", "piłka", "nożna", "sport", "turniej", "hala", "kort", "tenis", "pływac"]):
+    elif "sport" in group_lower or any(s in title_lower for s in ["mecz", "pogon", "gol", "pilka", "nozna", "sport", "turniej", "hala", "kort", "tenis", "plywac"]):
         kat = "SPORT / REKREACJA"
         tlo = "bg-sport"
     else:
-        kat = "WIADOMOŚCI LOKALNE"
+        kat = "WIADOMOSCI LOKALNE"
         tlo = "bg-neutralny"
 
-    # Bezpieczne i bezawaryjne parsowanie nazwy źródła
-    ładne_źródło = "Serwis Regionalny"
-    if "grodzisk.pl" in art["link"]: ładne_źródło = "Grodzisk.pl"
-    elif "grodziskinfo.pl" in art["link"]: ładne_źródło = "Grodzisk INFO"
-    elif "grodziski24.pl" in art["link"]: ładne_źródło = "Grodziski 24"
-    elif "przegladregionalny.pl" in art["link"]: ładne_źródło = "Przegląd Regionalny"
-    elif "wpr24.pl" in art["link"]: ładne_źródło = "WPR24"
-    elif "policja.gov.pl" in art["link"]: ładne_źródło = "KPP Grodzisk"
+    ladne_zrodlo = "Serwis Regionalny"
+    link_str = str(art["link"])
+    if "grodzisk.pl" in link_str: ladne_zrodlo = "Grodzisk.pl"
+    elif "grodziskinfo.pl" in link_str: ladne_zrodlo = "Grodzisk INFO"
+    elif "grodziski24.pl" in link_str: ladne_zrodlo = "Grodziski 24"
+    elif "przegladregionalny.pl" in link_str: ladne_zrodlo = "Przeglad Regionalny"
+    elif "wpr24.pl" in link_str: ladne_zrodlo = "WPR24"
+    elif "policja.gov.pl" in link_str: ladne_zrodlo = "KPP Grodzisk"
 
     card_template = """
         <article class="portal-card[CLASS_PLACEHOLDER]">
@@ -155,18 +150,18 @@ for i, art in enumerate(wszystkie_newsy[:9]): # Generujemy dokładnie 9 unikalny
                 <div class="tile-category-text">[KATEGORIA_PLACEHOLDER]</div>
             </div>
             <div class="card-body">
-                <div class="meta-bar"><span class="badge">[BADGE_PLACE_HOLDER]</span><span>[DOMENA_PLACEHOLDER]</span></div>
+                <div class="meta-bar"><span class="badge">[BADGE_PLACEHOLDER]</span><span>[DOMENA_PLACEHOLDER]</span></div>
                 <h2>[TYTUL_PLACEHOLDER]</h2>
                 <p>[OPIS_PLACEHOLDER]</p>
-                <a href="[LINK_PLACEHOLDER]" target="_blank" class="read-more">Zobacz źródło &rarr;</a>
+                <a href="[LINK_PLACEHOLDER]" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
             </div>
         </article>
     """
     card_template = card_template.replace("[CLASS_PLACEHOLDER]", is_hero)
     card_template = card_template.replace("[KLASA_TLA_PLACEHOLDER]", tlo)
     card_template = card_template.replace("[KATEGORIA_PLACEHOLDER]", kat)
-    card_template = card_template.replace("[BADGE_PLACE_HOLDER]", badge_text)
-    card_template = card_template.replace("[DOMENA_PLACEHOLDER]", ładne_źródło)
+    card_template = card_template.replace("[BADGE_PLACEHOLDER]", badge_text)
+    card_template = card_template.replace("[DOMENA_PLACEHOLDER]", ladne_zrodlo)
     card_template = card_template.replace("[TYTUL_PLACEHOLDER]", art["tytul"])
     card_template = card_template.replace("[OPIS_PLACEHOLDER]", art["opis"])
     card_template = card_template.replace("[LINK_PLACEHOLDER]", art["link"])
@@ -191,3 +186,8 @@ html_template = """<!DOCTYPE html>
         h1 span { color: var(--accent); }
         main { max-width: 1300px; margin: 2.5rem auto; padding: 0 1.5rem; }
         .magazine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; }
+        .portal-card { background-color: var(--card-bg); border-radius: var(--border-radius); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; }
+        .portal-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .hero-tile { grid-column: span 2; }
+        .hero-tile .img-container { height: 200px; }
+        .hero-tile h2 { font-size: 1.6rem; }
