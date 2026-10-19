@@ -1,36 +1,43 @@
-name: Automatyczny Scraper Lokalny
+name: Automatyczny scraper lokalny
 
 on:
   schedule:
-    - cron: '0 6 * * *'
-  workflow_dispatch:
+    - cron: '0 5 * * *'   # 5:00 UTC, czyli 6:00 lub 7:00 w Polsce zależnie od pory roku
+  workflow_dispatch:       # ręczne uruchomienie przyciskiem "Run workflow"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scraper
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # Daje botowi prawo do nadpisywania index.html
-
     steps:
-    - name: Pobranie kodu repozytorium
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-    - name: Instalacja Pythona
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
 
-    - name: Instalacja bibliotek
-      run: |
-        pip install beautifulsoup4
+      - name: Instalacja bibliotek
+        run: pip install -r requirements.txt
 
-    - name: Uruchomienie bota
-      run: python scraper.py
+      - name: Testy
+        run: python -m unittest discover -s tests -v
 
-    - name: Automatyczny commit i push zmian na strone
-      run: |
-        git config --global user.name "Bento Bot Agregator"
-        git config --global user.email "bot@agregator.ai"
-        git add index.html
-        git diff-index --quiet HEAD || git commit -m "Automatyczna aktualizacja wiadomosci (Bot)"
-        git push
+      - name: Uruchomienie bota
+        env:
+          BOT_CONTACT: ${{ vars.BOT_CONTACT }}
+        run: python scraper.py
+
+      - name: Zapis zmian na stronie
+        run: |
+          git config user.name "Grodzisk lokalnie bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add index.html data/
+          git diff --cached --quiet || git commit -m "Automatyczna aktualizacja ($(date -u +%F))"
+          git push
