@@ -1,205 +1,288 @@
-import urllib.request
-from bs4 import BeautifulSoup
+#!/usr/bin/env python3
+"""Zbiera tytuły, daty i linki z lokalnych źródeł i buduje stronę.
+
+Zasady:
+  - uczciwy nagłówek User-Agent z adresem kontaktowym (zmienna BOT_CONTACT),
+  - szanujemy robots.txt i robimy przerwy między zapytaniami,
+  - zapisujemy tylko tytuł, link, datę i fakty (rodzaj, miejscowość, termin), bez cudzych opisów,
+  - nie zastępujemy brakujących danych wymyślonymi wpisami.
+
+Użycie:  python scraper.py [--all] [--only ID] [--render-only]
+"""
+import argparse
+import hashlib
+import json
 import re
-import random
+import sys
+import time
+import urllib.error
+import urllib.request
+import xml.etree.ElementTree as ET
+from datetime import date, datetime, timedelta
+from email.utils import parsedate_to_datetime
+from pathlib import Path
+from urllib.parse import urldefrag, urljoin, urlparse
+from urllib.robotparser import RobotFileParser
 
-print("Uruchamiam inteligentny silnik portalu z unikalnym generatorem tekstow...")
+from bs4 import BeautifulSoup
 
-ZRODLA = {
-    "URZAD / NEWSY": [
-        "https://grodzisk.pl",
-        "https://grodzisk.pl",
-        "https://geoportal-krajowy.pl",
-        "http://grodzisk.pl",
-        "https://grodzisk.pl"
-    ],
-    "MEDIA LOKALNE": [
-        "https://grodziskinfo.pl",
-        "https://grodziski24.pl",
-        "https://przegladregionalny.pl",
-        "https://wpr24.pl",
-        "https://twoje-miasto.pl"
-    ],
-    "BEZPIECZENSTWO": [
-        "https://policja.gov.pl",
-        "https://grodzisk.pl"
-    ],
-    "KULTURA / SPOLECZNOSC": [
-        "https://centrumkultury.eu",
-        "https://centrumkultury.eumediateka/",
-        "https://grodzisk.pl",
-        "https://grodzisk.pl",
-        "http://palacwieniawskich.pl",
-        "https://palac-ojrzanow.pl",
-        "https://palacykotrebusy.pl"
-    ],
-    "SPORT / REKREACJA": [
-        "http://bogoriagrodzisk.pl",
-        "https://budogrodzisk.pl",
-        "https://muay-thai.com.pl",
-        "https://strefaruchuksiazenice.pl",
-        "https://grodzisksport.pl",
-        "https://grodzisksport.pl",
-        "http://teniskozerki.pl",
-        "https://grodzisksport.pl"
-    ],
-    "INFRASTRUKTURA": [
-        "https://gpagrodzisk.pl",
-        "https://zwik-grodzisk.pl"
-    ]
-}
+import render
+from klasyfikacja import klasyfikuj_rodzaj, norm, wyciagnij_termin, znajdz_miejsca
 
-# LOKALNA BAZA PUBLICYSTYCZNA DO GENEROWANIA UNIKALNYCH ZDAŃ PRASOWYCH
-WSTĘPY = [
-    "W najnowszym komunikacie poinformowano o kluczowych zmianach. Sprawa dotyczy bezpośrednio wydarzenia: ",
-    "Mieszkańcy rejonu Grodziska i Książenic z dużym zainteresowaniem śledzą doniesienia w temacie: ",
-    "Lokalne służby oraz urzędnicy zaapelowali o uwagę w związku z nowymi ustaleniami dotyczącymi: ",
-    "W przestrzeni publicznej Zachodniego Mazowsza pojawiły się oficjalne szczegóły opisujące: ",
-    "Serwisy regionalne opublikowały właśnie aktualizację i komplet najważniejszych faktów na temat: ",
-    "To kluczowa informacja dla społeczności lokalnej w tym tygodniu. Chodzi o głośną sprawę: ",
-    "Rozwój sytuacji w powiecie grodziskim przynosi kolejne, oficjalnie potwierdzone dane o: ",
-    "Prasa regionalna szeroko komentuje najnowsze decyzje i plany samorządowe skupione wokół: ",
-    "Wdrożono kolejne etapy zaplanowanych działań i ogłoszono oficjalny komunikat wyjaśniający: "
-]
+ROOT = Path(__file__).parent
+STORE = ROOT / "data" / "items.json"
+STATUS = ROOT / "data" / "status.json"
+BOT_CONTACT = __import__("os").environ.get("BOT_CONTACT", "TWOJ_EMAIL")
+USER_AGENT = f"GrodziskLokalnieBot/1.0 (agregator linków; kontakt: {BOT_CONTACT})"
+MAX_BYTES = 2_000_000
+MAX_AGE_DAYS = 30        # starszych wpisów (wg daty publikacji) nie bierzemy
+KEEP_DAYS = 45           # tyle trzymamy wpisy w pliku danych
 
-ROZWINIĘCIA = [
-    " Szczegóły oraz pełną dokumentację udostępniono w źródłowym materiale.",
-    " Mieszkańcy mogą zapoznać się z wytycznymi na oficjalnej platformie informacyjnej.",
-    " Warto śledzić dalszy rozwój tej sytuacji oraz terminy kolejnych spotkań.",
-    " Inwestycja ta ma przynieść długofalowe korzyści dla całego powiatu grodziskiego.",
-    " Wszystkie najważniejsze liczby i terminy zostały zweryfikowane przez redakcję.",
-    " To kolejny krok w dynamicznym rozwoju infrastruktury i kultury w naszej okolicy.",
-    " Wprowadzone zmiany mają zacząć obowiązywać w najbliższych dniach.",
-    " Zachęcamy do zapoznania się z oryginalną treścią ogłoszenia pod linkiem."
-]
+JUNK_WORDS = ["szukaj", "menu", "kontakt", "newsletter", "zaloguj", "cookies", "polityka",
+              "deklaracja dostepnosci", "mapa strony", "regulamin", "rodo", "wyszukiwarka",
+              "czytaj wiecej", "zobacz wszystkie", "przejdz do tresci", "facebook", "instagram",
+              "youtube", "archiwum", "ciasteczka", "dostepnosc"]
 
-def pobierz_ze_zrodla(url, nazwa_grupy):
-    artykuly = []
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'pl-PL,pl;q=0.9'
-    }
-    
-    req = urllib.request.Request(url, headers=headers)
+
+class Fetcher:
+    """Pobiera strony grzecznie: robots.txt, przerwy, limit rozmiaru, uczciwy User-Agent."""
+
+    def __init__(self, delay=2.0, timeout=20):
+        self.delay, self.timeout = delay, timeout
+        self.robots, self.last = {}, {}
+
+    def _open(self, url, timeout=None):
+        req = urllib.request.Request(url, headers={
+            "User-Agent": USER_AGENT, "Accept-Language": "pl,en;q=0.5",
+            "Accept-Encoding": "identity"})
+        return urllib.request.urlopen(req, timeout=timeout or self.timeout)
+
+    def allowed(self, url):
+        p = urlparse(url)
+        host = f"{p.scheme}://{p.netloc}"
+        if host not in self.robots:
+            rp = RobotFileParser()
+            try:
+                with self._open(host + "/robots.txt", timeout=10) as r:
+                    rp.parse(r.read(MAX_BYTES).decode("utf-8", "replace").splitlines())
+            except urllib.error.HTTPError as e:
+                rp.allow_all = e.code < 500
+                rp.disallow_all = e.code >= 500
+            except Exception:
+                rp.allow_all = True
+            self.robots[host] = rp
+        return self.robots[host].can_fetch(USER_AGENT, url)
+
+    def get(self, url):
+        if not self.allowed(url):
+            raise PermissionError("robots.txt zabrania pobierania")
+        host = urlparse(url).netloc
+        wait = self.delay - (time.time() - self.last.get(host, 0))
+        if wait > 0:
+            time.sleep(wait)
+        try:
+            with self._open(url) as r:
+                charset = r.headers.get_content_charset() or "utf-8"
+                return r.read(MAX_BYTES).decode(charset, "replace")
+        finally:
+            self.last[host] = time.time()
+
+
+def czysty_tekst(s):
+    return " ".join(s.split())
+
+
+def to_junk(title):
+    t = norm(title)
+    return len(title) < 15 or any(w in t for w in JUNK_WORDS)
+
+
+def rejestr(host):
+    parts = host.lower().removeprefix("www.").split(".")
+    return ".".join(parts[-3:] if host.endswith(".gov.pl") else parts[-2:])
+
+
+def ta_sama_strona(url, base):
+    return rejestr(urlparse(url).netloc) == rejestr(urlparse(base).netloc)
+
+
+def data_z_url(url):
+    m = re.search(r"/(20\d{2})/(\d{2})/(\d{2})/", url) or re.search(r"/(20\d{2})(\d{2})(\d{2})\d*/", url)
+    return _iso(m.groups()) if m else None
+
+
+def data_z_tekstu(text):
+    m = re.search(r"\b(\d{1,2})[./-](\d{1,2})[./-](20\d{2})\b", text)
+    return _iso((m.group(3), m.group(2), m.group(1))) if m else None
+
+
+def _iso(ymd):
     try:
-        html = urllib.request.urlopen(req, timeout=5).read()
-        soup = BeautifulSoup(html, 'html.parser')
-        elementy = soup.find_all(['h6', 'h2', 'h3', 'h4'])
-        
-        for el in elementy:
-            tytul = el.get_text().strip()
-            tytul_lower = tytul.lower()
-            
-            if not tytul or len(tytul) < 22 or len(tytul) > 120:
+        return date(int(ymd[0]), int(ymd[1]), int(ymd[2])).isoformat()
+    except ValueError:
+        return None
+
+
+def znajdz_feed(soup, base):
+    for tag in soup.find_all("link", rel="alternate"):
+        if re.search(r"rss|atom", tag.get("type", ""), re.I) and tag.get("href"):
+            return urljoin(base, tag["href"])
+    return None
+
+
+def parsuj_feed(xml_text, base):
+    """RSS 2.0 i Atom. Zwraca listę {title, url, published, desc}."""
+    items = []
+    try:
+        root = ET.fromstring(xml_text.encode("utf-8"))
+    except ET.ParseError:
+        return items
+    for el in root.iter():
+        tag = el.tag.split("}")[-1]
+        if tag not in ("item", "entry"):
+            continue
+        def get(*names):  # pierwszy znaleziony element (uwaga: pusty element XML jest "fałszywy" w Pythonie)
+            for n in names:
+                c = next((c for c in el if c.tag.split("}")[-1] == n), None)
+                if c is not None:
+                    return c
+            return None
+        title, link = get("title"), get("link")
+        url = (link.get("href") if link is not None and link.get("href") else (link.text if link is not None else None))
+        if title is None or not url or not (title.text or "").strip():
+            continue
+        pub = get("pubDate", "published", "updated")
+        published = None
+        if pub is not None and pub.text:
+            try:
+                published = parsedate_to_datetime(pub.text).date().isoformat()
+            except (TypeError, ValueError):
+                published = pub.text[:10] if re.match(r"20\d{2}-\d{2}-\d{2}", pub.text) else None
+        desc = get("description", "summary")
+        items.append({"title": czysty_tekst(title.text), "url": urljoin(base, url.strip()),
+                      "published": published or data_z_url(url), "desc": (desc.text or "") if desc is not None else ""})
+    return items
+
+
+def parsuj_html(html, base, selector=None):
+    soup = BeautifulSoup(html, "html.parser")
+    nodes = soup.select(selector) if selector else soup.select("article")
+    if not nodes:
+        nodes = soup.find_all(["h2", "h3", "h4"])
+    items, seen = [], set()
+    for node in nodes:
+        head = node if node.name in ("h1", "h2", "h3", "h4") else node.find(["h1", "h2", "h3", "h4"])
+        if head is None:
+            continue
+        a = head.find("a") or head.find_parent("a") or (node.find("a") if node is not head else None)
+        if a is None or not a.get("href") or a["href"].startswith(("javascript:", "mailto:", "tel:", "#")):
+            continue
+        title = czysty_tekst(head.get_text())
+        url = urldefrag(urljoin(base, a["href"]))[0]
+        if to_junk(title) or url in seen or url.rstrip("/") == base.rstrip("/") or not ta_sama_strona(url, base):
+            continue
+        seen.add(url)
+        t = node.find("time")
+        published = None
+        if t is not None:
+            published = (t.get("datetime") or "")[:10] if re.match(r"20\d{2}-\d{2}-\d{2}", t.get("datetime") or "") else data_z_tekstu(t.get_text())
+        published = published or data_z_url(url) or data_z_tekstu(node.get_text(" ")) if node is not head else (data_z_url(url))
+        items.append({"title": title, "url": url, "published": published, "desc": ""})
+    return items
+
+
+def zbierz(src, fetcher):
+    html = fetcher.get(src["url"])
+    items = []
+    feed = src.get("feed") or znajdz_feed(BeautifulSoup(html, "html.parser"), src["url"])
+    if feed:
+        try:
+            items = [i for i in parsuj_feed(fetcher.get(feed), src["url"]) if not to_junk(i["title"])]
+        except Exception:
+            items = []
+    if not items:
+        items = parsuj_html(html, src["url"], src.get("selector"))
+    return items[: src.get("limit", 15)]
+
+
+def wczytaj_store():
+    if STORE.exists():
+        return {i["id"]: i for i in json.loads(STORE.read_text(encoding="utf-8"))}
+    return {}
+
+
+def zapisz_store(store, today):
+    cutoff = (today - timedelta(days=KEEP_DAYS)).isoformat()
+    items = [i for i in store.values() if i["first_seen"] >= cutoff or (i.get("event_iso") or "") >= today.isoformat()]
+    STORE.parent.mkdir(exist_ok=True)
+    STORE.write_text(json.dumps(sorted(items, key=lambda i: i["first_seen"], reverse=True),
+                                ensure_ascii=False, indent=1), encoding="utf-8")
+    return items
+
+
+def dodaj(store, items, src, today):
+    nowe = 0
+    titles = {norm(i["title"]) for i in store.values()}
+    for it in items:
+        iid = hashlib.sha1(it["url"].encode()).hexdigest()[:12]
+        if iid in store or norm(it["title"]) in titles:
+            continue
+        if it["published"] and (today - date.fromisoformat(it["published"])).days > MAX_AGE_DAYS:
+            continue
+        when, event_iso = wyciagnij_termin(it["title"] + " " + it.get("desc", ""), today)
+        store[iid] = {
+            "id": iid, "title": it["title"], "url": it["url"], "source": src["name"], "source_id": src["id"],
+            "first_seen": today.isoformat(), "published": it["published"],
+            "kind": klasyfikuj_rodzaj(it["title"], src.get("kind")),
+            "place": znajdz_miejsca(it["title"], src.get("place", "cała gmina")),
+            "when": when, "event_iso": event_iso}
+        titles.add(norm(it["title"]))
+        nowe += 1
+    return nowe
+
+
+def na_czas(src, today, force):
+    return force or src["freq"] == "daily" or (src["freq"] == "weekly" and today.weekday() == 0) \
+        or (src["freq"] == "rare" and today.day == 1)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--all", action="store_true", help="pobierz też źródła tygodniowe i rzadkie")
+    ap.add_argument("--only", help="pobierz tylko to źródło (id)")
+    ap.add_argument("--render-only", action="store_true", help="tylko zbuduj stronę z zapisanych danych")
+    args = ap.parse_args()
+    today = date.today()
+    store, status = wczytaj_store(), {}
+
+    if not args.render_only:
+        sources = json.loads((ROOT / "sources.json").read_text(encoding="utf-8"))
+        fetcher = Fetcher()
+        ok = 0
+        for src in sources:
+            if not src.get("enabled", True) or (args.only and src["id"] != args.only):
                 continue
-                
-            CZARNA_LISTA = [
-                "szukaj", "menu", "kontakt", "newsletter", "facebook", "zaloguj", 
-                "cookies", "pliki", "polityka", "regulamin", "pobierz", "czytaj wiecej",
-                "wyszukiwarka", "biuro sledcze", "komenda", "kierownictwo", "wydzialy",
-                "zespoly", "sekcje", "strona glowna", "wstecz", "archiwum", "ustawienia",
-                "udostepnij", "reklama", "wspolpraca", "imieniny", "pogoda", "parafie"
-            ]
-            
-            if any(x in tytul_lower for x in CZARNA_LISTA):
+            if not args.only and not na_czas(src, today, args.all):
                 continue
-                
-            parent_a = el.find_parent('a') if el.name != 'a' else el
-            if not parent_a and el.find('a'): parent_a = el.find('a')
-            
-            link = parent_a['href'] if parent_a and parent_a.has_attr('href') else url
-            if link.startswith('/') and not link.startswith('//'):
-                baza = re.match(r'(https?://[^/]+)', url)
-                if baza: link = baza.group(1) + link
-            elif not link.startswith('http'): 
-                link = url
-                
-            # INTELIGENTNY, PROFSJONALNY MIX TEKSTU DLA KAŻDEGO ARTYKUŁU ORAZ CZYSZCZENIE NAZW
-            czysty_tytul = tytul.replace('"', '').replace("'", "")
-            wstep = random.choice(WSTĘPY)
-            rozwiniecie = random.choice(ROZWINIĘCIA)
-            opis = f"{wstep}„{czysty_tytul}”.{rozwiniecie}"
+            try:
+                items = zbierz(src, fetcher)
+                n = dodaj(store, items, src, today)
+                status[src["id"]] = {"ok": True, "found": len(items), "new": n}
+                ok += 1
+            except Exception as e:  # błąd jednego źródła nie zatrzymuje reszty
+                status[src["id"]] = {"ok": False, "error": f"{type(e).__name__}: {e}"}
+            print(f"{src['id']:20} {status[src['id']]}")
+        STATUS.parent.mkdir(exist_ok=True)
+        STATUS.write_text(json.dumps({"run": datetime.now().isoformat(timespec="seconds"), "sources": status},
+                                     ensure_ascii=False, indent=1), encoding="utf-8")
+        if status and ok == 0:
+            print("Żadne źródło nie odpowiedziało, nie publikuję nowej strony.")
+            sys.exit(1)
 
-            # Próba pobrania oryginalnego akapitu ze strony (jeśli jest dostępny i unikalny)
-            rodzic = el.find_parent()
-            if rodzic:
-                akapit = rodzic.find('p')
-                if akapit and len(akapit.get_text().strip()) > 45 and "cookie" not in akapit.get_text().lower(): 
-                    opis = akapit.get_text().strip()[:140] + "..."
+    items = zapisz_store(store, today)
+    render.build(items, ROOT / "template.html", ROOT / "index.html", today)
+    print(f"Zapisano {len(items)} wpisów i zbudowano index.html")
 
-            if tytul not in [a["tytul"] for a in artykuly]:
-                artykuly.append({"tytul": tytul, "link": link, "opis": opis, "grupa": nazwa_grupy})
-                
-            if len(artykuly) >= 3: 
-                break
-        return artykuly
-    except Exception:
-        return []
 
-wszystkie_newsy = []
-for grupa, linki in ZRODLA.items():
-    for l in linki:
-        wszystkie_newsy.extend(pobierz_ze_zrodla(l, grupa))
-
-random.shuffle(wszystkie_newsy)
-
-if len(wszystkie_newsy) < 9:
-    wszystkie_newsy = [{"tytul": "XII Ogolnopolska Noc Bibliotek za nami! Magia literatury w regionie", "link": "https://grodzisk.pl", "opis": "Wyjatkowe spotkania z czytelnikami w lokalnych placowkach.", "grupa": "KULTURA / SPOLECZNOSC"}] * 9
-
-html_cards = ""
-for i, art in enumerate(wszystkie_newsy[:9]):
-    is_hero = " hero-tile" if i == 0 else ""
-    badge_text = "Jedynka dnia" if i == 0 else "Aktualnosci"
-    title_lower = art["tytul"].lower()
-    group_lower = art["grupa"].lower()
-    
-    if "kultura" in group_lower or any(s in title_lower for s in ["noc", "bibliotek", "kultur", "muzycz", "teatr", "koncert", "wystawa", "sztuk", "festawil"]):
-        kat, tlo = "KULTURA / WYDARZENIA", "bg-kultura"
-    elif "finanse" in group_lower or any(s in title_lower for s in ["projekt", "ue", "pieniadze", "dofinansowanie", "budzet", "ceny", "podatki", "zl"]):
-        kat, tlo = "FINANSE / INWESTYCJE", "bg-finanse"
-    elif "bezpiecenstwo" in group_lower or any(s in title_lower for s in ["policja", "wypadek", "zatrzyman", "oszust", "alarm", "straz", "zranienie"]):
-        kat, tlo = "BEZPIECZENSTWO / ALERT", "bg-alert"
-    elif "infrastruktura" in group_lower or any(s in title_lower for s in ["droga", "ul.", "ulica", "remont", "asfalt", "budow", "parking", "wodociag", "osswietlenie"]):
-        kat, tlo = "INFRASTRUKTURA / DROGI", "bg-drogi"
-    elif "edukacja" in group_lower or any(s in title_lower for s in ["szkol", "edukacj", "nauczyciel", "uczen", "oswiat", "przedszkol"]):
-        kat, tlo = "EDUKACJA / REGION", "bg-edukacja"
-    elif "sport" in group_lower or any(s in title_lower for s in ["mecz", "pogon", "gol", "pilka", "sport", "turniej", "bieg", "plywa"]):
-        kat, tlo = "SPORT / REKREACJA", "bg-sport"
-    else:
-        kat, tlo = "WIADOMOSCI LOKALNE", "bg-neutralny"
-
-    ladne_zrodlo = "Portal Lokalny"
-    link_str = str(art["link"])
-    if "grodzisk.pl" in link_str: ladne_zrodlo = "Grodzisk.pl"
-    elif "grodziskinfo.pl" in link_str: ladne_zrodlo = "Grodzisk INFO"
-    elif "grodziski24.pl" in link_str: ladne_zrodlo = "Grodziski 24"
-    elif "przegladregionalny.pl" in link_str: ladne_zrodlo = "Przeglad Regionalny"
-    elif "wpr24.pl" in link_str: ladne_zrodlo = "WPR24"
-    elif "policja.gov.pl" in link_str: ladne_zrodlo = "KPP Grodzisk"
-    elif "geoportal" in link_str: ladne_zrodlo = "Geoportal"
-
-    card_template = f"""
-        <article class="portal-card{is_hero}">
-            <div class="img-container {tlo}">
-                <div class="tile-category-text">{kat}</div>
-            </div>
-            <div class="card-body">
-                <div class="meta-bar"><span class="badge">{badge_text}</span><span>{ladne_zrodlo}</span></div>
-                <h2>{art['tytul']}</h2>
-                <p>{art['opis']}</p>
-                <a href="{art['link']}" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
-            </div>
-        </article>
-    """
-    html_cards += card_template
-
-with open("template.html", "r", encoding="utf-8") as f:
-    szablon_content = f.read()
-
-final_html = szablon_content.replace("<!-- DYNAMIC_CARDS_PLACEHOLDER -->", html_cards)
-
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(final_html)
-
-print("Sukces! Portal zostal zaktualizowany o czysta, zroznicowana baze opisow.")
+if __name__ == "__main__":
+    main()
