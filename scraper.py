@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import random
 
-print("Uruchamiam zintegrowany silnik wielozrodlowy portalu prasowego...")
+print("Uruchamiam zintegrowany, inteligentny silnik portalu prasowego...")
 
 ZRODLA = {
     "URZAD / NEWSY": [
@@ -52,51 +52,55 @@ ZRODLA = {
 def pobierz_ze_zrodla(url, nazwa_grupy):
     artykuly = []
     
-    # EMULACJA PRAWDZIWEJ PRZEGLĄDARKI (Ominięcie blokad Cloudflare/Wordfence)
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Language': 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'pl-PL,pl;q=0.9'
     }
     
     req = urllib.request.Request(url, headers=headers)
     try:
-        html = urllib.request.urlopen(req, timeout=7).read()
+        html = urllib.request.urlopen(req, timeout=5).read()
         soup = BeautifulSoup(html, 'html.parser')
-        
-        # Skanujemy najpopularniejsze tagi nagłówków oraz klasy wpisów prasowych
-        elementy = soup.find_all(['h6', 'h2', 'h3', 'h4', 'a'])
+        elementy = soup.find_all(['h6', 'h2', 'h3', 'h4'])
         
         for el in elementy:
             tytul = el.get_text().strip()
+            tytul_lower = tytul.lower()
             
-            # Odpalamy restrykcyjny filtr śmieci tekstowych i menu
-            if not tytul or len(tytul) < 25 or len(tytul) > 120 or any(x in tytul.lower() for x in ["szukaj", "menu", "kontakt", "newsletter", "facebook", "zaloguj", "cookies", "pliki", "polityka", "regulamin", "pobierz", "czytaj więcej"]):
+            # FILTR MENU ORAZ ELEMENTÓW SYSTEMOWYCH (Eliminacja dziwnych tytułów)
+            if not tytul or len(tytul) < 22 or len(tytul) > 120:
+                continue
+                
+            CZARNA_LISTA = [
+                "szukaj", "menu", "kontakt", "newsletter", "facebook", "zaloguj", 
+                "cookies", "pliki", "polityka", "regulamin", "pobierz", "czytaj wiecej",
+                "wyszukiwarka", "biuro sledcze", "komenda", "kierownictwo", "wydzialy",
+                "zespoly", "sekcje", "strona glowna", "wstecz", "archiwum", "ustawienia",
+                "udostepnij", "reklama", "wspolpraca", "imieniny", "pogoda", "parafie"
+            ]
+            
+            if any(x in tytul_lower for x in CZARNA_LISTA):
                 continue
                 
             parent_a = el.find_parent('a') if el.name != 'a' else el
-            if not parent_a and el.find('a'): 
-                parent_a = el.find('a')
-                
+            if not parent_a and el.find('a'): parent_a = el.find('a')
+            
             link = parent_a['href'] if parent_a and parent_a.has_attr('href') else url
             if link.startswith('/') and not link.startswith('//'):
                 baza = re.match(r'(https?://[^/]+)', url)
-                if baza: 
-                    link = baza.group(1) + link
+                if baza: link = baza.group(1) + link
             elif not link.startswith('http'): 
                 link = url
                 
-            # Wyciągamy zajawkę tekstu
-            opis = "Przeglad prasy i faktow lokalnych z serwisu regionalnego. Kliknij ponizszy odnośnik, aby przejsc do oryginalnego zrodla faktow."
+            # DYNAMICZNY GENERATOR TREŚCI (Zamiast suchego tekstu próbnego)
+            opis = f"Serwis internetowy analizuje najnowsze doniesienia i wyciaga kluczowe wnioski z wydarzenia: '{tytul}'. Sprawdz zrodlo."
             rodzic = el.find_parent()
             if rodzic:
                 akapit = rodzic.find('p')
-                if akapit and len(akapit.get_text().strip()) > 30: 
+                if akapit and len(akapit.get_text().strip()) > 35: 
                     opis = akapit.get_text().strip()[:140] + "..."
 
-            # Zapobiegamy dublowaniu się tych samych tytułów w bazie
             if tytul not in [a["tytul"] for a in artykuly]:
                 artykuly.append({"tytul": tytul, "link": link, "opis": opis, "grupa": nazwa_grupy})
                 
@@ -106,27 +110,16 @@ def pobierz_ze_zrodla(url, nazwa_grupy):
     except Exception:
         return []
 
-# SKANOWANIE LOKALNEJ SIECI LINKÓW
+# SKANOWANIE I MIESZANIE 
 wszystkie_newsy = []
 for grupa, linki in ZRODLA.items():
     for l in linki:
-        wpisy = pobierz_ze_zrodla(l, grupa)
-        wszystkie_newsy.extend(wpisy)
+        wszystkie_newsy.extend(pobierz_ze_zrodla(l, grupa))
 
-print(f"Pomyślnie zebrano {len(wszystkie_newsy)} unikalnych wpisów.")
-
-# LOSOWE MIESZANIE WIADOMOŚCI (Przeplatanie urzędu, policji, sportu i mediów)
 random.shuffle(wszystkie_newsy)
 
-# Baza awaryjna na wypadek całkowitego braku internetu
 if len(wszystkie_newsy) < 9:
-    baza_awaryjna = [
-        {"tytul": "XII Ogolnopolska Noc Bibliotek za nami! Magia literatury w regionie", "link": "https://grodzisk.pl", "opis": "Wyjatkowe spotkania z czytelnikami w lokalnych placowkach.", "grupa": "KULTURA / SPOLECZNOSC"},
-        {"tytul": "Trzy duze projekty dla mieszkancow z rekordowym dofinansowaniem UE", "link": "https://grodzisk.pl", "opis": "Nowe sciezki rowerowe, parkingi przesiadkowe typu Parkuj i Jedz oraz modernizacja lokalnej infrastruktury drogowej.", "grupa": "URZAD / NEWSY"},
-        {"tytul": "Projekt planu ogolnego Gminy Grodzisk Mazowiecki udostepniony", "link": "https://grodzisk.pl", "opis": "Urzzednicy zakonczyli kluczowy etap prac nad planowaniem przestrzennym. Mieszkancy Ksiazenic moga skladac wnioski.", "grupa": "URZAD / NEWSY"}
-    ]
-    while len(wszystkie_newsy) < 9:
-        wszystkie_newsy.extend(baza_awaryjna)
+    wszystkie_newsy = [{"tytul": "XII Ogolnopolska Noc Bibliotek za nami! Magia literatury w regionie", "link": "https://grodzisk.pl", "opis": "Wyjatkowe spotkania z czytelnikami w lokalnych placowkach.", "grupa": "KULTURA / SPOLECZNOSC"}] * 9
 
 html_cards = ""
 for i, art in enumerate(wszystkie_newsy[:9]):
@@ -135,17 +128,17 @@ for i, art in enumerate(wszystkie_newsy[:9]):
     title_lower = art["tytul"].lower()
     group_lower = art["grupa"].lower()
     
-    if "kultura" in group_lower or any(s in title_lower for s in ["noc", "bibliotek", "kultur", "muzycz", "teatr", "koncert", "wystawa", "sztuk"]):
+    if "kultura" in group_lower or any(s in title_lower for s in ["noc", "bibliotek", "kultur", "muzycz", "teatr", "koncert", "wystawa", "sztuk", "festawil"]):
         kat, tlo = "KULTURA / WYDARZENIA", "bg-kultura"
-    elif "finanse" in group_lower or any(s in title_lower for s in ["projekt", "ue", "pieniadze", "dofinansowanie", "budzet", "ceny", "finans"]):
+    elif "finanse" in group_lower or any(s in title_lower for s in ["projekt", "ue", "pieniadze", "dofinansowanie", "budzet", "ceny", "podatki", "zl"]):
         kat, tlo = "FINANSE / INWESTYCJE", "bg-finanse"
-    elif "bezpiecenstwo" in group_lower or any(s in title_lower for s in ["policja", "wypadek", "zatrzyman", "oszust", "alarm", "straz", "kryminal"]):
+    elif "bezpiecenstwo" in group_lower or any(s in title_lower for s in ["policja", "wypadek", "zatrzyman", "oszust", "alarm", "straz", "zranienie"]):
         kat, tlo = "BEZPIECZENSTWO / ALERT", "bg-alert"
-    elif "infrastruktura" in group_lower or any(s in title_lower for s in ["droga", "ul.", "ulica", "remont", "asfalt", "budow", "parking", "wodociag"]):
+    elif "infrastruktura" in group_lower or any(s in title_lower for s in ["droga", "ul.", "ulica", "remont", "asfalt", "budow", "parking", "wodociag", "osswietlenie"]):
         kat, tlo = "INFRASTRUKTURA / DROGI", "bg-drogi"
     elif "edukacja" in group_lower or any(s in title_lower for s in ["szkol", "edukacj", "nauczyciel", "uczen", "oswiat", "przedszkol"]):
         kat, tlo = "EDUKACJA / REGION", "bg-edukacja"
-    elif "sport" in group_lower or any(s in title_lower for s in ["mecz", "pogon", "gol", "pilka", "sport", "turniej", "bieg", "joga"]):
+    elif "sport" in group_lower or any(s in title_lower for s in ["mecz", "pogon", "gol", "pilka", "sport", "turniej", "bieg", "plywa"]):
         kat, tlo = "SPORT / REKREACJA", "bg-sport"
     else:
         kat, tlo = "WIADOMOSCI LOKALNE", "bg-neutralny"
@@ -158,6 +151,7 @@ for i, art in enumerate(wszystkie_newsy[:9]):
     elif "przegladregionalny.pl" in link_str: ladne_zrodlo = "Przeglad Regionalny"
     elif "wpr24.pl" in link_str: ladne_zrodlo = "WPR24"
     elif "policja.gov.pl" in link_str: ladne_zrodlo = "KPP Grodzisk"
+    elif "geoportal" in link_str: ladne_zrodlo = "Geoportal"
 
     card_template = f"""
         <article class="portal-card{is_hero}">
@@ -182,4 +176,4 @@ final_html = szablon_content.replace("<!-- DYNAMIC_CARDS_PLACEHOLDER -->", html_
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(final_html)
 
-print("Sukces! Portal zostal w pelni zasilony zywymi wiadomosciami z sieci.")
+print("Sukces! Portal zostal zaktualizowany o czysta baze danych.")
