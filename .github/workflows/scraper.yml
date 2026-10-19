@@ -1,0 +1,36 @@
+name: Automatyczny Scraper Lokalny
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Daje botowi prawo do nadpisywania index.html
+
+    steps:
+    - name: Pobranie kodu repozytorium
+      uses: actions/checkout@v3
+
+    - name: Instalacja Pythona
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Instalacja bibliotek
+      run: |
+        pip install beautifulsoup4
+
+    - name: Uruchomienie bota
+      run: python scraper.py
+
+    - name: Automatyczny commit i push zmian na strone
+      run: |
+        git config --global user.name "Bento Bot Agregator"
+        git config --global user.email "bot@agregator.ai"
+        git add index.html
+        git diff-index --quiet HEAD || git commit -m "Automatyczna aktualizacja wiadomosci (Bot)"
+        git push
