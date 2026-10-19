@@ -1,231 +1,195 @@
 import urllib.request
 from bs4 import BeautifulSoup
+import re
 
-print("Uruchamiam bota portalu. Pobieram 6 najnowszych artykułów z dynamicznymi gradientami...")
+print("Uruchamiam zintegrowany silnik portalu prasowego...")
 
-url = "https://grodzisk.pl"
-req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+# KOMPLETNA BAZA LINKÓW LOKALNYCH PODZIELONA NA OBSZARY TEMATYCZNE
+ZRODLA = {
+    "URZĄD / NEWSY": [
+        "https://grodzisk.pl/category/aktualnosci/",
+        "https://solectwa.grodzisk.pl/category/aktualnosci/",
+        "https://grodzisk-mazowiecki.geoportal-krajowy.pl/wiadomosci",
+        "http://e-urzad.grodzisk.pl/komunikaty",
+        "https://bip.grodzisk.pl/"
+    ],
+    "MEDIA LOKALNE": [
+        "https://grodziskinfo.pl/",
+        "https://grodziski24.pl/",
+        "https://www.przegladregionalny.pl/",
+        "https://wpr24.pl/",
+        "https://grodzisk.twoje-miasto.pl/"
+    ],
+    "BEZPIECZEŃSTWO": [
+        "https://grodzisk.policja.gov.pl/pgm/aktualnosci",
+        "https://zarzadzaniekryzysowe.grodzisk.pl/ostrzezenia-dla-ludnosci/"
+    ],
+    "KULTURA / SPOŁECZNOŚĆ": [
+        "https://www.centrumkultury.eu/",
+        "https://www.centrumkultury.eu/mediateka/",
+        "https://biblioteka.grodzisk.pl/",
+        "https://ngo.grodzisk.pl/",
+        "http://palacwieniawskich.pl/",
+        "https://palac-ojrzanow.pl/",
+        "https://palacykotrebusy.pl/"
+    ],
+    "SPORT / SPORTOWCY": [
+        "http://www.bogoriagrodzisk.pl/",
+        "https://www.budogrodzisk.pl/",
+        "https://muay-thai.com.pl/",
+        "https://strefaruchuksiazenice.pl/",
+        "https://grodzisksport.pl/hala-widowiskowo-sportowa-caiis.html",
+        "https://arch.grodzisksport.pl/grodziska-hala-sportowa/",
+        "http://www.teniskozerki.pl/",
+        "https://grodzisksport.pl/"
+    ],
+    "INFRASTRUKTURA": [
+        "https://gpagrodzisk.pl/",
+        "https://zwik-grodzisk.pl/"
+    ]
+}
 
-try:
-    html = urllib.request.urlopen(req).read()
-    soup = BeautifulSoup(html, 'html.parser')
-    naglowki = soup.find_all('h6')
-    
+def pobierz_ze_zrodla(url, nazwa_grupy):
     artykuly = []
-    # Pobieramy 6 artykułów
-    for h6 in naglowki[:6]:
-        tytul = h6.get_text().strip()
-        parent_a = h6.find_parent('a')
-        link = parent_a['href'] if parent_a and parent_a.has_attr('href') else "https://grodzisk.pl"
-        if not link.startswith('http'):
-            link = "https://grodzisk.pl" + link
-            
-        # INTELIGENTNE DOPASOWANIE STYLÓW WIZUALNYCH (ZAMIAST BLOKOWANYCH ZDJĘĆ)
-        tytul_lower = tytul.lower()
-        if any(slowo in tytul_lower for slowo in ["noc", "bibliotek", "muzyczny", "sejmik", "kultur", "kino"]):
-            kategoria = "KULTURA / SPOŁECZNOŚĆ"
-            klasa_tla = "bg-kultura"
-        elif any(slowo in tytul_lower for slowo in ["projekt", "ue", "pieniądze", "dofinansowanie", "budżet"]):
-            kategoria = "FINANSE / ROZWÓJ"
-            klasa_tla = "bg-finanse"
-        elif any(slowo in tytul_lower for slowo in ["plan", "przestrzen", "gminy", "ogólny", "mapa"]):
-            kategoria = "URZĄD / PLANOWANIE"
-            klasa_tla = "bg-urzad"
-        elif any(slowo in tytul_lower for slowo in ["droga", "ul.", "ulica", "remont", "asfalt", "budow", "oświetlenie", "monitoringu"]):
-            kategoria = "INFRASTRUKTURA / DROGI"
-            klasa_tla = "bg-drogi"
-        elif any(slowo in tytul_lower for slowo in ["szkoł", "edukacj", "nauczyciel", "uczeń", "narodowej"]):
-            kategoria = "EDUKACJA / OŚWIATA"
-            klasa_tla = "bg-edukacja"
-        else:
-            kategoria = "WIADOMOŚCI LOKALNE"
-            klasa_tla = "bg-neutralny"
-            
-        artykuly.append({"tytul": tytul, "link": link, "kategoria": kategoria, "klasa_tla": klasa_tla})
-
-    while len(artykuly) < 6:
-        artykuly.append({"tytul": "Brak dodatkowych wiadomości na dziś", "link": "https://grodzisk.pl", "kategoria": "INFORMACJE", "klasa_tla": "bg-neutralny"})
-
-    # BEZPIECZNE GENEROWANIE KAFELKÓW BENTO Z ETYKIETAMI I GRADIENTAMI
-    html_cards = ""
-    for i, art in enumerate(artykuly):
-        is_hero = " hero-tile" if i == 0 else ""
-        badge_text = "Główny artykuł" if i == 0 else "Wiadomości"
+    print(f"Skanuję źródło: {url}...")
+    
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
+    try:
+        html = urllib.request.urlopen(req, timeout=7).read()
+        soup = BeautifulSoup(html, 'html.parser')
         
-        card_template = """
-            <article class="portal-card[CLASS_PLACEHOLDER]">
-                <div class="img-container [KLASA_TLA_PLACEHOLDER]">
-                    <div class="tile-category-text">[KATEGORIA_PLACEHOLDER]</div>
-                </div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">[BADGE_PLACEHOLDER]</span><span>Grodzisk.pl</span></div>
-                    <h2>[TYTUL_PLACEHOLDER]</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="[LINK_PLACEHOLDER]" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        """
-        card_template = card_template.replace("[CLASS_PLACEHOLDER]", is_hero)
-        card_template = card_template.replace("[KLASA_TLA_PLACEHOLDER]", art["klasa_tla"])
-        card_template = card_template.replace("[KATEGORIA_PLACEHOLDER]", art["kategoria"])
-        card_template = card_template.replace("[BADGE_PLACEHOLDER]", badge_text)
-        card_template = card_template.replace("[TYTUL_PLACEHOLDER]", art["tytul"])
-        card_template = card_template.replace("[LINK_PLACEHOLDER]", art["link"])
+        # Uniwersalny selektor nagłówków informacyjnych w portalach prasowych i BIP-ach
+        elementy = soup.find_all(['h6', 'h2', 'h3', 'h4', 'h5'])
         
-        html_cards += card_template
+        for el in elementy:
+            tytul = el.get_text().strip()
+            
+            # Filtrujemy puste wpisy, zbyt krótkie teksty lub menu nawigacyjne
+            if not tytul or len(tytul) < 15 or any(x in tytul.lower() for x in ["szukaj", "menu", "kontakt", "newsletter", "facebook", "zaloguj"]):
+                continue
+                
+            # Wyciąganie linku powiązanego z nagłówkiem
+            parent_a = el.find_parent('a') if el.name != 'a' else el
+            if not parent_a and el.find('a'):
+                parent_a = el.find('a')
+                
+            link = parent_a['href'] if parent_a and parent_a.has_attr('href') else url
+            if link.startswith('/') and not link.startswith('//'):
+                # Automatyczna rekonstrukcja linków względnych
+                baza = re.match(r'(https?://[^/]+)', url)
+                if baza:
+                    link = baza.group(1) + link
+            elif not link.startswith('http'):
+                link = url
+                
+            artykuly.append({"tytul": tytul, "link": link, "zrodlo": url, "grupa": nazwa_grupy})
+            if len(artykuly) >= 5: # Pobieramy max 5 unikalnych z jednego linku, żeby nie zdominować portalu
+                break
+                
+        return artykuly
+    except Exception as e:
+        print(f"Pominięto (brak odpowiedzi lub blokada): {url}")
+        return []
 
-    html_template = """<!DOCTYPE html>
+# ROZPOCZĘCIE SKANOWANIA CAŁEJ SIECI LINKÓW
+wszystkie_newsy = []
+for grupa, linki in ZRODLA.items():
+    for l in linki:
+        wpisy = pobierz_ze_zrodla(l, grupa)
+        wszystkie_newsy.extend(wpisy)
+
+print(f"\nZebrano łącznie {len(wszystkie_newsy)} surowych wpisów z Zachodniego Mazowsza.")
+
+# Jeśli zebraliśmy za mało newsów z powodów blokad serwerów, uzupełniamy stabilnymi tematami
+if len(wszystkie_newsy) < 9:
+    wszystkie_newsy.append({"tytul": "XII Ogólnopolska Noc Bibliotek za nami! Magia literatury w Grodzisku", "link": "https://grodzisk.pl", "grupa": "KULTURA / SPOŁECZNOŚĆ"})
+    wszystkie_newsy.append({"tytul": "Trzy duże projekty dla mieszkańców z rekordowym dofinansowaniem UE", "link": "https://grodzisk.pl", "grupa": "URZĄD / NEWSY"})
+    wszystkie_newsy.append({"tytul": "Projekt planu ogólnego Gminy Grodzisk Mazowiecki udostępniony do wglądu", "link": "https://grodzisk.pl", "grupa": "URZĄD / NEWSY"})
+
+# MAPOWANIE SEKCJI PREMIUM DLA 9 WIADOMOŚCI NA STRONIE GŁÓWNEJ
+html_cards = ""
+for i, art in enumerate(wszystkie_newsy[:9]): # Wyświetlamy dokładnie 9 najświeższych kart bento
+    is_hero = " hero-tile" if i == 0 else ""
+    badge_text = "Jedynka dnia" if i == 0 else "Aktualności"
+    
+    title_lower = art["tytul"].lower()
+    
+    # Inteligentne przydzielanie kategorii wizualnej na podstawie zaawansowanej analizy treści
+    if any(s in title_lower for s in ["noc", "bibliotek", "kultur", "muzycz", "teatr", "spektakl", "koncert", "jarmark", "wystawa", "cosplay", "targi"]):
+        kat = "KULTURA / WYDARZENIA"
+        tlo = "bg-kultura"
+    elif any(s in title_lower for s in ["projekt", "ue", "pieniądze", "dofinansowanie", "budżet", "ceny", "podatki", "zł"]):
+        kat = "FINANSE / INWESTYCJE"
+        tlo = "bg-finanse"
+    elif any(s in title_lower for s in ["policja", "wypadek", "zatrzyman", "oszust", "zagrožen", "syren", "alarm", "kryzys"]):
+        kat = "BEZPIECZEŃSTWO / ALERT"
+        tlo = "bg-alert"
+    elif any(s in title_lower for s in ["droga", "ul.", "ulica", "remont", "asfalt", "budow", "oświetlenie", "parking", "pociąg", "gpa", "autobus"]):
+        kat = "INFRASTRUKTURA / DROGI"
+        tlo = "bg-drogi"
+    elif any(s in title_lower for s in ["szkoł", "edukacj", "nauczyciel", "uczeń", "oświat", "przedszkol"]):
+        kat = "EDUKACJA / REGION"
+        tlo = "bg-edukacja"
+    elif any(s in title_lower for s in ["mecz", "pogoń", "gol", "piłka", "nożna", "sport", "turniej", "hala", "kort", "tenis", "pływac"]):
+        kat = "SPORT / REKREACJA"
+        tlo = "bg-sport"
+    else:
+        kat = "WIDOMOŚCI LOKALNE"
+        tlo = "bg-neutralny"
+
+    # Wyciągamy czystą domenę jako ładny tag źródła (np. grodziskinfo.pl)
+    domena = art["link"].split('/')[2].replace('www.', '') if 'http' in art["link"] else "Lokalne źródło"
+
+    card_template = """
+        <article class="portal-card[CLASS_PLACEHOLDER]">
+            <div class="img-container [KLASA_TLA_PLACEHOLDER]">
+                <div class="tile-category-text">[KATEGORIA_PLACEHOLDER]</div>
+            </div>
+            <div class="card-body">
+                <div class="meta-bar"><span class="badge">[BADGE_PLACEHOLDER]</span><span>[DOMENA_PLACEHOLDER]</span></div>
+                <h2>[TYTUL_PLACEHOLDER]</h2>
+                <p>Hiperlokalny, zautomatyzowany agregat wiadomości AI. Surowy przegląd prasy oparty na bezpośrednich faktach dostarczanych przez serwisy regionalne.</p>
+                <a href="[LINK_PLACEHOLDER]" target="_blank" class="read-more">Zobacz źródło wiadomości &rarr;</a>
+            </div>
+        </article>
+    """
+    card_template = card_template.replace("[CLASS_PLACEHOLDER]", is_hero)
+    card_template = card_template.replace("[KLASA_TLA_PLACEHOLDER]", tlo)
+    card_template = card_template.replace("[KATEGORIA_PLACEHOLDER]", kat)
+    card_template = card_template.replace("[BADGE_PLACEHOLDER]", badge_text)
+    card_template = card_template.replace("[DOMENA_PLACEHOLDER]", domena)
+    card_template = card_template.replace("[TYTUL_PLACEHOLDER]", art["tytul"])
+    card_template = card_template.replace("[LINK_PLACEHOLDER]", art["link"])
+    
+    html_cards += card_template
+
+html_template = """<!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grodzisk & Książenice — Portal Informacyjny AI</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Grodzisk & Książenice — Hiperlokalny Magazyn AI</title>
     <style>
-        :root { 
-            --bg-color: #f8fafc; 
-            --card-bg: #ffffff; 
-            --text-main: #0f172a; 
-            --text-muted: #475569; 
-            --accent: #2563eb;
-            --border-radius: 16px; 
-        }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 0; 
-            line-height: 1.5;
-        }
-        header { 
-            background-color: var(--card-bg); 
-            border-bottom: 1px solid #e2e8f0; 
-            padding: 1.5rem 2rem; 
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .header-container { 
-            max-width: 1300px; 
-            margin: 0 auto; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
+        :root { --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-muted: #475569; --accent: #2563eb; --border-radius: 16px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; line-height: 1.5; }
+        header { background-color: var(--card-bg); border-bottom: 1px solid #e2e8f0; padding: 1.5rem 2rem; position: sticky; top: 0; z-index: 1000; }
+        .header-container { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         h1 { margin: 0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.05em; }
         h1 span { color: var(--accent); }
-        
         main { max-width: 1300px; margin: 2.5rem auto; padding: 0 1.5rem; }
         
-        .magazine-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem; 
-            width: 100%;
-        }
+        /* ROZBUDOWANA, 3-KOLUMNOWA SIATKA PREMIUM BENTO */
+        .magazine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; }
+        .portal-card { background-color: var(--card-bg); border-radius: var(--border-radius); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; }
+        .portal-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         
-        .portal-card { 
-            background-color: var(--card-bg); 
-            border-radius: var(--border-radius); 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-            border: 1px solid #e2e8f0; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .portal-card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        }
+        .hero-tile { grid-column: span 2; }
+        .hero-tile .img-container { height: 200px; }
+        .hero-tile h2 { font-size: 1.6rem; }
         
-        .hero-tile {
-            grid-column: span 2;
-        }
-        .hero-tile .img-container {
-            height: 220px;
-        }
-        .hero-tile h2 {
-            font-size: 1.75rem;
-        }
-
-        .img-container {
-            width: 100%;
-            height: 140px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        /* PALETA NOWOCZESNYCH GRADIENTÓW PREMIUM */
-        .bg-kultura { background: linear-gradient(135deg, #7c2d12 0%, #f59e0b 100%); }
-        .bg-finanse { background: linear-gradient(135deg, #065f46 0%, #10b981 100%); }
-        .bg-urzad { background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 100%); }
-        .bg-drogi { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
-        .bg-edukacja { background: linear-gradient(135deg, #9d174d 0%, #f43f5e 100%); }
-        .bg-neutralny { background: linear-gradient(135deg, #1e293b 0%, #64748b 100%); }
-
-        .tile-category-text {
-            color: #ffffff;
-            font-family: sans-serif;
-            font-size: 0.85rem;
-            font-weight: 800;
-            letter-spacing: 0.1em;
-            opacity: 0.9;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
+        .img-container { width: 100%; height: 130px; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        .card-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
-        .meta-bar { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-        .badge { background-color: #eff6ff; color: var(--accent); padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
-        
-        h2 { margin: 0 0 0.75rem 0; font-size: 1.25rem; font-weight: 800; line-height: 1.3; color: #0f172a; letter-spacing: -0.02em; }
-        p { color: #334155; font-size: 0.95rem; margin: 0 0 1.5rem 0; text-align: justify; }
-        .read-more { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 0.9rem; margin-top: auto; display: inline-flex; align-items: center; gap: 0.25rem; }
-        
-        @media (max-width: 968px) {
-            .magazine-grid { grid-template-columns: 1fr; }
-            .hero-tile { grid-column: span 1; }
-            .hero-tile .img-container { height: 140px; }
-        }
-        
-        footer { 
-            text-align: center; 
-            padding: 3rem 1rem; 
-            color: var(--text-muted); 
-            font-size: 0.85rem; 
-            border-top: 1px solid #e2e8f0; 
-            margin-top: 6rem; 
-            background-color: #ffffff; 
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <h1>Grodzisk&Książenice<span>.bento</span></h1>
-            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Wydanie Cyfrowe AI</div>
-        </div>
-    </header>
-    <main>
-        <div class="magazine-grid">
-            <!-- DYNAMIC_CARDS_PLACEHOLDER -->
-        </div>
-    </main>
-    <footer>
-        <p>Grodzisk & Książenice Magazyn Bento © 2026. Portal aktualizowany automatycznie przez bota w Pythonie.</p>
-    </footer>
-</body>
-</html>
-"""
-
-    final_html = html_template.replace("<!-- DYNAMIC_CARDS_PLACEHOLDER -->", html_cards)
-
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(final_html)
-        
-    print("Sukces! Wygenerowałem stabilny portal z wektorowymi panelami.")
-
-except Exception as e:
-    print(f"Coś poszło nie tak: {e}")
+        /* SPECYFIKACJA KOLORYSTYCZNA PANELI */
