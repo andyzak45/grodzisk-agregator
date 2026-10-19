@@ -3,214 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Grodzisk & Książenice — Portal Informacyjny AI</title>
     <style>
-        :root { 
-            --bg-color: #f8fafc; 
-            --card-bg: #ffffff; 
-            --text-main: #0f172a; 
-            --text-muted: #475569; 
-            --accent: #2563eb;
-            --border-radius: 16px; 
-        }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 0; 
-            line-height: 1.5;
-        }
-        header { 
-            background-color: var(--card-bg); 
-            border-bottom: 1px solid #e2e8f0; 
-            padding: 1.5rem 2rem; 
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .header-container { 
-            max-width: 1300px; 
-            margin: 0 auto; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
+        :root { --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-muted: #475569; --accent: #2563eb; --border-radius: 16px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; line-height: 1.5; }
+        header { background-color: var(--card-bg); border-bottom: 1px solid #e2e8f0; padding: 1.5rem 2rem; position: sticky; top: 0; z-index: 1000; }
+        .header-container { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         h1 { margin: 0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.05em; }
         h1 span { color: var(--accent); }
-        
         main { max-width: 1300px; margin: 2.5rem auto; padding: 0 1.5rem; }
-        
-        .magazine-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem; 
-            width: 100%;
-        }
-        
-        .portal-card { 
-            background-color: var(--card-bg); 
-            border-radius: var(--border-radius); 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-            border: 1px solid #e2e8f0; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .portal-card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        }
-        
-        .hero-tile {
-            grid-column: span 2;
-        }
-        .hero-tile .img-container {
-            height: 220px;
-        }
-        .hero-tile h2 {
-            font-size: 1.75rem;
-        }
-
-        .img-container {
-            width: 100%;
-            height: 140px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        /* PALETA NOWOCZESNYCH GRADIENTÓW PREMIUM */
+        .magazine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; }
+        .portal-card { background-color: var(--card-bg); border-radius: var(--border-radius); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; }
+        .portal-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .hero-tile { grid-column: span 2; }
+        .hero-tile .img-container { height: 200px; }
+        .hero-tile h2 { font-size: 1.6rem; }
+        .img-container { width: 100%; height: 130px; display: flex; align-items: center; justify-content: center; position: relative; }
         .bg-kultura { background: linear-gradient(135deg, #7c2d12 0%, #f59e0b 100%); }
         .bg-finanse { background: linear-gradient(135deg, #065f46 0%, #10b981 100%); }
-        .bg-urzad { background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 100%); }
+        .bg-alert { background: linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%); }
         .bg-drogi { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
         .bg-edukacja { background: linear-gradient(135deg, #9d174d 0%, #f43f5e 100%); }
+        .bg-sport { background: linear-gradient(135deg, #312e81 0%, #6366f1 100%); }
         .bg-neutralny { background: linear-gradient(135deg, #1e293b 0%, #64748b 100%); }
-
-        .tile-category-text {
-            color: #ffffff;
-            font-family: sans-serif;
-            font-size: 0.85rem;
-            font-weight: 800;
-            letter-spacing: 0.1em;
-            opacity: 0.9;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .card-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .tile-category-text { color: #ffffff; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.12em; text-shadow: 0 2px 4px rgba(0,0,0,0.4); text-transform: uppercase; }
+        .card-body { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
         .meta-bar { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-        .badge { background-color: #eff6ff; color: var(--accent); padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
-        
-        h2 { margin: 0 0 0.75rem 0; font-size: 1.25rem; font-weight: 800; line-height: 1.3; color: #0f172a; letter-spacing: -0.02em; }
-        p { color: #334155; font-size: 0.95rem; margin: 0 0 1.5rem 0; text-align: justify; }
-        .read-more { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 0.9rem; margin-top: auto; display: inline-flex; align-items: center; gap: 0.25rem; }
-        
-        @media (max-width: 968px) {
-            .magazine-grid { grid-template-columns: 1fr; }
-            .hero-tile { grid-column: span 1; }
-            .hero-tile .img-container { height: 140px; }
-        }
-        
-        footer { 
-            text-align: center; 
-            padding: 3rem 1rem; 
-            color: var(--text-muted); 
-            font-size: 0.85rem; 
-            border-top: 1px solid #e2e8f0; 
-            margin-top: 6rem; 
-            background-color: #ffffff; 
-        }
+        .badge { background-color: #eff6ff; color: var(--accent); padding: 0.25rem 0.5rem; border-radius: 6px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; }
+        h2 { margin: 0 0 0.75rem 0; font-size: 1.15rem; font-weight: 800; line-height: 1.35; color: #0f172a; letter-spacing: -0.01em; }
+        p { color: #334155; font-size: 0.9rem; margin: 0 0 1.25rem 0; text-align: justify; }
+        .read-more { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 0.85rem; margin-top: auto; display: inline-flex; align-items: center; }
+        @media (max-width: 968px) { .magazine-grid { grid-template-columns: 1fr; } .hero-tile { grid-column: span 1; } }
+        footer { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.82rem; border-top: 1px solid #e2e8f0; margin-top: 6rem; background-color: #ffffff; }
     </style>
 </head>
 <body>
     <header>
         <div class="header-container">
             <h1>Grodzisk&Książenice<span>.bento</span></h1>
-            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Wydanie Cyfrowe AI</div>
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Zintegrowana Sieć AI</div>
         </div>
     </header>
     <main>
         <div class="magazine-grid">
             
-            <article class="portal-card hero-tile">
-                <div class="img-container bg-kultura">
-                    <div class="tile-category-text">KULTURA / SPOŁECZNOŚĆ</div>
-                </div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Główny artykuł</span><span>Grodzisk.pl</span></div>
-                    <h2>XII Ogólnopolska Noc Bibliotek za nami!</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
-            <article class="portal-card">
-                <div class="img-container bg-finanse">
-                    <div class="tile-category-text">FINANSE / ROZWÓJ</div>
-                </div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Wiadomości</span><span>Grodzisk.pl</span></div>
-                    <h2>Trzy projekty dla mieszkańców z dofinansowaniem UE</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
-            <article class="portal-card">
-                <div class="img-container bg-finanse">
-                    <div class="tile-category-text">FINANSE / ROZWÓJ</div>
-                </div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Wiadomości</span><span>Grodzisk.pl</span></div>
-                    <h2>Projekt planu ogólnego Gminy Grodzisk Mazowiecki</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
-            <article class="portal-card">
-                <div class="img-container bg-edukacja">
-                    <div class="tile-category-text">EDUKACJA / OŚWIATA</div>
-                </div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Wiadomości</span><span>Grodzisk.pl</span></div>
-                    <h2>Dzień Edukacji Narodowej w Grodzisku Mazowieckim</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
-            <article class="portal-card">
-                <div class="img-container bg-drogi">
-                    <div class="tile-category-text">INFRASTRUKTURA / DROGI</div>
-                </div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Wiadomości</span><span>Grodzisk.pl</span></div>
-                    <h2>Podpisanie umowy na budowę oświetlenia oraz monitoringu</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
-            <article class="portal-card">
-                <div class="img-container bg-neutralny">
-                    <div class="tile-category-text">WIADOMOŚCI LOKALNE</div>
-                </div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Wiadomości</span><span>Grodzisk.pl</span></div>
-                    <h2>Grodzisk Mazowiecki na różowo</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
+        <article class="portal-card hero-tile">
+            <div class="img-container bg-kultura">
+                <div class="tile-category-text">KULTURA / WYDARZENIA</div>
+            </div>
+            <div class="card-body">
+                <div class="meta-bar"><span class="badge">Jedynka dnia</span><span>Grodzisk.pl</span></div>
+                <h2>XII Ogólnopolska Noc Bibliotek za nami!</h2>
+                <p>Przeglad prasy i faktow regionalnych z lokalnego serwisu. Kliknij ponizszy link, aby zapoznac sie ze zrodlem.</p>
+                <a href="https://grodzisk.pl/2026/10/17/xii-ogolnopolska-noc-bibliotek-za-nami/" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
+            </div>
+        </article>
+    
+        <article class="portal-card">
+            <div class="img-container bg-finanse">
+                <div class="tile-category-text">FINANSE / INWESTYCJE</div>
+            </div>
+            <div class="card-body">
+                <div class="meta-bar"><span class="badge">Aktualnosci</span><span>Grodzisk.pl</span></div>
+                <h2>Trzy projekty dla mieszkańców z dofinansowaniem UE</h2>
+                <p>Przeglad prasy i faktow regionalnych z lokalnego serwisu. Kliknij ponizszy link, aby zapoznac sie ze zrodlem.</p>
+                <a href="https://grodzisk.pl/2026/10/16/trzy-projekty-dla-mieszkancow-z-dofinansowaniem-ue/" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
+            </div>
+        </article>
+    
+        <article class="portal-card">
+            <div class="img-container bg-finanse">
+                <div class="tile-category-text">FINANSE / INWESTYCJE</div>
+            </div>
+            <div class="card-body">
+                <div class="meta-bar"><span class="badge">Aktualnosci</span><span>Grodzisk.pl</span></div>
+                <h2>Projekt planu ogólnego Gminy Grodzisk Mazowiecki</h2>
+                <p>Przeglad prasy i faktow regionalnych z lokalnego serwisu. Kliknij ponizszy link, aby zapoznac sie ze zrodlem.</p>
+                <a href="https://grodzisk.pl/2026/10/14/projekt-planu-ogolnego-gminy-grodzisk-mazowiecki/" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
+            </div>
+        </article>
+    
+        <article class="portal-card">
+            <div class="img-container bg-kultura">
+                <div class="tile-category-text">KULTURA / WYDARZENIA</div>
+            </div>
+            <div class="card-body">
+                <div class="meta-bar"><span class="badge">Aktualnosci</span><span>Grodzisk.pl</span></div>
+                <h2>XII Ogólnopolska Noc Bibliotek za nami!</h2>
+                <p>Przeglad prasy i faktow regionalnych z lokalnego serwisu. Kliknij ponizszy link, aby zapoznac sie ze zrodlem.</p>
+                <a href="https://grodzisk.pl/2026/10/17/xii-ogolnopolska-noc-bibliotek-za-nami/" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
+            </div>
+        </article>
+    
+        <article class="portal-card">
+            <div class="img-container bg-finanse">
+                <div class="tile-category-text">FINANSE / INWESTYCJE</div>
+            </div>
+            <div class="card-body">
+                <div class="meta-bar"><span class="badge">Aktualnosci</span><span>Grodzisk.pl</span></div>
+                <h2>Trzy projekty dla mieszkańców z dofinansowaniem UE</h2>
+                <p>Przeglad prasy i faktow regionalnych z lokalnego serwisu. Kliknij ponizszy link, aby zapoznac sie ze zrodlem.</p>
+                <a href="https://grodzisk.pl/2026/10/16/trzy-projekty-dla-mieszkancow-z-dofinansowaniem-ue/" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
+            </div>
+        </article>
+    
+        <article class="portal-card">
+            <div class="img-container bg-finanse">
+                <div class="tile-category-text">FINANSE / INWESTYCJE</div>
+            </div>
+            <div class="card-body">
+                <div class="meta-bar"><span class="badge">Aktualnosci</span><span>Grodzisk.pl</span></div>
+                <h2>Projekt planu ogólnego Gminy Grodzisk Mazowiecki</h2>
+                <p>Przeglad prasy i faktow regionalnych z lokalnego serwisu. Kliknij ponizszy link, aby zapoznac sie ze zrodlem.</p>
+                <a href="https://grodzisk.pl/2026/10/14/projekt-planu-ogolnego-gminy-grodzisk-mazowiecki/" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
+            </div>
+        </article>
+    
+        <article class="portal-card">
+            <div class="img-container bg-neutralny">
+                <div class="tile-category-text">WIADOMOSCI LOKALNE</div>
+            </div>
+            <div class="card-body">
+                <div class="meta-bar"><span class="badge">Aktualnosci</span><span>Serwis Regionalny</span></div>
+                <h2>Przejdź do sekcji:</h2>
+                <p>Przeglad prasy i faktow regionalnych z lokalnego serwisu. Kliknij ponizszy link, aby zapoznac sie ze zrodlem.</p>
+                <a href="https://geoportal-krajowy.pl" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
+            </div>
+        </article>
+    
+        <article class="portal-card">
+            <div class="img-container bg-neutralny">
+                <div class="tile-category-text">WIADOMOSCI LOKALNE</div>
+            </div>
+            <div class="card-body">
+                <div class="meta-bar"><span class="badge">Aktualnosci</span><span>Serwis Regionalny</span></div>
+                <h2>Geoportal Krajowy na Twoim urządzeniu mobilnym!</h2>
+                <p>Przeglad prasy i faktow regionalnych z lokalnego serwisu. Kliknij ponizszy link, aby zapoznac sie ze zrodlem.</p>
+                <a href="https://geoportal-krajowy.pl" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
+            </div>
+        </article>
+    
+        <article class="portal-card">
+            <div class="img-container bg-neutralny">
+                <div class="tile-category-text">WIADOMOSCI LOKALNE</div>
+            </div>
+            <div class="card-body">
+                <div class="meta-bar"><span class="badge">Aktualnosci</span><span>Serwis Regionalny</span></div>
+                <h2>Poznaj raporty: archiwalne zdjęcia lotnicze oraz zdjęcia satelitarne</h2>
+                <p>Raport archiwalnych zdjęć lotniczych to narzędzie, które umożliwia
+            sprawdzenie historii wybranej działki lub terenu na podstawie...</p>
+                <a href="https://geoportal-krajowy.pl" target="_blank" class="read-more">Zobacz zrodlo &rarr;</a>
+            </div>
+        </article>
+    
         </div>
     </main>
     <footer>
-        <p>Grodzisk & Książenice Magazyn Bento © 2026. Portal aktualizowany automatycznie przez bota w Pythonie.</p>
+        <p>Grodzisk & Książenice Centralny Agregator AI © 2026. Treści zbierane automatycznie z ponad 30 lokalnych źródeł Zachodniego Mazowsza.</p>
     </footer>
 </body>
 </html>
