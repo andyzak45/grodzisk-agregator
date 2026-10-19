@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grodzisk & Książenice — Portal Informacyjny i Radar AI</title>
-    <!-- Dołączenie darmowej biblioteki mapowej Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com" />
     <style>
         :root {
             --bg-color: #f1f5f9;
@@ -61,7 +59,7 @@
             padding: 0 1rem;
         }
 
-        /* Profesjonalny Moduł Mapy */
+        /* Profesjonalny Moduł Mapy przez stabilne okno iframe */
         .radar-section {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
@@ -92,15 +90,29 @@
         .pulse-dot {
             width: 10px;
             height: 10px;
-            background-color: #22c55e;
+            background-color: #ef4444;
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0 { transform: scale(0.95); opacity: 1; }
+            0% { transform: scale(0.95); opacity: 1; }
             50% { transform: scale(1.1); opacity: 0.5; }
             100% { transform: scale(0.95); opacity: 1; }
+        }
+
+        .map-wrapper {
+            width: 100%;
+            height: 450px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+
+        .map-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
         /* Siatka Wiadomości */
@@ -163,17 +175,6 @@
             margin-top: 5rem;
             background-color: #ffffff;
         }
-
-        /* Klucz legendy mapy */
-        .map-legend {
-            display: flex;
-            gap: 1.5rem;
-            font-size: 0.85rem;
-            margin-top: 0.75rem;
-            color: var(--text-muted);
-            flex-wrap: wrap;
-        }
-        .legend-item { display: flex; align-items: center; gap: 0.4rem; }
     </style>
 </head>
 <body>
@@ -187,23 +188,19 @@
 
     <main>
         
-        <!-- PROFESJONALNY MODUŁ MAPY LOTNICZEJ -->
+        <!-- NIEZAWODNY MODUŁ MAPY GEOGRAFICZNEJ -->
         <section class="radar-section">
             <div class="radar-header">
                 <h3 class="radar-title">
                     <span class="pulse-dot"></span> 
-                    Zintegrowany Monitor Przestrzeni Powietrznej
+                    Zintegrowany Monitor Przestrzeni Powietrznej i Terenu
                 </h3>
-                <span style="font-size: 0.85rem; color: var(--text-muted);">Aktywne korytarze, lądowiska i strefy dronów (UAV)</span>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Oficjalny, interaktywny podkład geograficzny regionu</span>
             </div>
             
-            <!-- Kontener na mapę -->
-            <div id="map" style="width: 100%; height: 450px; border-radius: 8px; border: 1px solid #cbd5e1; background-color: #e5e7eb;"></div>
-            
-            <div class="map-legend">
-                <div class="legend-item"><span style="color: #ef4444; font-weight: bold;">🔴</span> Lądowisko LPR (Szpital)</div>
-                <div class="legend-item"><span style="color: #3b82f6; font-weight: bold;">🔵</span> Lotnisko Cywilne (Jaktorów)</div>
-                <div class="legend-item"><span style="color: #10b981; font-weight: bold;">🟢</span> Strefa Dronów (Książenice)</div>
+            <!-- Osadzenie oficjalnego widoku OpenStreetMap przez bezpieczną strukturę iframe -->
+            <div class="map-wrapper">
+                <iframe class="map-iframe" src="https://openstreetmap.org"></iframe>
             </div>
         </section>
 
@@ -220,7 +217,7 @@
                 <div class="card-content">
                     <div class="card-meta"><span class="source-tag">UM Grodzisk</span><time>Październik 2026</time></div>
                     <h2>Rekordowe 11,3 mln zł na ul. Koncertową w Książenicach</h2>
-                    <p>Zatwierdzono budżet na kompleksową przebudowę 1,7 km kluczowej drogi sołeckiej. Powstanie nowa nawierzchnia i kanalizacja. Prace wykona MKL-BUD do maja 2028 r [5].</p>
+                    <p>Zatwierdzono budżet na kompleksową przebudowę 1,7 km kluczowej drogi sołeckiej. Powstanie nowa nawierzchnia i kanalizacja. Prace wykona MKL-BUD do maja 2028 r.</p>
                     <a href="https://grodzisk.pl" target="_blank" class="source-link">Więcej na grodzisk.pl &rarr;</a>
                 </div>
             </article>
@@ -236,7 +233,7 @@
                 <div class="card-content">
                     <div class="card-meta"><span class="source-tag">BIP Przetargi</span><time>Październik 2026</time></div>
                     <h2>Ruszył przetarg na park i zbiornik wodny w Książenicach</h2>
-                    <p>Ogłoszono oficjalne zamówienie publiczne na projekt nowoczesnej strefy rekreacyjnej wokół stawu na terenie dawnego PGR. Inwestycja zakłada stworzenie ekologicznych ścieżek [5].</p>
+                    <p>Ogłoszono oficjalne zamówienie publiczne na projekt nowoczesnej strefy rekreacyjnej wokół stawu na terenie dawnego PGR. Inwestycja zakłada stworzenie ekologicznych ścieżek.</p>
                     <a href="https://grodzisk.pl" target="_blank" class="source-link">Szczegóły w BIP Grodzisk &rarr;</a>
                 </div>
             </article>
@@ -247,3 +244,8 @@
                     <defs><linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#7c2d12" /><stop offset="100%" style="stop-color:#f59e0b" /></linearGradient></defs>
                     <rect width="400" height="140" fill="url(#grad3)" />
                     <line x1="0" y1="0" x2="400" y2="140" stroke="#fde68a" stroke-width="1" opacity="0.15"/>
+                    <text x="20" y="35" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="bold" opacity="0.8">MONITORING / BEZPIECZEŃSTWO</text>
+                </svg>
+                <div class="card-content">
+                    <div class="card-meta"><span class="source-tag">Grodzisk News</span><time>Październik 2026</time></div>
+                    <h2>Nowe oświetlenie i monitoring wokół basenu za 2,4 mln zł</h2>
