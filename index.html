@@ -61,7 +61,7 @@
             padding: 0 1rem;
         }
 
-        /* Profesjonalny Moduł Mapowy */
+        /* Profesjonalny Moduł Mapy */
         .radar-section {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
@@ -102,25 +102,6 @@
             50% { transform: scale(1.1); opacity: 0.5; }
             100% { transform: scale(0.95); opacity: 1; }
         }
-
-        #map {
-            width: 100%;
-            height: 480px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            z-index: 10;
-        }
-
-        /* Klucz legendy mapy */
-        .map-legend {
-            display: flex;
-            gap: 1.5rem;
-            font-size: 0.85rem;
-            margin-top: 0.75rem;
-            color: var(--text-muted);
-            flex-wrap: wrap;
-        }
-        .legend-item { display: flex; align-items: center; gap: 0.4rem; }
 
         /* Siatka Wiadomości */
         .news-grid {
@@ -182,6 +163,17 @@
             margin-top: 5rem;
             background-color: #ffffff;
         }
+
+        /* Klucz legendy mapy */
+        .map-legend {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+        .legend-item { display: flex; align-items: center; gap: 0.4rem; }
     </style>
 </head>
 <body>
@@ -205,13 +197,13 @@
                 <span style="font-size: 0.85rem; color: var(--text-muted);">Aktywne korytarze, lądowiska i strefy dronów (UAV)</span>
             </div>
             
-            <!-- Kontener na mapę JavaScript -->
-            <div id="map"></div>
+            <!-- Kontener na mapę z wymuszonym stylem wysokości bezpośrednio w elemencie -->
+            <div id="map" style="width: 100%; height: 450px; border-radius: 8px; border: 1px solid #cbd5e1; background-color: #262626;"></div>
             
             <div class="map-legend">
-                <div class="legend-item"><span style="color: #ef4444; font-weight: bold;">🔴</span> Lądowiska Medyczne / Szpitale</div>
-                <div class="legend-item"><span style="color: #3b82f6; font-weight: bold;">🔵</span> Lotniska Cywilne / Trawiaste</div>
-                <div class="legend-item"><span style="color: #10b981; font-weight: bold;">🟢</span> Główne Strefy Aktywności Dronów</div>
+                <div class="legend-item"><span style="color: #ef4444; font-weight: bold;">🔴</span> Lądowisko LPR (Szpital)</div>
+                <div class="legend-item"><span style="color: #3b82f6; font-weight: bold;">🔵</span> Lotnisko Cywilne (Jaktorów)</div>
+                <div class="legend-item"><span style="color: #10b981; font-weight: bold;">🟢</span> Strefa Dronów (Książenice)</div>
             </div>
         </section>
 
@@ -254,3 +246,4 @@
                 <svg class="svg-container" viewBox="0 0 400 140" xmlns="http://w3.org">
                     <defs><linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#7c2d12" /><stop offset="100%" style="stop-color:#f59e0b" /></linearGradient></defs>
                     <rect width="400" height="140" fill="url(#grad3)" />
+                    <line x1="0" y1="0" x2="400" y2="140" stroke="#fde68a" stroke-width="1" opacity="0.15"/>
