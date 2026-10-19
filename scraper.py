@@ -7,45 +7,45 @@ print("Uruchamiam zintegrowany silnik portalu prasowego...")
 # KOMPLETNA BAZA LINKÓW LOKALNYCH PODZIELONA NA OBSZARY TEMATYCZNE
 ZRODLA = {
     "URZĄD / NEWSY": [
-        "https://grodzisk.pl/category/aktualnosci/",
-        "https://solectwa.grodzisk.pl/category/aktualnosci/",
-        "https://grodzisk-mazowiecki.geoportal-krajowy.pl/wiadomosci",
-        "http://e-urzad.grodzisk.pl/komunikaty",
-        "https://bip.grodzisk.pl/"
+        "https://grodzisk.pl",
+        "https://grodzisk.pl",
+        "https://geoportal-krajowy.pl",
+        "http://grodzisk.pl",
+        "https://grodzisk.pl"
     ],
     "MEDIA LOKALNE": [
-        "https://grodziskinfo.pl/",
-        "https://grodziski24.pl/",
-        "https://www.przegladregionalny.pl/",
-        "https://wpr24.pl/",
-        "https://grodzisk.twoje-miasto.pl/"
+        "https://grodziskinfo.pl",
+        "https://grodziski24.pl",
+        "https://przegladregionalny.pl",
+        "https://wpr24.pl",
+        "https://twoje-miasto.pl"
     ],
     "BEZPIECZEŃSTWO": [
-        "https://grodzisk.policja.gov.pl/pgm/aktualnosci",
-        "https://zarzadzaniekryzysowe.grodzisk.pl/ostrzezenia-dla-ludnosci/"
+        "https://policja.gov.pl",
+        "https://grodzisk.pl"
     ],
     "KULTURA / SPOŁECZNOŚĆ": [
-        "https://www.centrumkultury.eu/",
-        "https://www.centrumkultury.eu/mediateka/",
-        "https://biblioteka.grodzisk.pl/",
-        "https://ngo.grodzisk.pl/",
-        "http://palacwieniawskich.pl/",
-        "https://palac-ojrzanow.pl/",
-        "https://palacykotrebusy.pl/"
+        "https://centrumkultury.eu",
+        "https://centrumkultury.eumediateka/",
+        "https://grodzisk.pl",
+        "https://grodzisk.pl",
+        "http://palacwieniawskich.pl",
+        "https://palac-ojrzanow.pl",
+        "https://palacykotrebusy.pl"
     ],
     "SPORT / SPORTOWCY": [
-        "http://www.bogoriagrodzisk.pl/",
-        "https://www.budogrodzisk.pl/",
-        "https://muay-thai.com.pl/",
-        "https://strefaruchuksiazenice.pl/",
-        "https://grodzisksport.pl/hala-widowiskowo-sportowa-caiis.html",
-        "https://arch.grodzisksport.pl/grodziska-hala-sportowa/",
-        "http://www.teniskozerki.pl/",
-        "https://grodzisksport.pl/"
+        "http://bogoriagrodzisk.pl",
+        "https://budogrodzisk.pl",
+        "https://muay-thai.com.pl",
+        "https://strefaruchuksiazenice.pl",
+        "https://grodzisksport.pl",
+        "https://grodzisksport.pl",
+        "http://teniskozerki.pl",
+        "https://grodzisksport.pl"
     ],
     "INFRASTRUKTURA": [
-        "https://gpagrodzisk.pl/",
-        "https://zwik-grodzisk.pl/"
+        "https://gpagrodzisk.pl",
+        "https://zwik-grodzisk.pl"
     ]
 }
 
@@ -58,24 +58,20 @@ def pobierz_ze_zrodla(url, nazwa_grupy):
         html = urllib.request.urlopen(req, timeout=7).read()
         soup = BeautifulSoup(html, 'html.parser')
         
-        # Uniwersalny selektor nagłówków informacyjnych w portalach prasowych i BIP-ach
         elementy = soup.find_all(['h6', 'h2', 'h3', 'h4', 'h5'])
         
         for el in elementy:
             tytul = el.get_text().strip()
             
-            # Filtrujemy puste wpisy, zbyt krótkie teksty lub menu nawigacyjne
-            if not tytul or len(tytul) < 15 or any(x in tytul.lower() for x in ["szukaj", "menu", "kontakt", "newsletter", "facebook", "zaloguj"]):
+            if not tytul or len(tytul) < 15 or any(x in tytul.lower() for x in ["szukaj", "menu", "kontakt", "newsletter", "facebook", "zaloguj", "cookies"]):
                 continue
                 
-            # Wyciąganie linku powiązanego z nagłówkiem
             parent_a = el.find_parent('a') if el.name != 'a' else el
             if not parent_a and el.find('a'):
                 parent_a = el.find('a')
                 
             link = parent_a['href'] if parent_a and parent_a.has_attr('href') else url
             if link.startswith('/') and not link.startswith('//'):
-                # Automatyczna rekonstrukcja linków względnych
                 baza = re.match(r'(https?://[^/]+)', url)
                 if baza:
                     link = baza.group(1) + link
@@ -83,12 +79,11 @@ def pobierz_ze_zrodla(url, nazwa_grupy):
                 link = url
                 
             artykuly.append({"tytul": tytul, "link": link, "zrodlo": url, "grupa": nazwa_grupy})
-            if len(artykuly) >= 5: # Pobieramy max 5 unikalnych z jednego linku, żeby nie zdominować portalu
+            if len(artykuly) >= 5:
                 break
                 
         return artykuly
     except Exception as e:
-        print(f"Pominięto (brak odpowiedzi lub blokada): {url}")
         return []
 
 # ROZPOCZĘCIE SKANOWANIA CAŁEJ SIECI LINKÓW
@@ -108,20 +103,19 @@ if len(wszystkie_newsy) < 9:
 
 # MAPOWANIE SEKCJI PREMIUM DLA 9 WIADOMOŚCI NA STRONIE GŁÓWNEJ
 html_cards = ""
-for i, art in enumerate(wszystkie_newsy[:9]): # Wyświetlamy dokładnie 9 najświeższych kart bento
+for i, art in enumerate(wszystkie_newsy[:9]):
     is_hero = " hero-tile" if i == 0 else ""
     badge_text = "Jedynka dnia" if i == 0 else "Aktualności"
     
     title_lower = art["tytul"].lower()
     
-    # Inteligentne przydzielanie kategorii wizualnej na podstawie zaawansowanej analizy treści
     if any(s in title_lower for s in ["noc", "bibliotek", "kultur", "muzycz", "teatr", "spektakl", "koncert", "jarmark", "wystawa", "cosplay", "targi"]):
         kat = "KULTURA / WYDARZENIA"
         tlo = "bg-kultura"
     elif any(s in title_lower for s in ["projekt", "ue", "pieniądze", "dofinansowanie", "budżet", "ceny", "podatki", "zł"]):
         kat = "FINANSE / INWESTYCJE"
         tlo = "bg-finanse"
-    elif any(s in title_lower for s in ["policja", "wypadek", "zatrzyman", "oszust", "zagrožen", "syren", "alarm", "kryzys"]):
+    elif any(s in title_lower for s in ["policja", "wypadek", "zatrzyman", "oszust", "缓慢", "zagrožen", "syren", "alarm", "kryzys"]):
         kat = "BEZPIECZEŃSTWO / ALERT"
         tlo = "bg-alert"
     elif any(s in title_lower for s in ["droga", "ul.", "ulica", "remont", "asfalt", "budow", "oświetlenie", "parking", "pociąg", "gpa", "autobus"]):
@@ -134,11 +128,15 @@ for i, art in enumerate(wszystkie_newsy[:9]): # Wyświetlamy dokładnie 9 najśw
         kat = "SPORT / REKREACJA"
         tlo = "bg-sport"
     else:
-        kat = "WIDOMOŚCI LOKALNE"
+        kat = "WIADOMOŚCI LOKALNE"
         tlo = "bg-neutralny"
 
-    # Wyciągamy czystą domenę jako ładny tag źródła (np. grodziskinfo.pl)
-    domena = art["link"].split('/')[2].replace('www.', '') if 'http' in art["link"] else "Lokalne źródło"
+    # NAPRAWIONY BŁĄD PARSOWANIA DOMENY (Bez bezpiecznego split/replace)
+    domena = "Grodzisk"
+    if "http" in art["link"]:
+        czesci = art["link"].split('/')
+        if len(czesci) > 2:
+            domena = czesci[2].replace('www.', '')
 
     card_template = """
         <article class="portal-card[CLASS_PLACEHOLDER]">
@@ -180,16 +178,17 @@ html_template = """<!DOCTYPE html>
         h1 { margin: 0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.05em; }
         h1 span { color: var(--accent); }
         main { max-width: 1300px; margin: 2.5rem auto; padding: 0 1.5rem; }
-        
-        /* ROZBUDOWANA, 3-KOLUMNOWA SIATKA PREMIUM BENTO */
         .magazine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; }
         .portal-card { background-color: var(--card-bg); border-radius: var(--border-radius); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; }
         .portal-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        
         .hero-tile { grid-column: span 2; }
         .hero-tile .img-container { height: 200px; }
         .hero-tile h2 { font-size: 1.6rem; }
-        
         .img-container { width: 100%; height: 130px; display: flex; align-items: center; justify-content: center; position: relative; }
-        
-        /* SPECYFIKACJA KOLORYSTYCZNA PANELI */
+        .bg-kultura { background: linear-gradient(135deg, #7c2d12 0%, #f59e0b 100%); }
+        .bg-finanse { background: linear-gradient(135deg, #065f46 0%, #10b981 100%); }
+        .bg-alert { background: linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%); }
+        .bg-drogi { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        .bg-edukacja { background: linear-gradient(135deg, #9d174d 0%, #f43f5e 100%); }
+        .bg-sport { background: linear-gradient(135deg, #312e81 0%, #6366f1 100%); }
+        .bg-neutralny { background: linear-gradient(135deg, #1e293b 0%, #64748b 100%); }
