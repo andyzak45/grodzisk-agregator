@@ -3,192 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grodzisk & Książenice — Portal Informacyjny AI</title>
+    <title>Grodzisk lokalnie</title>
     <style>
-        :root { 
-            --bg-color: #f8fafc; 
-            --card-bg: #ffffff; 
-            --text-main: #0f172a; 
-            --text-muted: #475569; 
-            --accent: #2563eb;
-            --border-radius: 16px; 
-        }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 0; 
-            line-height: 1.5;
-        }
-        header { 
-            background-color: var(--card-bg); 
-            border-bottom: 1px solid #e2e8f0; 
-            padding: 1.5rem 2rem; 
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .header-container { 
-            max-width: 1300px; 
-            margin: 0 auto; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
+        :root { --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-muted: #475569; --accent: #2563eb; --border-radius: 16px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; line-height: 1.5; }
+        header { background-color: var(--card-bg); border-bottom: 1px solid #e2e8f0; padding: 1.5rem 2rem; position: sticky; top: 0; z-index: 1000; }
+        .header-container { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
         h1 { margin: 0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.05em; }
         h1 span { color: var(--accent); }
-        
-        main { max-width: 1300px; margin: 2.5rem auto; padding: 0 1.5rem; }
-        
-        .magazine-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem; 
-            width: 100%;
-        }
-        
-        .portal-card { 
-            background-color: var(--card-bg); 
-            border-radius: var(--border-radius); 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-            border: 1px solid #e2e8f0; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .portal-card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        }
-        
-        .hero-tile {
-            grid-column: span 2;
-        }
-        .hero-tile .img-container {
-            height: 320px;
-        }
-        .hero-tile h2 {
-            font-size: 1.75rem;
-        }
-
-        .img-container {
-            width: 100%;
-            height: 180px;
-            overflow: hidden;
-            position: relative;
-            background-color: #cbd5e1;
-        }
-        .img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        .portal-card:hover .img-container img {
-            transform: scale(1.03);
-        }
-        
-        .card-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
-        .meta-bar { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-        .badge { background-color: #eff6ff; color: var(--accent); padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
-        
-        h2 { margin: 0 0 0.75rem 0; font-size: 1.25rem; font-weight: 800; line-height: 1.3; color: #0f172a; letter-spacing: -0.02em; }
-        p { color: #334155; font-size: 0.95rem; margin: 0 0 1.5rem 0; text-align: justify; }
-        .read-more { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 0.9rem; margin-top: auto; display: inline-flex; align-items: center; gap: 0.25rem; }
-        
-        @media (max-width: 968px) {
-            .magazine-grid { grid-template-columns: 1fr; }
-            .hero-tile { grid-column: span 1; }
-            .hero-tile .img-container { height: 200px; }
-        }
-        
-        footer { 
-            text-align: center; 
-            padding: 3rem 1rem; 
-            color: var(--text-muted); 
-            font-size: 0.85rem; 
-            border-top: 1px solid #e2e8f0; 
-            margin-top: 6rem; 
-            background-color: #ffffff; 
-        }
+        .updated { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        main { max-width: 1300px; margin: 2rem auto; padding: 0 1.5rem; }
+        .filters { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 1.5rem; }
+        .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .chip, select { font: inherit; font-size: 0.9rem; padding: 0.4rem 0.9rem; border-radius: 99px; border: 1px solid #cbd5e1; background: var(--card-bg); color: var(--text-main); cursor: pointer; }
+        .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .magazine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; }
+        .portal-card { background-color: var(--card-bg); border-radius: var(--border-radius); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; }
+        .portal-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .hero-tile { grid-column: span 2; }
+        .hero-tile .img-container { height: 200px; }
+        .hero-tile h2 { font-size: 1.6rem; }
+        .img-container { width: 100%; height: 110px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .bg-kultura { background: linear-gradient(135deg, #7c2d12 0%, #f59e0b 100%); }
+        .bg-finanse { background: linear-gradient(135deg, #065f46 0%, #10b981 100%); }
+        .bg-alert { background: linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%); }
+        .bg-drogi { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        .bg-edukacja { background: linear-gradient(135deg, #9d174d 0%, #f43f5e 100%); }
+        .bg-sport { background: linear-gradient(135deg, #312e81 0%, #6366f1 100%); }
+        .bg-neutralny { background: linear-gradient(135deg, #1e293b 0%, #64748b 100%); }
+        .tile-category-text { color: #ffffff; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.12em; text-shadow: 0 2px 4px rgba(0,0,0,0.4); text-transform: uppercase; }
+        .card-body { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .meta-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem 0.75rem; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+        .badge { background-color: #eff6ff; color: var(--accent); padding: 0.25rem 0.5rem; border-radius: 6px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; }
+        h2 { margin: 0 0 0.75rem 0; font-size: 1.15rem; font-weight: 800; line-height: 1.35; color: #0f172a; letter-spacing: -0.01em; }
+        .when { color: #334155; font-size: 0.9rem; margin: 0 0 1rem 0; font-weight: 600; }
+        .read-more { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 0.85rem; margin-top: auto; display: inline-flex; align-items: center; }
+        .empty { color: var(--text-muted); }
+        [hidden] { display: none !important; }
+        @media (max-width: 968px) { .magazine-grid { grid-template-columns: 1fr; } .hero-tile { grid-column: span 1; } header { padding: 1rem; } }
+        footer { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.82rem; border-top: 1px solid #e2e8f0; margin-top: 4rem; background-color: #ffffff; }
     </style>
 </head>
 <body>
     <header>
         <div class="header-container">
-            <h1>Grodzisk&Książenice<span>.bento</span></h1>
-            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Wydanie Cyfrowe AI</div>
+            <h1>Grodzisk<span> lokalnie</span></h1>
+            <div class="updated">Ostatnia aktualizacja: 19.10.2026</div>
         </div>
     </header>
     <main>
+        <div class="filters"><div class="chips"><button class="chip on" data-kind="">Wszystko</button><button class="chip" data-kind="ost">Ostrzeżenia</button><button class="chip" data-kind="zdr">Zdarzenia</button><button class="chip" data-kind="wyd">Wydarzenia</button><button class="chip" data-kind="inw">Inwestycje i przetargi</button><button class="chip" data-kind="spo">Sport</button><button class="chip" data-kind="inne">Wiadomości</button></div><select id="place" aria-label="Miejscowość"><option value="">Cała okolica</option><option value="Grodzisk Mazowiecki">Grodzisk Mazowiecki</option><option value="Jaktorów">Jaktorów</option><option value="Kady">Kady</option><option value="Kozerki">Kozerki</option><option value="Milanówek">Milanówek</option><option value="Podkowa Leśna">Podkowa Leśna</option><option value="Pruszków">Pruszków</option><option value="Szczęsne">Szczęsne</option><option value="cała gmina">Cała gmina</option><option value="okolica">okolica</option><option value="Żabia Wola">Żabia Wola</option></select></div>
         <div class="magazine-grid">
-            
-            <article class="portal-card hero-tile">
-                <div class="img-container"><img src="https://unsplash.com" alt="Foto"></div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Główny artykuł</span><span>Grodzisk.pl</span></div>
-                    <h2>XII Ogólnopolska Noc Bibliotek za nami!</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
-            <article class="portal-card">
-                <div class="img-container"><img src="https://unsplash.com" alt="Foto"></div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Wiadomości</span><span>Grodzisk.pl</span></div>
-                    <h2>Trzy projekty dla mieszkańców z dofinansowaniem UE</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
-            <article class="portal-card">
-                <div class="img-container"><img src="https://unsplash.com" alt="Foto"></div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Wiadomości</span><span>Grodzisk.pl</span></div>
-                    <h2>Projekt planu ogólnego Gminy Grodzisk Mazowiecki</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
-            <article class="portal-card">
-                <div class="img-container"><img src="https://unsplash.com" alt="Foto"></div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Wiadomości</span><span>Grodzisk.pl</span></div>
-                    <h2>Dzień Edukacji Narodowej w Grodzisku Mazowieckim</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
-            <article class="portal-card">
-                <div class="img-container"><img src="https://unsplash.com" alt="Foto"></div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Wiadomości</span><span>Grodzisk.pl</span></div>
-                    <h2>Podpisanie umowy na budowę oświetlenia oraz monitoringu</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
-            <article class="portal-card">
-                <div class="img-container"><img src="https://unsplash.com" alt="Foto"></div>
-                <div class="card-body">
-                    <div class="meta-bar"><span class="badge">Wiadomości</span><span>Grodzisk.pl</span></div>
-                    <h2>Grodzisk Mazowiecki na różowo</h2>
-                    <p>Automatyczny przegląd prasy lokalnej AI. Aktualne wiadomości i fakty wyciągnięte bezpośrednio z oficjalnych kanałów informacyjnych urzędu gminy pod kątem przydatności dla mieszkańców.</p>
-                    <a href="https://grodzisk.pl" target="_blank" class="read-more">Zobacz szczegóły &rarr;</a>
-                </div>
-            </article>
-        
+            <article class="portal-card hero-tile" data-kind="ost" data-place="cała gmina"><div class="img-container bg-alert"><div class="tile-category-text">Ostrzeżenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Cała gmina</span><time datetime="2026-10-19">19.10</time><span>KPP Grodzisk Maz.</span></div><h2>Pieszy też może stworzyć zagrożenie! Czy znasz te przepisy?</h2><a href="https://ksp.policja.gov.pl/wrd/aktualnosci/153454,Pieszy-tez-moze-stworzyc-zagrozenie-Czy-znasz-te-przepisy.html" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="ost" data-place="cała gmina"><div class="img-container bg-alert"><div class="tile-category-text">Ostrzeżenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Cała gmina</span><time datetime="2026-10-19">19.10</time><span>KPP Grodzisk Maz.</span></div><h2>Uważaj na dezinformację, rozmawiaj i wspieraj, a zagrożenia zgłaszaj Policji</h2><a href="https://grodzisk.policja.gov.pl/pgm/aktualnosci/153407,Uwazaj-na-dezinformacje-rozmawiaj-i-wspieraj-a-zagrozenia-zglaszaj-Policji.html" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="ost" data-place="Grodzisk Mazowiecki"><div class="img-container bg-alert"><div class="tile-category-text">Ostrzeżenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Grodzisk Mazowiecki</span><time datetime="2026-10-19">19.10</time><span>Grodzisk Twoje Miasto</span></div><h2>RCB odwołało alert dla Lubelszczyzny i Podkarpacia związany z...</h2><a href="https://www.twoje-miasto.pl/art-kraj/rcb-odwolalo-alert-dla-lubelszczyzny-i1233834" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="ost" data-place="okolica"><div class="img-container bg-alert"><div class="tile-category-text">Ostrzeżenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">okolica</span><time datetime="2026-10-15">15.10</time><span>Przegląd Regionalny</span></div><h2>Alert IMGW na Mazowszu. Nadchodzą niebezpieczne warunki</h2><a href="https://www.przegladregionalny.pl/artykul/11363,alert-imgw-na-mazowszu-nadchodza-niebezpieczne-warunki" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="cała gmina"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Cała gmina</span><time datetime="2026-10-19">19.10</time><span>KPP Grodzisk Maz.</span></div><h2>Mokro, ślisko, niebezpiecznie. Zdejmij nogę z gazu!</h2><a href="https://ksp.policja.gov.pl/wrd/aktualnosci/153504,Mokro-slisko-niebezpiecznie-Zdejmij-noge-z-gazu.html" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="cała gmina"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Cała gmina</span><time datetime="2026-10-19">19.10</time><span>KPP Grodzisk Maz.</span></div><h2>„Panie dyżurny! Zostałem oszukany na kryptowaluty”</h2><a href="https://magazyn-ksp.policja.gov.pl/mag/poradniki/153468,Panie-dyzurny-Zostalem-oszukany-na-kryptowaluty.html" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="cała gmina"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Cała gmina</span><time datetime="2026-10-19">19.10</time><span>KPP Grodzisk Maz.</span></div><h2>Dwaj nieletni wpadli za oszustwo „na pracownika banku”</h2><a href="https://grodzisk.policja.gov.pl/pgm/aktualnosci/153481,Dwaj-nieletni-wpadli-za-oszustwo-na-pracownika-banku.html" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="cała gmina"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Cała gmina</span><time datetime="2026-10-19">19.10</time><span>KPP Grodzisk Maz.</span></div><h2>Grodziscy policjanci dołączyli do kampanii &quot;Dzieciństwo bez przemocy&quot;</h2><a href="https://grodzisk.policja.gov.pl/pgm/aktualnosci/153464,Grodziscy-policjanci-dolaczyli-do-kampanii-quotDziecinstwo-bez-przemocyquot.html" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="cała gmina"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Cała gmina</span><time datetime="2026-10-19">19.10</time><span>KPP Grodzisk Maz.</span></div><h2>Szkolne zajęcia z policjantem o przeciwdziałaniu przemocy rówieśniczej</h2><a href="https://grodzisk.policja.gov.pl/pgm/aktualnosci/153453,Szkolne-zajecia-z-policjantem-o-przeciwdzialaniu-przemocy-rowiesniczej.html" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="cała gmina"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Cała gmina</span><time datetime="2026-10-19">19.10</time><span>KPP Grodzisk Maz.</span></div><h2>II etap konkursu oskarżycieli publicznych w garnizonie stołecznym rozstrzygnięty!</h2><a href="https://ksp.policja.gov.pl/pl/dzialania/aktualnosci/69821,II-etap-konkursu-oskarzycieli-publicznych-w-garnizonie-stolecznym-rozstrzygniety.html" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="cała gmina"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Cała gmina</span><time datetime="2026-10-19">19.10</time><span>KPP Grodzisk Maz.</span></div><h2>Jeździsz rowerem – włóż kask, chroń swoją głowę!</h2><a href="https://grodzisk.policja.gov.pl/pgm/aktualnosci/153198,Jezdzisz-rowerem-wloz-kask-chron-swoja-glowe.html" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="cała gmina"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Cała gmina</span><time datetime="2026-10-19">19.10</time><span>KPP Grodzisk Maz.</span></div><h2>Grodziscy policjanci oddali hołd Koledze, który zginął na służbie</h2><a href="https://grodzisk.policja.gov.pl/pgm/aktualnosci/153204,Grodziscy-policjanci-oddali-hold-Koledze-ktory-zginal-na-sluzbie.html" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="Grodzisk Mazowiecki"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Grodzisk Mazowiecki</span><time datetime="2026-10-19">19.10</time><span>Grodzisk Twoje Miasto</span></div><h2>Policja: sytuacja w szkołach się ustabilizowała; nie zanotowano kolejnych zdarzeń</h2><a href="https://www.twoje-miasto.pl/art-kraj/policja-sytuacja-w-szkolach-sie-i1234458" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="Kozerki"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Kozerki</span><time datetime="2026-10-19">19.10</time><span>WPR24</span></div><h2>Tragiczny wypadek na DW719 w Kozerkach. 14-letnia Wiktoria w śpiączce, śledztwo w toku</h2><a href="https://wpr24.pl/tragiczny-wypadek-na-dw719-w-kozerkach-14-letnia-wiktoria-w-spiaczce-sledztwo-w-toku/" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article><article class="portal-card" data-kind="zdr" data-place="Grodzisk Mazowiecki"><div class="img-container bg-alert"><div class="tile-category-text">Zdarzenia</div></div><div class="card-body"><div class="meta-bar"><span class="badge">Grodzisk Mazowiecki</span><time datetime="2026-10-14">14.10</time><span>Grodziski24</span></div><h2>Telefon od „pracownika banku” zakończył się zatrzymaniem dwóch nastolatków</h2><a href="https://grodziski24.pl/20261014824212/telefon-od-pracownika-banku-zakonczyl-sie-zatrzymaniem-dwoch-nastolatkow" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a></div></article>
         </div>
     </main>
     <footer>
-        <p>Grodzisk & Książenice Magazyn Bento © 2026. Portal aktualizowany automatycznie przez bota w Pythonie.</p>
+        <p>Informacje zbierane automatycznie z publicznych stron lokalnych instytucji i mediów. Pokazujemy tytuł, datę i link do oryginału, pełne treści czytaj u wydawców. Zauważyłeś błąd? Napisz do redakcji.</p>
     </footer>
+    <script>
+    (function () {
+        var kind = "", place = "";
+        var cards = document.querySelectorAll(".portal-card");
+        function apply() {
+            cards.forEach(function (c) {
+                var okKind = !kind || c.dataset.kind === kind;
+                var places = (c.dataset.place || "").split("|");
+                var okPlace = !place || places.indexOf(place) > -1 || c.dataset.place === "cała gmina";
+                c.hidden = !(okKind && okPlace);
+            });
+        }
+        document.querySelectorAll(".chip").forEach(function (b) {
+            b.addEventListener("click", function () {
+                kind = b.dataset.kind;
+                document.querySelectorAll(".chip").forEach(function (x) { x.classList.toggle("on", x === b); });
+                apply();
+            });
+        });
+        var sel = document.getElementById("place");
+        if (sel) sel.addEventListener("change", function () { place = sel.value; apply(); });
+        var now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        document.querySelectorAll("time[datetime]").forEach(function (t) {
+            var p = t.getAttribute("datetime").split("-");
+            var diff = Math.round((new Date(+p[0], p[1] - 1, +p[2]) - today) / 864e5);
+            var word = { "0": "dzisiaj", "-1": "wczoraj", "1": "jutro" }[diff];
+            if (word) t.textContent = word;
+        });
+    })();
+    </script>
 </body>
 </html>
