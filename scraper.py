@@ -1,7 +1,7 @@
 import urllib.request
 from bs4 import BeautifulSoup
 
-print("Uruchamiam bota portalu. Pobieram 6 najnowszych artykułów ze zdjęciami...")
+print("Uruchamiam bota portalu. Pobieram 6 najnowszych artykułów z dynamicznymi gradientami...")
 
 url = "https://grodzisk.pl"
 req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -20,27 +20,33 @@ try:
         if not link.startswith('http'):
             link = "https://grodzisk.pl" + link
             
-        # INTELIGENTNY DOBÓR ZDJĘĆ Z LINII PRODUKCYJNEJ UNSPLASH
+        # INTELIGENTNE DOPASOWANIE STYLÓW WIZUALNYCH (ZAMIAST BLOKOWANYCH ZDJĘĆ)
         tytul_lower = tytul.lower()
         if any(slowo in tytul_lower for slowo in ["noc", "bibliotek", "muzyczny", "sejmik", "kultur", "kino"]):
-            foto = "https://unsplash.com"
+            kategoria = "KULTURA / SPOŁECZNOŚĆ"
+            klasa_tla = "bg-kultura"
         elif any(slowo in tytul_lower for slowo in ["projekt", "ue", "pieniądze", "dofinansowanie", "budżet"]):
-            foto = "https://unsplash.com"
+            kategoria = "FINANSE / ROZWÓJ"
+            klasa_tla = "bg-finanse"
         elif any(slowo in tytul_lower for slowo in ["plan", "przestrzen", "gminy", "ogólny", "mapa"]):
-            foto = "https://unsplash.com"
+            kategoria = "URZĄD / PLANOWANIE"
+            klasa_tla = "bg-urzad"
         elif any(slowo in tytul_lower for slowo in ["droga", "ul.", "ulica", "remont", "asfalt", "budow", "oświetlenie", "monitoringu"]):
-            foto = "https://unsplash.com"
+            kategoria = "INFRASTRUKTURA / DROGI"
+            klasa_tla = "bg-drogi"
         elif any(slowo in tytul_lower for slowo in ["szkoł", "edukacj", "nauczyciel", "uczeń", "narodowej"]):
-            foto = "https://unsplash.com"
+            kategoria = "EDUKACJA / OŚWIATA"
+            klasa_tla = "bg-edukacja"
         else:
-            foto = "https://unsplash.com"
+            kategoria = "WIADOMOŚCI LOKALNE"
+            klasa_tla = "bg-neutralny"
             
-        artykuly.append({"tytul": tytul, "link": link, "foto": foto})
+        artykuly.append({"tytul": tytul, "link": link, "kategoria": kategoria, "klasa_tla": klasa_tla})
 
     while len(artykuly) < 6:
-        artykuly.append({"tytul": "Brak dodatkowych wiadomości na dziś", "link": "https://grodzisk.pl", "foto": "https://unsplash.com"})
+        artykuly.append({"tytul": "Brak dodatkowych wiadomości na dziś", "link": "https://grodzisk.pl", "kategoria": "INFORMACJE", "klasa_tla": "bg-neutralny"})
 
-    # NAPRAWIONE BUDOWANIE DANYCH W PĘTLI - POBIERAMY POZYCJĘ 'art', A NIE CAŁĄ TABLICĘ
+    # BEZPIECZNE GENEROWANIE KAFELKÓW BENTO Z ETYKIETAMI I GRADIENTAMI
     html_cards = ""
     for i, art in enumerate(artykuly):
         is_hero = " hero-tile" if i == 0 else ""
@@ -48,7 +54,9 @@ try:
         
         card_template = """
             <article class="portal-card[CLASS_PLACEHOLDER]">
-                <div class="img-container"><img src="[FOTO_PLACEHOLDER]" alt="Foto"></div>
+                <div class="img-container [KLASA_TLA_PLACEHOLDER]">
+                    <div class="tile-category-text">[KATEGORIA_PLACEHOLDER]</div>
+                </div>
                 <div class="card-body">
                     <div class="meta-bar"><span class="badge">[BADGE_PLACEHOLDER]</span><span>Grodzisk.pl</span></div>
                     <h2>[TYTUL_PLACEHOLDER]</h2>
@@ -58,10 +66,11 @@ try:
             </article>
         """
         card_template = card_template.replace("[CLASS_PLACEHOLDER]", is_hero)
-        card_template = card_template.replace("[FOTO_PLACEHOLDER]", art["foto"]) # POZYCJA Z PĘTLI
+        card_template = card_template.replace("[KLASA_TLA_PLACEHOLDER]", art["klasa_tla"])
+        card_template = card_template.replace("[KATEGORIA_PLACEHOLDER]", art["kategoria"])
         card_template = card_template.replace("[BADGE_PLACEHOLDER]", badge_text)
-        card_template = card_template.replace("[TYTUL_PLACEHOLDER]", art["tytul"]) # POZYCJA Z PĘTLI
-        card_template = card_template.replace("[LINK_PLACEHOLDER]", art["link"]) # POZYCJA Z PĘTLI
+        card_template = card_template.replace("[TYTUL_PLACEHOLDER]", art["tytul"])
+        card_template = card_template.replace("[LINK_PLACEHOLDER]", art["link"])
         
         html_cards += card_template
 
@@ -134,7 +143,7 @@ try:
             grid-column: span 2;
         }
         .hero-tile .img-container {
-            height: 320px;
+            height: 220px;
         }
         .hero-tile h2 {
             font-size: 1.75rem;
@@ -142,19 +151,29 @@ try:
 
         .img-container {
             width: 100%;
-            height: 180px;
-            overflow: hidden;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
-            background-color: #cbd5e1;
         }
-        .img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        .portal-card:hover .img-container img {
-            transform: scale(1.03);
+
+        /* PALETA NOWOCZESNYCH GRADIENTÓW PREMIUM */
+        .bg-kultura { background: linear-gradient(135deg, #7c2d12 0%, #f59e0b 100%); }
+        .bg-finanse { background: linear-gradient(135deg, #065f46 0%, #10b981 100%); }
+        .bg-urzad { background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 100%); }
+        .bg-drogi { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        .bg-edukacja { background: linear-gradient(135deg, #9d174d 0%, #f43f5e 100%); }
+        .bg-neutralny { background: linear-gradient(135deg, #1e293b 0%, #64748b 100%); }
+
+        .tile-category-text {
+            color: #ffffff;
+            font-family: sans-serif;
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            opacity: 0.9;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         .card-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
@@ -168,7 +187,7 @@ try:
         @media (max-width: 968px) {
             .magazine-grid { grid-template-columns: 1fr; }
             .hero-tile { grid-column: span 1; }
-            .hero-tile .img-container { height: 200px; }
+            .hero-tile .img-container { height: 140px; }
         }
         
         footer { 
@@ -206,7 +225,7 @@ try:
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(final_html)
         
-    print("Sukces! Wygenerowałem w pełni poprawny plik ze strukturą linków.")
+    print("Sukces! Wygenerowałem stabilny portal z wektorowymi panelami.")
 
 except Exception as e:
     print(f"Coś poszło nie tak: {e}")
