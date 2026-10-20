@@ -500,7 +500,34 @@ class Notki(unittest.TestCase):
         self.assertEqual(streszczenia.dopisz(store, self.ZR, self.F(f"<article>{self.ARTYKUL}</article>"), TODAY, 2, llm), 2)
         import os
         os.environ.pop("ANTHROPIC_API_KEY", None)
+        os.environ.pop("GITHUB_TOKEN", None)
         self.assertEqual(streszczenia.dopisz(self._store(), self.ZR, self.F(""), TODAY, 5), 0)
+
+    def test_wybor_modelu(self):
+        import os
+        stare = {k: os.environ.pop(k, None) for k in ("ANTHROPIC_API_KEY", "GITHUB_TOKEN")}
+        try:
+            self.assertEqual(streszczenia.wybierz_model(), (None, 0))
+            os.environ["GITHUB_TOKEN"] = "x"
+            fn, przerwa = streszczenia.wybierz_model()
+            self.assertTrue(fn and przerwa == streszczenia.PRZERWA)
+            os.environ["ANTHROPIC_API_KEY"] = "y"
+            self.assertEqual(streszczenia.wybierz_model()[1], 0)
+        finally:
+            for k in ("ANTHROPIC_API_KEY", "GITHUB_TOKEN"):
+                os.environ.pop(k, None)
+                if stare[k]:
+                    os.environ[k] = stare[k]
+
+    def test_limit_zapytan_konczy_notki_bez_oznaczania_wpisu(self):
+        import urllib.error
+        store = {str(i): dict(self._store()["a"], id=str(i), url=f"https://grodzisk.pl/{i}") for i in range(3)}
+        def llm(t):
+            raise urllib.error.HTTPError("u", 429, "Too Many Requests", {}, None)
+        f = self.F(f"<article>{self.ARTYKUL}</article>")
+        self.assertEqual(streszczenia.dopisz(store, self.ZR, f, TODAY, 5, llm), 0)
+        self.assertEqual(f.wywolania, 1)                       # po pierwszym 429 koniec
+        self.assertFalse(any(i.get("opis_proba") for i in store.values()))  # nic nie oznaczone, więc kolejny przebieg spróbuje znów
 
     def test_karta_oznacza_opis_automatyczny(self):
         with tempfile.TemporaryDirectory() as d:

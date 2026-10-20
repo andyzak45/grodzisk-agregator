@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  models: read            # darmowe GitHub Models do notek pod tytułami
 
 concurrency:
   group: scraper
@@ -35,8 +36,9 @@ jobs:
       - name: Uruchomienie bota
         env:
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # opcjonalny: bez niego nie powstają notki pod tytułami
-          SUMMARY_MODEL: ${{ vars.SUMMARY_MODEL }}              # opcjonalny: domyślnie claude-haiku-5-5
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # opcjonalny: płatna alternatywa, domyślnie używamy darmowych GitHub Models
+          SUMMARY_MODEL: ${{ vars.SUMMARY_MODEL }}              # opcjonalny: inny model niż domyślny
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
             python scraper.py --render-only
