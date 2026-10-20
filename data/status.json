@@ -1,55 +1,110 @@
 {
- "run": "2026-10-20T05:21:30",
+ "run": "2026-10-19T09:36:24",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
    "found": 9,
-   "new": 0
+   "new": 9
   },
   "kryzysowe": {
    "ok": true,
    "found": 5,
-   "new": 0
+   "new": 2
   },
   "policja": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 15
   },
   "grodziski24": {
    "ok": true,
    "found": 15,
-   "new": 5
+   "new": 15
   },
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 13
+   "new": 15
   },
   "przeglad-regionalny": {
    "ok": true,
    "found": 15,
-   "new": 5
+   "new": 15
   },
   "grodziskinfo": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 15
   },
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 15
   },
   "centrum-kultury": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 15
   },
   "mediateka": {
    "ok": true,
    "found": 15,
-   "new": 2
+   "new": 9
+  },
+  "biblioteka": {
+   "ok": true,
+   "found": 10,
+   "new": 10
+  },
+  "grodzisksport": {
+   "ok": true,
+   "found": 0,
+   "new": 0
+  },
+  "hala-caiis": {
+   "ok": true,
+   "found": 0,
+   "new": 0
+  },
+  "bogoria": {
+   "ok": true,
+   "found": 10,
+   "new": 9
+  },
+  "budo": {
+   "ok": true,
+   "found": 9,
+   "new": 0
+  },
+  "muay-thai": {
+   "ok": true,
+   "found": 0,
+   "new": 0
+  },
+  "strefa-ruchu": {
+   "ok": true,
+   "found": 4,
+   "new": 0
+  },
+  "tenis-kozerki": {
+   "ok": true,
+   "found": 6,
+   "new": 0
+  },
+  "ngo": {
+   "ok": true,
+   "found": 10,
+   "new": 3
+  },
+  "bip": {
+   "ok": true,
+   "found": 0,
+   "new": 0
+  },
+  "solectwa": {
+   "ok": true,
+   "found": 8,
+   "new": 0
   }
  }
 }
