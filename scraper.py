@@ -5,6 +5,7 @@ Zasady:
   - uczciwy nagłówek User-Agent z adresem kontaktowym (zmienna BOT_CONTACT),
   - szanujemy robots.txt i robimy przerwy między zapytaniami,
   - zapisujemy tylko tytuł, link, datę i fakty (rodzaj, miejscowość, termin), bez cudzych opisów,
+  - tytuły zdarzeń zastępujemy neutralnymi (bez imion, wieku i stanu zdrowia osób),
   - nie zastępujemy brakujących danych wymyślonymi wpisami.
 
 Użycie:  python scraper.py [--all] [--only ID] [--render-only]
@@ -27,7 +28,9 @@ from urllib.robotparser import RobotFileParser
 from bs4 import BeautifulSoup
 
 import render
+import reczne
 from klasyfikacja import klasyfikuj_rodzaj, norm, wyciagnij_termin, znajdz_miejsca
+from redakcja import neutralny_tytul, podobne
 
 ROOT = Path(__file__).parent
 STORE = ROOT / "data" / "items.json"
@@ -37,6 +40,8 @@ USER_AGENT = f"GrodziskLokalnieBot/1.0 (agregator linków; kontakt: {BOT_CONTACT
 MAX_BYTES = 2_000_000
 MAX_AGE_DAYS = 30        # starszych wpisów (wg daty publikacji) nie bierzemy
 KEEP_DAYS = 45           # tyle trzymamy wpisy w pliku danych
+MAX_SZCZEGOLOW = 25      # tyle podstron na przebieg otwieramy, żeby znaleźć brakujące daty
+DUPLIKAT_DNI = 7         # w tym oknie szukamy tego samego tematu w innych źródłach
 
 JUNK_WORDS = ["szukaj", "menu", "kontakt", "newsletter", "zaloguj", "cookies", "polityka",
               "deklaracja dostepnosci", "mapa strony", "regulamin", "rodo", "wyszukiwarka",
@@ -191,10 +196,89 @@ def parsuj_html(html, base, selector=None):
     return items
 
 
-def zbierz(src, fetcher):
+def id_wpisu(url):
+    return hashlib.sha1(url.encode()).hexdigest()[:12]
+
+
+def tkey(title):
+    """Skrót tytułu do wykrywania powtórek. Zapisujemy go zamiast tytułu, gdy tytuł jest zastąpiony."""
+    return hashlib.sha1(norm(title).encode()).hexdigest()[:12]
+
+
+def _iso_z(v):
+    v = str(v or "").strip()
+    return v[:10] if re.match(r"20\d{2}-\d{2}-\d{2}", v) else None
+
+
+def _fragment_po(slowa, text):
+    m = re.search(r"(?:" + slowa + r")\W{0,5}(.{0,45})", text, re.I | re.S)
+    return m.group(1) if m else ""
+
+
+def szczegoly(html, today=None):
+    """Z podstrony wpisu: data publikacji i początek wydarzenia. Tylko dane strukturalne
+    (JSON-LD, meta, <time>) i podpisy typu "Data publikacji:" lub "Termin:"."""
+    today = today or date.today()
+    soup = BeautifulSoup(html, "html.parser")
+    out = {"published": None, "start": None, "time": None, "tekst": None}
+
+    def szukaj(node):
+        if isinstance(node, dict):
+            out["published"] = out["published"] or _iso_z(node.get("datePublished"))
+            if "Event" in str(node.get("@type", "")):
+                out["start"] = out["start"] or _iso_z(node.get("startDate"))
+            for v in node.values():
+                szukaj(v)
+        elif isinstance(node, list):
+            for v in node:
+                szukaj(v)
+
+    for tag in soup.find_all("script", type="application/ld+json"):
+        try:
+            szukaj(json.loads(tag.string or ""))
+        except (ValueError, TypeError):
+            pass
+    if not out["published"]:
+        m = soup.find("meta", property="article:published_time") or soup.find("meta", itemprop="datePublished")
+        out["published"] = _iso_z(m.get("content")) if m else None
+    t = soup.find("time", datetime=True)
+    out["time"] = _iso_z(t["datetime"]) if t else None
+    page = soup.get_text("\n")
+    pub_txt = wyciagnij_termin(_fragment_po(r"data publikacji|opublikowano|data dodania", page), today)[1]
+    out["tekst"] = pub_txt
+    ev_txt = wyciagnij_termin(_fragment_po(r"termin|kiedy|data wydarzenia", page), today)
+    out["start_tekst"] = ev_txt
+    return out
+
+
+def uzupelnij(items, fetcher, store, src, budzet):
+    """Dla nowych wpisów bez daty publikacji (i wydarzeń bez terminu) otwiera podstronę, w limicie na przebieg."""
+    wydarzenia = src.get("kind") == "wyd"
+    for it in items:
+        if budzet["left"] <= 0:
+            break
+        if id_wpisu(it["url"]) in store:
+            continue
+        brak_daty = not it["published"]
+        brak_terminu = wydarzenia and wyciagnij_termin(it["title"])[1] is None
+        if not (brak_daty or brak_terminu):
+            continue
+        budzet["left"] -= 1
+        try:
+            d = szczegoly(fetcher.get(it["url"]))
+        except Exception:
+            continue
+        if brak_daty:
+            it["published"] = d["published"] or d["tekst"] or (None if wydarzenia else d["time"])
+        if wydarzenia:
+            it["start"] = d["start"] or d["time"] or d["start_tekst"][1]
+
+
+def zbierz(src, fetcher, diag=None):
     html = fetcher.get(src["url"])
+    soup = BeautifulSoup(html, "html.parser")
     items = []
-    feed = src.get("feed") or znajdz_feed(BeautifulSoup(html, "html.parser"), src["url"])
+    feed = src.get("feed") or znajdz_feed(soup, src["url"])
     if feed:
         try:
             items = [i for i in parsuj_feed(fetcher.get(feed), src["url"]) if not to_junk(i["title"])]
@@ -202,13 +286,34 @@ def zbierz(src, fetcher):
             items = []
     if not items:
         items = parsuj_html(html, src["url"], src.get("selector"))
+    skip = src.get("skip_url", [])
+    items = [i for i in items if not any(p in i["url"] for p in skip)]
+    if diag is not None:
+        diag.update({"bajty": len(html), "article": len(soup.find_all("article")),
+                     "naglowki": len(soup.find_all(["h2", "h3", "h4"])), "feed": bool(feed)})
     return items[: src.get("limit", 15)]
 
 
-def wczytaj_store():
-    if STORE.exists():
-        return {i["id"]: i for i in json.loads(STORE.read_text(encoding="utf-8"))}
-    return {}
+def wczytaj_store(sources=None):
+    """Wczytuje zapisane wpisy i stosuje bieżące reguły (rodzaj, miejscowość, tytuły zdarzeń, wykluczenia),
+    więc poprawka reguł działa też wstecz, a stare wpisy nie zachowują nieaktualnych tytułów."""
+    if not STORE.exists():
+        return {}
+    zrodla = {s["id"]: s for s in sources or []}
+    store = {}
+    for i in json.loads(STORE.read_text(encoding="utf-8")):
+        src = zrodla.get(i.get("source_id"))
+        if src and any(p in i["url"] for p in src.get("skip_url", [])):
+            continue
+        if src and not i.get("neutral"):
+            i["kind"] = klasyfikuj_rodzaj(i["title"], src.get("kind"))
+            i["place"] = znajdz_miejsca(i["title"], src.get("place", "cała gmina"))
+        if i["kind"] == "zdr" and not i.get("neutral"):
+            i["tkey"] = tkey(i["title"])
+            i["title"] = neutralny_tytul(i["title"], i["place"])
+            i["neutral"] = True
+        store[i["id"]] = i
+    return store
 
 
 def zapisz_store(store, today):
@@ -222,21 +327,43 @@ def zapisz_store(store, today):
 
 def dodaj(store, items, src, today):
     nowe = 0
-    titles = {norm(i["title"]) for i in store.values()}
+    klucze = {i.get("tkey") or tkey(i["title"]) for i in store.values()}
     for it in items:
-        iid = hashlib.sha1(it["url"].encode()).hexdigest()[:12]
-        if iid in store or norm(it["title"]) in titles:
+        iid = id_wpisu(it["url"])
+        klucz = tkey(it["title"])
+        if iid in store or klucz in klucze:
             continue
-        if it["published"] and (today - date.fromisoformat(it["published"])).days > MAX_AGE_DAYS:
-            continue
+        start = it.get("start")
         when, event_iso = wyciagnij_termin(it["title"] + " " + it.get("desc", ""), today)
+        if not event_iso and start:
+            d = date.fromisoformat(start)
+            when, event_iso = f"{d.day}.{d.month:02d}", start
+        if it["published"] and (today - date.fromisoformat(it["published"])).days > MAX_AGE_DAYS \
+                and (event_iso or "") < today.isoformat():
+            continue
+        kind = klasyfikuj_rodzaj(it["title"], src.get("kind"))
+        place = znajdz_miejsca(it["title"], src.get("place", "cała gmina"))
+        neutral = kind == "zdr"
+        title = neutralny_tytul(it["title"], place) if neutral else it["title"]
+        # ten sam temat opisany przez inne źródło: dopisujemy źródło do istniejącego wpisu
+        powtorka = next((o for o in store.values()
+                         if o["source_id"] != src["id"]
+                         and (today - date.fromisoformat(o["first_seen"])).days <= DUPLIKAT_DNI
+                         and ((neutral and o.get("neutral") and o["title"] == title
+                               and o["first_seen"] == today.isoformat() and o["place"] == place)
+                              or (not neutral and not o.get("neutral") and podobne(o["title"], title)))), None)
+        klucze.add(klucz)
+        if powtorka:
+            also = powtorka.setdefault("also", [])
+            if src["name"] not in also and src["name"] != powtorka["source"]:
+                also.append(src["name"])
+            continue
         store[iid] = {
-            "id": iid, "title": it["title"], "url": it["url"], "source": src["name"], "source_id": src["id"],
-            "first_seen": today.isoformat(), "published": it["published"],
-            "kind": klasyfikuj_rodzaj(it["title"], src.get("kind")),
-            "place": znajdz_miejsca(it["title"], src.get("place", "cała gmina")),
-            "when": when, "event_iso": event_iso}
-        titles.add(norm(it["title"]))
+            "id": iid, "title": title, "url": it["url"], "source": src["name"], "source_id": src["id"],
+            "first_seen": today.isoformat(), "published": it["published"], "kind": kind, "place": place,
+            "when": when, "event_iso": event_iso, "tkey": klucz}
+        if neutral:
+            store[iid]["neutral"] = True
         nowe += 1
     return nowe
 
@@ -253,11 +380,17 @@ def main():
     ap.add_argument("--render-only", action="store_true", help="tylko zbuduj stronę z zapisanych danych")
     args = ap.parse_args()
     today = date.today()
-    store, status = wczytaj_store(), {}
+    sources = json.loads((ROOT / "sources.json").read_text(encoding="utf-8"))
+    try:  # błąd w pliku ręcznym zatrzymuje przebieg przed jakąkolwiek zmianą strony
+        reczne_wpisy = reczne.wczytaj(ROOT / "data" / "manual.json", today)
+    except reczne.BladPliku as e:
+        print(f"BŁĄD w data/manual.json: {e}")
+        sys.exit(1)
+    store, status = wczytaj_store(sources), {}
 
     if not args.render_only:
-        sources = json.loads((ROOT / "sources.json").read_text(encoding="utf-8"))
         fetcher = Fetcher()
+        budzet = {"left": MAX_SZCZEGOLOW}
         ok = 0
         for src in sources:
             if not src.get("enabled", True) or (args.only and src["id"] != args.only):
@@ -265,9 +398,13 @@ def main():
             if not args.only and not na_czas(src, today, args.all):
                 continue
             try:
-                items = zbierz(src, fetcher)
+                diag = {}
+                items = zbierz(src, fetcher, diag)
+                uzupelnij(items, fetcher, store, src, budzet)
                 n = dodaj(store, items, src, today)
                 status[src["id"]] = {"ok": True, "found": len(items), "new": n}
+                if not items:
+                    status[src["id"]].update({"uwaga": "strona odpowiada, ale parser nie znalazł wpisów", "diag": diag})
                 ok += 1
             except Exception as e:  # błąd jednego źródła nie zatrzymuje reszty
                 status[src["id"]] = {"ok": False, "error": f"{type(e).__name__}: {e}"}
@@ -280,8 +417,8 @@ def main():
             sys.exit(1)
 
     items = zapisz_store(store, today)
-    render.build(items, ROOT / "template.html", ROOT / "index.html", today)
-    print(f"Zapisano {len(items)} wpisów i zbudowano index.html")
+    render.build(items + reczne_wpisy, ROOT / "template.html", ROOT / "index.html", today)
+    print(f"Zapisano {len(items)} wpisów automatycznych i {len(reczne_wpisy)} ręcznych, zbudowano index.html")
 
 
 if __name__ == "__main__":

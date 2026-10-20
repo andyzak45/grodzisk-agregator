@@ -18,29 +18,44 @@ def norm(text):
 
 
 # Kolejność ma znaczenie: pierwsza pasująca reguła wygrywa.
+# Wzorce to wyrażenia regularne na tekście bez polskich znaków; każdy zaczyna się od granicy słowa,
+# a krótkie rdzenie mają jawne końcówki (np. "pozar" nie łapie już słowa "pozarzadowych").
 KIND_RULES = [
-    ("ost", ["ostrzez", "alert", "awari", "brak pradu", "brak wody", "utrudnien", "objazd",
-             "wscieklizn", "ewakuac", "zagrozeni", "komunikat kryzysow"]),
-    ("zdr", ["policj", "zatrzyman", "oszust", "wypad", "kolizj", "pozar", "kradzie",
-             "potracon", "interwencj", "zgon", "smierc", "zginel", "nieletni"]),
-    ("spo", ["mecz", "pilk", "siatk", "tenis", "pogon", "sparta", "bogoria", "liga", "ligi",
-             "bieg", "turniej", "zawod", "koszyk", "plywa", "kort", "mistrzostw"]),
-    ("wyd", ["koncert", "spektakl", "warsztat", "festiwal", "spotkani", "wystaw", "seans",
-             "impre", "jarmark", "kiermasz", "targi", "piknik", "wydarzeni", "zapraszam",
-             "zajec", "teatr", "noc bibliotek", "rajd", "cosplay", "stand-up"]),
-    ("inw", ["przetarg", "inwestycj", "remont", "budow", "przebudow", "modernizacj", "droga",
-             "drogi", "drog ", "chodnik", "oswietlen", "wodociag", "kanalizac", "uchwal",
-             "budzet", "dofinansowan", "plan ogoln", "planu ogoln", "sesj", "umow", "wniosk", "konsultacj",
-             "rekultywac", "parking", "sciezk"]),
+    ("ost", [r"ostrzez", r"alert", r"awari", r"brak pradu", r"brak wody", r"utrudnien", r"objazd",
+             r"wscieklizn", r"ewakuac", r"komunikat kryzysow", r"zagrozeni\w* atakiem", r"alarm",
+             r"wylaczen\w* (?:pradu|wody)"]),
+    ("zdr", [r"zatrzym", r"wpadl", r"wypadek", r"wypadk", r"kolizj", r"pozar(?:u|ze|em|y|ow|\b)",
+             r"kradziez", r"wlaman", r"potracon", r"potracen", r"rozboj", r"napad", r"pobit",
+             r"zgin", r"nie zyje", r"smiertel", r"tragiczn", r"pijan", r"ranny", r"ranna", r"ranni",
+             r"zaginion", r"interwencj"]),
+    ("spo", [r"mecz", r"pilk", r"siatk", r"tenis", r"pogon", r"sparta", r"bogoria", r"liga", r"ligi",
+             r"bieg", r"turniej", r"zawod(?:y|ach|nik|nicz)", r"koszyk", r"plywa", r"kort",
+             r"mistrzostw", r"grand prix"]),
+    ("wyd", [r"koncert", r"spektakl", r"warsztat", r"festiwal", r"spotkani", r"wystaw", r"seans",
+             r"impre", r"jarmark", r"kiermasz", r"targi", r"piknik", r"wydarzeni", r"zapraszam",
+             r"zajec", r"teatr", r"noc bibliotek", r"rajd", r"cosplay", r"stand-up"]),
+    ("inw", [r"przetarg", r"inwestycj", r"remont", r"budow", r"przebudow", r"modernizacj", r"droga",
+             r"drogi", r"drog ", r"chodnik", r"oswietlen", r"wodociag", r"kanalizac", r"uchwal",
+             r"budzet", r"dofinansowan", r"plan ogoln", r"planu ogoln", r"sesj", r"umow", r"wniosk",
+             r"konsultacj", r"rekultywac", r"parking", r"sciezk"]),
 ]
-_KIND_RE = [(k, re.compile(r"\b(?:" + "|".join(map(re.escape, stems)) + ")")) for k, stems in KIND_RULES]
+_KIND_RE = [(k, re.compile(r"\b(?:" + "|".join(pats) + ")")) for k, pats in KIND_RULES]
+
+# Źródła z podpowiedzią "zdr" (policja) i "ost" (zarządzanie kryzysowe) publikują też dużo
+# profilaktyki i szkoleń. Dla nich liczą się tylko rodzaje poniżej, reszta to zwykła wiadomość.
+HINT_ALLOWED = {"zdr": {"ost", "zdr", "wyd"}, "ost": {"ost", "zdr", "wyd"}}
 
 
 def klasyfikuj_rodzaj(title, hint=None):
     t = norm(title)
+    allowed = HINT_ALLOWED.get(hint)
     for kind, rx in _KIND_RE:
+        if allowed and kind not in allowed:
+            continue
         if rx.search(t):
             return kind
+    if hint in HINT_ALLOWED:
+        return "inne"
     return hint or "inne"
 
 
@@ -61,7 +76,7 @@ PLACES = {
     "Urszulin": r"urszulin", "Zapole": r"zapol", "Budki Kozerkowskie": r"budk\w* kozerk",
     "Chawłowo": r"chawlow", "Kozery-Folwark": r"kozer\w*.folwark", "Lipy": r"\blip(?:y|ach)\b",
     "Mieczysławów": r"mieczyslaw", "Podchyliczki": r"podchylicz", "Putka": r"\bputk",
-    "Wandzin": r"wandzin", "Zajączkowo": r"zajaczkow", "Żdżary": r"zdzar",
+    "Wandzin": r"wandzin", "Dąbrówka": r"\bdabrowk", "Zajączkowo": r"zajaczkow", "Żdżary": r"zdzar",
     # poza gminą
     "Milanówek": r"milanow", "Podkowa Leśna": r"podkow\w* lesn", "Jaktorów": r"jaktor",
     "Żabia Wola": r"zabi\w* wol", "Baranów": r"baranow", "Radziejowice": r"radziejowic",
@@ -88,6 +103,27 @@ def znajdz_miejsca(text, default=CALA_GMINA, limit=2):
     if re.search(r"\bgrodzisk", t) and default == CALA_GMINA:
         return "Grodzisk Mazowiecki"
     return default
+
+
+# Poziomy wielkości miejscowości (spis GUS 2021, miasto GUS 2024). Służą do sortowania listy.
+POZIOMY = {
+    1: ["Grodzisk Mazowiecki"],
+    2: ["Książenice"],
+    3: ["Adamowizna", "Odrano-Wola", "Opypy", "Szczęsne"],
+    4: ["Chrzanów Mały", "Czarny Las", "Janinów", "Kałęczyn", "Kozerki", "Kozery", "Natolin", "Radonie"],
+    5: ["Chlebnia", "Chrzanów Duży", "Izdebno Kościelne", "Kady", "Kraśnicza Wola", "Makówka",
+        "Marynin", "Mościska", "Tłuste", "Wólka Grodziska"],
+    6: ["Adamów", "Kłudno Nowe", "Kłudno Stare", "Kozery Nowe", "Władków", "Wężyk", "Zabłotnia",
+        "Żuków", "Izdebno Nowe", "Urszulin", "Zapole", "Kłudzienko", "Dąbrówka", "Budki Kozerkowskie",
+        "Chawłowo", "Izdebno Małe", "Kozery-Folwark", "Lipy", "Mieczysławów", "Podchyliczki", "Putka",
+        "Wandzin", "Zajączkowo", "Żdżary"],
+}
+_POZIOM = {n: lvl for lvl, names in POZIOMY.items() for n in names}
+
+
+def klucz_miejsca(name):
+    """Sortowanie listy miejscowości: poziom (większe najpierw), potem alfabetycznie; spoza gminy na końcu."""
+    return (_POZIOM.get(name, 7), norm(name))
 
 
 MONTHS = {"stycznia": 1, "lutego": 2, "marca": 3, "kwietnia": 4, "maja": 5, "czerwca": 6,

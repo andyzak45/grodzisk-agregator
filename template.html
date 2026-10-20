@@ -31,6 +31,11 @@
         .bg-edukacja { background: linear-gradient(135deg, #9d174d 0%, #f43f5e 100%); }
         .bg-sport { background: linear-gradient(135deg, #312e81 0%, #6366f1 100%); }
         .bg-neutralny { background: linear-gradient(135deg, #1e293b 0%, #64748b 100%); }
+        .ico { width: 34px; height: 34px; color: rgba(255,255,255,0.92); margin-right: 0.6rem; flex-shrink: 0; }
+        .hero-tile .ico { width: 56px; height: 56px; }
+        .hero-tile .tile-category-text { font-size: 1rem; }
+        .opis { color: #334155; font-size: 0.92rem; margin: 0 0 0.75rem 0; }
+        .zauwazono, .also { font-style: italic; }
         .tile-category-text { color: #ffffff; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.12em; text-shadow: 0 2px 4px rgba(0,0,0,0.4); text-transform: uppercase; }
         .card-body { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
         .meta-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem 0.75rem; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
@@ -58,7 +63,7 @@
         </div>
     </main>
     <footer>
-        <p>Informacje zbierane automatycznie z publicznych stron lokalnych instytucji i mediów. Pokazujemy tytuł, datę i link do oryginału, pełne treści czytaj u wydawców. Zauważyłeś błąd? Napisz do redakcji.</p>
+        <p>Informacje zbierane z publicznych stron lokalnych instytucji i mediów oraz opracowywane przez redakcję. Pokazujemy fakty i link do oryginału, pełne treści czytaj u wydawców. Przy zdarzeniach nie podajemy danych osób. Zauważyłeś błąd? Napisz do redakcji.</p>
     </footer>
     <script>
     (function () {
@@ -86,7 +91,9 @@
             var p = t.getAttribute("datetime").split("-");
             var diff = Math.round((new Date(+p[0], p[1] - 1, +p[2]) - today) / 864e5);
             var word = { "0": "dzisiaj", "-1": "wczoraj", "1": "jutro" }[diff];
-            if (word) t.textContent = word;
+            if (!word) return;
+            var g = t.getAttribute("data-t");
+            t.textContent = word + (g ? ", godz. " + g : "");
         });
     })();
     </script>

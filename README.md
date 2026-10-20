@@ -7,7 +7,9 @@ Bot raz dziennie zbiera tytuły, daty i linki z lokalnych źródeł (`sources.js
 - `sources.json`: lista źródeł (włączanie i wyłączanie: pole `enabled`, rytm: `daily`, `weekly`, `rare`)
 - `scraper.py`: pobieranie, zapis do `data/items.json`, wywołanie generatora strony
 - `klasyfikacja.py`: reguły rodzaju, miejscowości i terminu
-- `render.py` + `template.html`: wygląd strony
+- `render.py` + `template.html`: wygląd strony (ikony rodzajów, daty po polsku, filtry)
+- `redakcja.py`: zasady redakcyjne w kodzie (neutralne tytuły zdarzeń, daty, opisy, powtórki tematów)
+- `reczne.py` + `data/manual.json`: wpisy ręczne (np. z Facebooka), sprawdzane przed publikacją
 - `tests/`: testy (uruchamiają się przed każdym przebiegiem bota)
 - `data/status.json`: wynik ostatniego przebiegu dla każdego źródła, tu szukaj błędów
 
@@ -25,3 +27,18 @@ W repozytorium: Settings → Secrets and variables → Actions → Variables →
 ## Zasady
 Zapisujemy tytuł, link, datę i fakty (rodzaj, miejscowość, termin). Nie kopiujemy zajawek ani treści
 artykułów. Źródła z zastrzeżonymi prawami (np. GrodziskNews) są wyłączone do czasu uzyskania zgody.
+
+## Wpisy ręczne (data/manual.json)
+Plik to lista wpisów w nawiasach `[ ... ]`. Nowy wpis dopisujesz przed ostatnim `]`, a poprzedni kończysz przecinkiem.
+
+    {"kind": "wydarzenie", "place": "Książenice", "date": "2026-10-25", "time": "18:00",
+     "title": "Koncert w świetlicy", "text": "Wstęp wolny.", "url": "https://www.facebook.com/...", "source": "Facebook"}
+
+Wymagane: `kind` (ostrzezenie, zdarzenie, wydarzenie, inwestycja, sport, wiadomosc), `place`, `date`, `title`, `url`.
+Opcjonalne: `time` (tylko wydarzenia), `text` (do 300 znaków, własnymi słowami), `source`.
+Po zapisaniu pliku na GitHubie strona przebudowuje się sama. Błąd w pliku (zła miejscowość, data, brak przecinka)
+kończy przebieg na czerwono z komunikatem w logu, a opublikowana strona zostaje bez zmian.
+
+## Zasady dotyczące zdarzeń
+Tytuły zdarzeń są zastępowane neutralnymi (rodzaj zdarzenia i miejsce). Oryginalny tytuł nie jest zapisywany.
+Wpisy ręczne o zdarzeniach z wiekiem lub stanem zdrowia osób są odrzucane.
