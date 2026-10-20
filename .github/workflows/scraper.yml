@@ -30,11 +30,13 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Testy
-        run: python -m unittest discover -s tests -v
+        run: python -m unittest test_scraper -v
 
       - name: Uruchomienie bota
         env:
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # opcjonalny: bez niego nie powstają notki pod tytułami
+          SUMMARY_MODEL: ${{ vars.SUMMARY_MODEL }}              # opcjonalny: domyślnie claude-haiku-5-5
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
             python scraper.py --render-only
