@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '0 5 * * *'   # 5:00 UTC, czyli 6:00 lub 7:00 w Polsce zależnie od pory roku
   workflow_dispatch:       # ręczne uruchomienie przyciskiem "Run workflow"
+  push:
+    paths:
+      - 'data/manual.json'  # po edycji wpisów ręcznych strona przebudowuje się od razu
 
 permissions:
   contents: write
@@ -32,7 +35,12 @@ jobs:
       - name: Uruchomienie bota
         env:
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
-        run: python scraper.py
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            python scraper.py --render-only
+          else
+            python scraper.py
+          fi
 
       - name: Zapis zmian na stronie
         run: |
