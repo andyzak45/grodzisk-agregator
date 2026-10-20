@@ -6,9 +6,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import json
 import render
+import reczne
+import redakcja
 import scraper
-from klasyfikacja import klasyfikuj_rodzaj, wyciagnij_termin, znajdz_miejsca
+from klasyfikacja import klasyfikuj_rodzaj, klucz_miejsca, wyciagnij_termin, znajdz_miejsca
 
 TODAY = date(2026, 10, 19)
 
@@ -147,7 +150,8 @@ class Strona(unittest.TestCase):
         self.assertNotIn("<script>alert", page)
         self.assertIn("&lt;script&gt;", page)
         self.assertNotIn("Wczorajszy koncert", page)
-        self.assertIn("Kiedy: 25.10", page)
+        self.assertIn("Kiedy: <time", page)
+        self.assertIn("niedz. 25.10", page)
         self.assertIn('data-place="Władków"', page)
         self.assertNotIn("PLACEHOLDER", page)
 
@@ -177,6 +181,249 @@ class Pobieranie(unittest.TestCase):
         self.assertEqual(scraper.dodaj(store, items, src, TODAY), 2)
         kinds = sorted(i["kind"] for i in store.values())
         self.assertEqual(kinds, ["inw", "spo"])
+
+
+class RodzajNaPrawdziwychTytulach(unittest.TestCase):
+    """Przypadki z pierwszego przebiegu bota (19.10.2026)."""
+
+    def test_pozarzadowe_to_nie_pozar(self):
+        self.assertEqual(klasyfikuj_rodzaj("Spotkanie dla organizacji pozarządowych", "wyd"), "wyd")
+        self.assertEqual(klasyfikuj_rodzaj("Pożar hali w Kozerkach"), "zdr")
+
+    def test_profilaktyka_policji_to_zwykla_wiadomosc(self):
+        for t in ["Jeździsz rowerem – włóż kask, chroń swoją głowę!",
+                  "Pieszy też może stworzyć zagrożenie! Czy znasz te przepisy?",
+                  "Uważaj na dezinformację, rozmawiaj i wspieraj, a zagrożenia zgłaszaj Policji",
+                  "Uczniowie grodziskiej „Jedynki” bezpieczni na drogach"]:
+            self.assertEqual(klasyfikuj_rodzaj(t, "zdr"), "inne", t)
+
+    def test_prawdziwe_zdarzenie_i_ostrzezenie_przechodza(self):
+        self.assertEqual(klasyfikuj_rodzaj("Dwaj nieletni wpadli za oszustwo", "zdr"), "zdr")
+        self.assertEqual(klasyfikuj_rodzaj("Zagrożenie atakiem z powietrza", "ost"), "ost")
+        self.assertEqual(klasyfikuj_rodzaj("Bezpłatne szkolenia z obrony cywilnej", "ost"), "inne")
+
+
+class Miejscowosci(unittest.TestCase):
+    def test_kolejnosc_wg_wielkosci_potem_alfabetycznie(self):
+        names = ["Żdżary", "Szczęsne", "Książenice", "Grodzisk Mazowiecki", "Adamowizna", "Milanówek", "Natolin"]
+        self.assertEqual(sorted(names, key=klucz_miejsca),
+                         ["Grodzisk Mazowiecki", "Książenice", "Adamowizna", "Szczęsne", "Natolin", "Żdżary", "Milanówek"])
+
+
+class Redakcja(unittest.TestCase):
+    def test_tytul_zdarzenia_bez_danych_ofiary(self):
+        t = redakcja.neutralny_tytul("Tragiczny wypadek na DW719 w Kozerkach. 14-letnia Wiktoria w śpiączce", "Kozerki")
+        self.assertEqual(t, "Wypadek drogowy: Kozerki")
+        for zle in ("Wiktoria", "14", "śpiączk"):
+            self.assertNotIn(zle, t)
+
+    def test_wrazliwe(self):
+        self.assertTrue(redakcja.wrazliwe("14-letnia dziewczyna w śpiączce"))
+        self.assertTrue(redakcja.wrazliwe("Ranny 35-latek trafił do szpitala"))
+        self.assertFalse(redakcja.wrazliwe("Koncert w Mediatece"))
+
+    def test_daty_po_polsku(self):
+        self.assertEqual(redakcja.data_ui("2026-10-19", TODAY), "dzisiaj")
+        self.assertEqual(redakcja.data_ui("2026-10-18", TODAY), "wczoraj")
+        self.assertEqual(redakcja.data_ui("2026-10-20", TODAY), "jutro")
+        self.assertEqual(redakcja.data_ui("2026-10-25", TODAY), "niedz. 25.10")
+        self.assertEqual(redakcja.data_ui("2026-10-17", TODAY), "sob. 17.10")
+        self.assertEqual(redakcja.data_ui("2027-01-14", TODAY), "czw. 14.01.2027")
+
+    def test_termin_z_godzina(self):
+        it = {"event_iso": "2026-10-25", "when": "25.10, godz. 18:00"}
+        self.assertEqual(redakcja.termin_ui(it, TODAY), "niedz. 25.10, godz. 18:00")
+
+    def test_podobne_tytuly(self):
+        self.assertTrue(redakcja.podobne("Podpisanie umowy na budowę oświetlenia oraz monitoringu",
+                                         "Podpisano umowę na oświetlenie i monitoring ulic"))
+        self.assertFalse(redakcja.podobne("Koncert w Mediatece", "Przetarg na przebudowę stadionu"))
+
+
+class Zdarzenia(unittest.TestCase):
+    SRC = {"id": "wpr", "name": "WPR24", "kind": "inne", "place": "okolica"}
+
+    def test_oryginalny_tytul_nie_trafia_do_magazynu(self):
+        store = {}
+        items = [{"title": "Tragiczny wypadek na DW719 w Kozerkach. 14-letnia Wiktoria w śpiączce",
+                  "url": "https://wpr24.pl/a", "published": "2026-10-18", "desc": ""}]
+        self.assertEqual(scraper.dodaj(store, items, self.SRC, TODAY), 1)
+        w = next(iter(store.values()))
+        self.assertEqual((w["kind"], w["title"], w["place"]), ("zdr", "Wypadek drogowy: Kozerki", "Kozerki"))
+        self.assertNotIn("Wiktoria", json.dumps(w, ensure_ascii=False))
+        # drugi przebieg tego samego wpisu nie dubluje (rozpoznanie po skrócie tytułu)
+        self.assertEqual(scraper.dodaj(store, [dict(items[0], url="https://wpr24.pl/inny-adres")], self.SRC, TODAY), 0)
+
+    def test_stary_magazyn_jest_czyszczony_przy_wczytaniu(self):
+        stary = [{"id": "x1", "title": "Tragiczny wypadek na DW719 w Kozerkach. 14-letnia Wiktoria w śpiączce, śledztwo w toku",
+                  "url": "https://wpr24.pl/a", "source": "WPR24", "source_id": "wpr24", "first_seen": "2026-10-19",
+                  "published": None, "kind": "zdr", "place": "Kozerki", "when": None, "event_iso": None}]
+        with tempfile.TemporaryDirectory() as d:
+            sciezka = Path(d) / "items.json"
+            sciezka.write_text(json.dumps(stary, ensure_ascii=False), encoding="utf-8")
+            orig, scraper.STORE = scraper.STORE, sciezka
+            try:
+                store = scraper.wczytaj_store([{"id": "wpr24", "kind": "inne", "place": "okolica"}])
+            finally:
+                scraper.STORE = orig
+        w = store["x1"]
+        self.assertEqual(w["title"], "Wypadek drogowy: Kozerki")
+        self.assertTrue(w["neutral"])
+
+    def test_ten_sam_temat_z_dwoch_zrodel_to_jeden_wpis(self):
+        store = {}
+        a = {"id": "um", "name": "Urząd Miejski", "kind": "inw", "place": "cała gmina"}
+        b = {"id": "tm", "name": "Twoje Miasto", "kind": "inne", "place": "Grodzisk Mazowiecki"}
+        scraper.dodaj(store, [{"title": "Podpisanie umowy na budowę oświetlenia oraz monitoringu",
+                               "url": "https://grodzisk.pl/1", "published": "2026-10-13", "desc": ""}], a, TODAY)
+        n = scraper.dodaj(store, [{"title": "Podpisano umowę na oświetlenie i monitoring ulic",
+                                   "url": "https://tm.pl/1", "published": None, "desc": ""}], b, TODAY)
+        self.assertEqual((n, len(store)), (0, 1))
+        self.assertEqual(next(iter(store.values()))["also"], ["Twoje Miasto"])
+
+
+class Szczegoly(unittest.TestCase):
+    def test_json_ld_wydarzenie(self):
+        html = ('<script type="application/ld+json">{"@type":"Event","startDate":"2026-10-25T18:00:00+01:00",'
+                '"datePublished":"2026-10-10"}</script>')
+        d = scraper.szczegoly(html, TODAY)
+        self.assertEqual((d["published"], d["start"]), ("2026-10-10", "2026-10-25"))
+
+    def test_meta_i_podpis_daty(self):
+        self.assertEqual(scraper.szczegoly('<meta property="article:published_time" content="2026-10-17T08:00:00+02:00">',
+                                           TODAY)["published"], "2026-10-17")
+        self.assertEqual(scraper.szczegoly("<p>Data publikacji: 17.10.2026</p>", TODAY)["tekst"], "2026-10-17")
+
+    def test_termin_z_podpisu(self):
+        d = scraper.szczegoly("<p>Termin: 25 października, godz. 18:00</p>", TODAY)
+        self.assertEqual(d["start_tekst"][1], "2026-10-25")
+
+    def test_uzupelnienie_daty_z_podstrony(self):
+        class F:
+            def get(self, url):
+                return "<p>Data publikacji: 17.10.2026</p>"
+        it = {"title": "Komunikat Policji o zmianie organizacji ruchu", "url": "https://x.pl/a", "published": None, "desc": ""}
+        scraper.uzupelnij([it], F(), {}, {"kind": "inne"}, {"left": 5})
+        self.assertEqual(it["published"], "2026-10-17")
+
+    def test_limit_podstron(self):
+        class F:
+            wywolania = 0
+            def get(self, url):
+                F.wywolania += 1
+                return "<p>pusto</p>"
+        its = [{"title": f"Wpis numer {i} bez daty", "url": f"https://x.pl/{i}", "published": None, "desc": ""} for i in range(10)]
+        scraper.uzupelnij(its, F(), {}, {"kind": "inne"}, {"left": 3})
+        self.assertEqual(F.wywolania, 3)
+
+
+class Wykluczenia(unittest.TestCase):
+    def test_skip_url(self):
+        html = ('<article><h2><a href="/art-kraj/policja-w-szkolach-i1">Policja: sytuacja w szkołach się ustabilizowała</a></h2></article>'
+                '<article><h2><a href="/art-miasto/krajowy-trening-i2">Krajowy Trening Rodzinny dla dzieci i rodziców</a></h2></article>')
+        class F:
+            def get(self, url):
+                return html
+        src = {"id": "t", "name": "T", "url": "https://t.twoje-miasto.pl/", "skip_url": ["/art-kraj/"]}
+        self.assertEqual([i["title"] for i in scraper.zbierz(src, F())], ["Krajowy Trening Rodzinny dla dzieci i rodziców"])
+
+    def test_diagnostyka_pustej_strony(self):
+        class F:
+            def get(self, url):
+                return "<html><body><div>nic</div></body></html>"
+        diag = {}
+        self.assertEqual(scraper.zbierz({"id": "t", "name": "T", "url": "https://x.pl/"}, F(), diag), [])
+        self.assertEqual((diag["article"], diag["naglowki"], diag["feed"]), (0, 0, False))
+
+
+class WarstwaReczna(unittest.TestCase):
+    def _wczytaj(self, dane):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "manual.json"
+            p.write_text(json.dumps(dane, ensure_ascii=False), encoding="utf-8")
+            return reczne.wczytaj(p, TODAY)
+
+    BAZA = {"kind": "wydarzenie", "place": "Książenice", "date": "2026-10-25", "time": "18:00",
+            "title": "Koncert w świetlicy", "text": "Wstęp wolny.", "url": "https://www.facebook.com/x/1"}
+
+    def test_poprawny_wpis(self):
+        w = self._wczytaj([self.BAZA])[0]
+        self.assertEqual((w["kind"], w["when"], w["event_iso"], w["source"]),
+                         ("wyd", "25.10, godz. 18:00", "2026-10-25", "Wpis redakcji"))
+
+    def test_pusty_lub_brakujacy_plik(self):
+        self.assertEqual(self._wczytaj([]), [])
+        self.assertEqual(reczne.wczytaj(Path("/nie/ma/takiego.json"), TODAY), [])
+
+    def test_bledy_maja_czytelny_komunikat(self):
+        for zle, fragment in [
+            (dict(self.BAZA, place="Atlantyda"), "nieznana miejscowość"),
+            (dict(self.BAZA, date="25.10.2026"), "RRRR-MM-DD"),
+            (dict(self.BAZA, kind="plotka"), "nieznany rodzaj"),
+            (dict(self.BAZA, url="facebook.com/x"), "http"),
+            (dict(self.BAZA, time="osiemnasta"), "GG:MM"),
+            ({k: v for k, v in self.BAZA.items() if k != "title"}, "title"),
+            (dict(self.BAZA, kind="zdarzenie", title="Wypadek, ranny 35-latek"), "wiek"),
+        ]:
+            with self.assertRaises(reczne.BladPliku) as ctx:
+                self._wczytaj([zle])
+            self.assertIn(fragment, str(ctx.exception))
+
+    def test_zepsuty_json(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "manual.json"
+            p.write_text('[{"kind": "sport",]', encoding="utf-8")
+            with self.assertRaises(reczne.BladPliku):
+                reczne.wczytaj(p, TODAY)
+
+
+class StronaRedakcyjna(unittest.TestCase):
+    def _strona(self, items):
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "index.html"
+            render.build(items, Path(__file__).resolve().parent.parent / "template.html", out, TODAY)
+            return out.read_text(encoding="utf-8")
+
+    def _it(self, **kw):
+        base = {"id": "1", "title": "Tytuł", "url": "https://x.pl/1", "source": "Źródło", "first_seen": "2026-10-19",
+                "published": "2026-10-19", "kind": "inne", "place": "cała gmina", "when": None, "event_iso": None}
+        base.update(kw)
+        return base
+
+    def test_zdarzenie_ma_opis_bez_szczegolow_i_nie_jest_jedynka(self):
+        page = self._strona([self._it(kind="zdr", title="Wypadek drogowy: Kozerki", place="Kozerki", neutral=True)])
+        self.assertIn("Sprawę opisuje Źródło", page)
+        self.assertNotIn("hero-tile\"", page)
+
+    def test_okolica_nie_jest_miejscowoscia_na_liscie(self):
+        page = self._strona([self._it(place="okolica"), self._it(id="2", url="https://x.pl/2", place="Natolin")])
+        self.assertNotIn('<option value="okolica">', page)
+        self.assertIn('<option value="Natolin">', page)
+
+    def test_lista_miejscowosci_wg_poziomu(self):
+        items = [self._it(id=str(i), url=f"https://x.pl/{i}", place=p)
+                 for i, p in enumerate(["Żdżary", "Książenice", "Szczęsne", "Grodzisk Mazowiecki"])]
+        page = self._strona(items)
+        kolejnosc = [page.index(f'<option value="{p}">') for p in ["Grodzisk Mazowiecki", "Książenice", "Szczęsne", "Żdżary"]]
+        self.assertEqual(kolejnosc, sorted(kolejnosc))
+
+    def test_wpis_bez_daty_jest_oznaczony_a_nie_udaje_dzisiejszego(self):
+        page = self._strona([self._it(published=None, first_seen="2026-10-18")])
+        self.assertIn("zauważono", page)
+        self.assertNotIn("dzisiaj", page.split("<main>")[1].split("<script>")[0])
+
+    def test_zapowiedzi_bez_terminu_sa_ograniczone(self):
+        items = [self._it(id=str(i), url=f"https://x.pl/{i}", kind="wyd", title=f"Zapowiedź {i}") for i in range(6)]
+        items.append(self._it(id="stara", url="https://x.pl/s", kind="wyd", title="Stara zapowiedź",
+                              first_seen="2026-10-10", published=None))
+        page = self._strona(items)
+        self.assertEqual(page.count('<article class="portal-card'), render.BEZ_TERMINU_MAX)
+        self.assertNotIn("Stara zapowiedź", page)
+
+    def test_wpis_reczny_pokazuje_wlasny_opis_i_ikone(self):
+        page = self._strona([self._it(kind="inw", text="Zamknięta ulica Kościuszki do piątku.", manual=True)])
+        self.assertIn("Zamknięta ulica Kościuszki do piątku.", page)
+        self.assertIn('<svg class="ico"', page)
 
 
 if __name__ == "__main__":
