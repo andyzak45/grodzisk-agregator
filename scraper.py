@@ -29,6 +29,7 @@ from bs4 import BeautifulSoup
 
 import render
 import reczne
+import streszczenia
 from klasyfikacja import klasyfikuj_rodzaj, norm, wyciagnij_termin, znajdz_miejsca
 from redakcja import neutralny_tytul, podobne
 
@@ -40,6 +41,7 @@ USER_AGENT = f"GrodziskLokalnieBot/1.0 (agregator linków; kontakt: {BOT_CONTACT
 MAX_BYTES = 2_000_000
 MAX_AGE_DAYS = 30        # starszych wpisów (wg daty publikacji) nie bierzemy
 KEEP_DAYS = 45           # tyle trzymamy wpisy w pliku danych
+MAX_NOTEK = 30           # tyle notek pod tytułami piszemy na przebieg (koszt i czas)
 MAX_SZCZEGOLOW = 25      # tyle podstron na przebieg otwieramy, żeby znaleźć brakujące daty
 DUPLIKAT_DNI = 7         # w tym oknie szukamy tego samego tematu w innych źródłach
 
@@ -55,6 +57,7 @@ class Fetcher:
     def __init__(self, delay=2.0, timeout=20):
         self.delay, self.timeout = delay, timeout
         self.robots, self.last = {}, {}
+        self.strony = {}   # podstrony pobrane do szukania dat, używane też do notek
 
     def _open(self, url, timeout=None):
         req = urllib.request.Request(url, headers={
@@ -265,7 +268,10 @@ def uzupelnij(items, fetcher, store, src, budzet):
             continue
         budzet["left"] -= 1
         try:
-            d = szczegoly(fetcher.get(it["url"]))
+            strona = fetcher.get(it["url"])
+            if hasattr(fetcher, "strony"):
+                fetcher.strony[it["url"]] = strona
+            d = szczegoly(strona)
         except Exception:
             continue
         if brak_daty:
@@ -416,6 +422,10 @@ def main():
             print("Żadne źródło nie odpowiedziało, nie publikuję nowej strony.")
             sys.exit(1)
 
+    if not args.render_only:
+        zrodla = {x["id"]: x for x in sources}
+        n = streszczenia.dopisz(store, zrodla, fetcher, today, MAX_NOTEK)
+        print(f"Dopisano {n} notek pod tytułami")
     items = zapisz_store(store, today)
     render.build(items + reczne_wpisy, ROOT / "template.html", ROOT / "index.html", today)
     print(f"Zapisano {len(items)} wpisów automatycznych i {len(reczne_wpisy)} ręcznych, zbudowano index.html")

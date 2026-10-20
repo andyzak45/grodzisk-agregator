@@ -86,7 +86,7 @@ def opis(it, today):
     """Jedno zdanie z faktów. Pusty tekst, gdy nic nie wnosi ponad tytuł i znaczniki na karcie."""
     if it.get("text"):
         return it["text"]
-    zrodlo = it["source"]
+    zrodlo = it["source"].rstrip(".")
     if it["kind"] == "zdr":
         return f"Sprawę opisuje {zrodlo}. Szczegóły pod linkiem do źródła."
     if it["kind"] == "ost":

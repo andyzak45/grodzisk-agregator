@@ -42,3 +42,10 @@ kończy przebieg na czerwono z komunikatem w logu, a opublikowana strona zostaje
 ## Zasady dotyczące zdarzeń
 Tytuły zdarzeń są zastępowane neutralnymi (rodzaj zdarzenia i miejsce). Oryginalny tytuł nie jest zapisywany.
 Wpisy ręczne o zdarzeniach z wiekiem lub stanem zdrowia osób są odrzucane.
+
+## Notki pod tytułami (opcjonalne)
+Gdy w Settings → Secrets and variables → Actions → **Secrets** jest `ANTHROPIC_API_KEY`, bot pisze 1-2 zdania pod tytułem
+własnymi słowami (maks. 30 notek na przebieg, tylko wpisy z ostatnich 7 dni). Dotyczy tylko źródeł z `"streszczaj": true`
+w `sources.json` (domyślnie instytucje publiczne), nigdy zdarzeń. Notka jest odrzucana, gdy zawiera dane osób albo
+7 kolejnych słów z artykułu. Karta oznacza ją jako automatyczną. Model można zmienić zmienną `SUMMARY_MODEL`.
+Bez klucza ten etap jest pomijany, a strona działa jak dotąd.

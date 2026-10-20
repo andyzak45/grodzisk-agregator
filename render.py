@@ -3,7 +3,7 @@ import html
 from datetime import date
 from pathlib import Path
 
-from klasyfikacja import klucz_miejsca
+from klasyfikacja import klucz_miejsca, w_gminie
 from redakcja import data_ui, dzien, godzina, miejsce_ui, opis, termin_ui
 
 KIND_UI = {
@@ -66,7 +66,7 @@ def widoczne(items, today):
 
 def wybierz_jedynke(items, today):
     def score(it):
-        return WEIGHT[it["kind"]] + max(0, 10 - wiek(it, today))
+        return WEIGHT[it["kind"]] + max(0, 10 - wiek(it, today)) - (0 if w_gminie(it["place"]) else 6)
     fresh = [i for i in items if wiek(i, today) <= 3 and i["kind"] != "zdr"]
     return max(fresh, key=score) if fresh else None
 
@@ -91,7 +91,8 @@ def karta(it, today, hero=False):
         data = f'<span class="zauwazono">zauważono {e(dzien(it["first_seen"]))}</span>' if not termin else ""
     znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
     tekst = opis(it, today)
-    opis_html = f'<p class="opis">{e(tekst)}</p>' if tekst else ""
+    auto = ' <span class="auto">Opis automatyczny.</span>' if it.get("opis_auto") else ""
+    opis_html = f'<p class="opis">{e(tekst)}{auto}</p>' if tekst else ""
     zrodlo = e(it["source"]) + (f' <span class="also">oraz {e(", ".join(it["also"]))}</span>' if it.get("also") else "")
     return (
         f'<article class="portal-card{" hero-tile" if hero else ""}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'

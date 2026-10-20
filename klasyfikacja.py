@@ -121,6 +121,11 @@ POZIOMY = {
 _POZIOM = {n: lvl for lvl, names in POZIOMY.items() for n in names}
 
 
+def w_gminie(place):
+    """Czy wpis dotyczy gminy Grodzisk Mazowiecki (jej miejscowości albo całej gminy), a nie okolicy."""
+    return any(p == CALA_GMINA or p in _POZIOM for p in place.split("|"))
+
+
 def klucz_miejsca(name):
     """Sortowanie listy miejscowości: poziom (większe najpierw), potem alfabetycznie; spoza gminy na końcu."""
     return (_POZIOM.get(name, 7), norm(name))
