@@ -14,7 +14,8 @@
   "tkey": "2e11c4201851",
   "also": [
    "Grodzisk Twoje Miasto"
-  ]
+  ],
+  "opis_proba": true
  },
  {
   "id": "c8854eabd5ea",
@@ -574,7 +575,8 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "276a9c3160ea"
+  "tkey": "276a9c3160ea",
+  "opis_proba": true
  },
  {
   "id": "30eedea81dd9",
@@ -887,7 +889,8 @@
   "kind": "wyd",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "e4e59568b772",
@@ -915,7 +918,8 @@
   "kind": "wyd",
   "place": "Jaktorów",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "dd4b0f3115c4",
@@ -928,7 +932,8 @@
   "kind": "inne",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "22f24fd6439e",
@@ -941,7 +946,8 @@
   "kind": "wyd",
   "place": "Podkowa Leśna",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "d9f0749948cc",
@@ -954,7 +960,8 @@
   "kind": "wyd",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "5b3b000123b8",
@@ -967,7 +974,8 @@
   "kind": "inne",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "7dfb1c6f66c1",
@@ -980,7 +988,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "aff796453e54",
@@ -993,7 +1002,8 @@
   "kind": "inne",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "efb04ad02b9f",
@@ -1006,7 +1016,8 @@
   "kind": "inne",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "fbc9f7863e0b",
@@ -1990,7 +2001,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "149a2e9a99ec",
@@ -2003,7 +2015,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "7ce2be4dbf4f",
@@ -2016,7 +2029,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "1c1fe16ab5a6",
@@ -2029,7 +2043,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "9846fb5723a2",
@@ -2042,7 +2057,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "f3609761caf4",
@@ -2055,7 +2071,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "a5bfbc5330a2",
@@ -2068,7 +2085,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "25ed0fbdb3d4",
@@ -2081,7 +2099,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "88a2024e9ff4",
@@ -2094,7 +2113,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "8aeddc4c1db5",
@@ -2107,7 +2127,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "64af6274992c",
@@ -2120,7 +2141,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "664fc51f0881",
@@ -2133,7 +2155,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "52b752e9ff55",
@@ -2263,7 +2286,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "e8a3e2cacc4a",
@@ -2276,7 +2300,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "f85e32270b38",
@@ -2289,7 +2314,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "d5987652432f",
@@ -2302,7 +2328,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "f5eb173a3f28",
@@ -2315,7 +2342,8 @@
   "kind": "wyd",
   "place": "Kady",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "946467f12886",
@@ -2328,7 +2356,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "bcf491e3424f",
@@ -2341,7 +2370,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": true
  },
  {
   "id": "911cdb7f9edb",
