@@ -96,7 +96,13 @@ _POMIJANE = {"oraz", "przez", "jest", "jako", "tego", "dla", "ktory", "ktora", "
 
 
 def _rdzenie(title):
-    return {w[:4] for w in re.findall(r"[a-z0-9]+", norm(title)) if len(w) >= 4 and w not in _POMIJANE}
+    out = set()
+    for w in re.findall(r"[a-z0-9]+", norm(title)):
+        if w.isdigit() and len(w) >= 2:
+            out.add(w)                      # liczby (np. 800, 2026) są mocnym znacznikiem tematu
+        elif len(w) >= 4 and w not in _POMIJANE:
+            out.add(w[:4])
+    return out
 
 
 def podobne(a, b, prog=0.55):

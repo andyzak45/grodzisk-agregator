@@ -357,12 +357,14 @@ def dodaj(store, items, src, today):
         neutral = kind == "zdr"
         title = neutralny_tytul(it["title"], place) if neutral else it["title"]
         # ten sam temat opisany przez inne źródło: dopisujemy źródło do istniejącego wpisu
+        # (zdarzenia policji łączymy tylko między źródłami; zwykłe wiadomości także w obrębie jednego źródła)
         powtorka = next((o for o in store.values()
-                         if o["source_id"] != src["id"]
-                         and (today - date.fromisoformat(o["first_seen"])).days <= DUPLIKAT_DNI
-                         and ((neutral and o.get("neutral") and o["title"] == title
+                         if (today - date.fromisoformat(o["first_seen"])).days <= DUPLIKAT_DNI
+                         and ((neutral and o.get("neutral") and o["source_id"] != src["id"] and o["title"] == title
                                and o["first_seen"] == today.isoformat() and o["place"] == place)
-                              or (not neutral and not o.get("neutral") and podobne(o["title"], title)))), None)
+                              or (not neutral and not o.get("neutral")
+                                  and ten_sam_temat(o, {"title": title, "event_iso": event_iso,
+                                                        "kind": kind, "source_id": src["id"]})))), None)
         klucze.add(klucz)
         if powtorka:
             also = powtorka.setdefault("also", [])
@@ -377,6 +379,39 @@ def dodaj(store, items, src, today):
             store[iid]["neutral"] = True
         nowe += 1
     return nowe
+
+
+def ten_sam_temat(a, b):
+    """Podobne tytuły to za mało: dwa wydarzenia z różnymi datami albo kolejne dni cyklu z jednego źródła to osobne wpisy."""
+    if not podobne(a["title"], b["title"]):
+        return False
+    if a.get("event_iso") and b.get("event_iso") and a["event_iso"] != b["event_iso"]:
+        return False
+    if a["source_id"] == b["source_id"] and "wyd" in (a["kind"], b["kind"]):
+        return False
+    return True
+
+
+def scal_duplikaty(store):
+    """Ten sam temat opisany kilkoma bardzo podobnymi tytułami: zostaje najstarszy wpis (z notką), reszta znika
+    z listy, a jej źródło trafia do 'oraz'. Zdarzeń policji nie ruszamy."""
+    usuniete = 0
+    wpisy = sorted((i for i in store.values() if not i.get("neutral")), key=lambda i: (i["first_seen"], i["id"]))
+    zostaja = []
+    for b in wpisy:
+        a = next((x for x in zostaja
+                  if abs((date.fromisoformat(b["first_seen"]) - date.fromisoformat(x["first_seen"])).days) <= DUPLIKAT_DNI
+                  and ten_sam_temat(x, b)), None)
+        if a is None:
+            zostaja.append(b)
+            continue
+        also = a.setdefault("also", [])
+        for nazwa in [b["source"]] + b.get("also", []):
+            if nazwa != a["source"] and nazwa not in also:
+                also.append(nazwa)
+        del store[b["id"]]
+        usuniete += 1
+    return usuniete
 
 
 def na_czas(src, today, force):
@@ -398,6 +433,9 @@ def main():
         print(f"BŁĄD w data/manual.json: {e}")
         sys.exit(1)
     store, status = wczytaj_store(sources), {}
+    scalone = scal_duplikaty(store)
+    if scalone:
+        print(f"Scalono {scalone} podobnych wpisów (źródła dopisane jako 'oraz')")
 
     if not args.render_only:
         fetcher = Fetcher()

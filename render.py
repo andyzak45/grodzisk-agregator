@@ -91,7 +91,7 @@ def karta(it, today, hero=False):
         data = f'<span class="zauwazono">zauważono {e(dzien(it["first_seen"]))}</span>' if not termin else ""
     znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
     tekst = opis(it, today)
-    auto = ' <span class="auto">Opis automatyczny.</span>' if it.get("opis_auto") else ""
+    auto = ""      # dopisek przy każdej notce usunięty; informacja o automatycznych opisach jest w stopce
     opis_html = f'<p class="opis">{e(tekst)}{auto}</p>' if tekst else ""
     zrodlo = e(it["source"]) + (f' <span class="also">oraz {e(", ".join(it["also"]))}</span>' if it.get("also") else "")
     return (
@@ -177,7 +177,7 @@ def wiersz_archiwum(it, today):
     miejsce = miejsce_ui(it["place"])
     d = date.fromisoformat(data_wpisu(it))
     tekst = opis(it, today)
-    auto = ' <em>(opis automatyczny)</em>' if it.get("opis_auto") and tekst else ""
+    auto = ""
     haystack = " ".join([it["title"], tekst, it["source"], miejsce, label]).lower()
     zauw = "" if it.get("published") else " (zauważono)"
     meta = (f'<span>{d.day}.{d.month:02d}.{d.year}{zauw}</span><span>{e(label)}</span>'
@@ -213,7 +213,7 @@ def build_archive(items, shown, template_path, out_path, today=None):
             '<div class="arch-tools"><input id="q" type="search" placeholder="Szukaj w archiwum…" aria-label="Szukaj">'
             f'<select id="k" aria-label="Rodzaj">{opts}</select></div><div class="arch-count" id="cnt"></div>'
             f'{body}</main>\n<footer><p>Archiwum zawiera starsze wpisy zebrane z publicznych stron lokalnych instytucji i mediów. '
-            'Pełne treści czytaj u wydawców. Krótkie opisy oznaczone jako automatyczne mogą zawierać błędy, rozstrzyga oryginał.</p></footer>'
+            'Pełne treści czytaj u wydawców.</p></footer>'
             f'{_ARCH_JS}</body></html>')
     Path(out_path).write_text(page, encoding="utf-8")
     return len(reszta)

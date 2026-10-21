@@ -535,7 +535,7 @@ class Notki(unittest.TestCase):
         self.assertEqual(f.wywolania, 1)                       # po 429 i jednym ponowieniu koniec
         self.assertFalse(any(i.get("opis_proba") for i in store.values()))  # nic nie oznaczone, więc kolejny przebieg spróbuje znów
 
-    def test_karta_oznacza_opis_automatyczny(self):
+    def test_karta_nie_ma_dopisku_o_opisie_automatycznym(self):
         with tempfile.TemporaryDirectory() as d:
             out = Path(d) / "index.html"
             it = {"id": "1", "title": "Tytuł", "url": "https://x.pl/1", "source": "Źródło", "first_seen": "2026-10-19",
@@ -544,7 +544,8 @@ class Notki(unittest.TestCase):
             render.build([it], Path(__file__).resolve().parent / "template.html", out, TODAY)
             page = out.read_text(encoding="utf-8")
         self.assertIn("ulica Kościuszki.", page)
-        self.assertIn("Opis automatyczny.", page)
+        self.assertNotIn("Opis automatyczny.", page)
+        self.assertNotIn("automatycznie", page)
 
 class NotkiAwariaModelu(unittest.TestCase):
     N = Notki
@@ -836,7 +837,7 @@ class Archiwum(unittest.TestCase):
         self.assertIn("Tytuł 1", page)
         self.assertNotIn("Tytuł 2", page)
         self.assertIn("&lt;b&gt;starego&lt;/b&gt;", page)      # treść jest escapowana
-        self.assertIn("opis automatyczny", page)
+        self.assertNotIn("opis automatyczny", page)
         self.assertIn("index.html", page)
 
     def test_puste_archiwum(self):
@@ -844,3 +845,31 @@ class Archiwum(unittest.TestCase):
             sz = Path(__file__).resolve().parent / "template.html"
             render.build_archive([], [], sz, Path(d) / "a.html", TODAY)
             self.assertIn("jeszcze puste", (Path(d) / "a.html").read_text(encoding="utf-8"))
+
+
+class ScalanieDuplikatow(unittest.TestCase):
+    def _w(self, i, title, **kw):
+        w = {"id": f"i{i}", "title": title, "url": f"https://x.pl/{i}", "source": "A", "source_id": "a",
+             "first_seen": "2026-10-20", "published": "2026-10-20", "kind": "inne", "place": "cała gmina",
+             "when": None, "event_iso": None, "tkey": f"k{i}"}
+        w.update(kw)
+        return w
+
+    def test_ten_sam_temat_w_jednym_zrodle_jest_scalany(self):
+        a = self._w(1, "Projekt zakłada automatyczne odnawianie 800+")
+        b = self._w(2, "800+ ma być odnawiane automatycznie", first_seen="2026-10-21")
+        store = {"i1": a, "i2": b}
+        self.assertEqual(scraper.scal_duplikaty(store), 1)
+        self.assertEqual(list(store), ["i1"])
+
+    def test_wydarzenia_z_roznymi_datami_zostaja_osobno(self):
+        a = self._w(1, "Festiwal Nauki i Pasji – DZIEŃ EGIPTU", kind="wyd", event_iso="2026-10-25")
+        b = self._w(2, "Festiwal Nauki i Pasji – DZIEŃ ARCHEOLOGII", kind="wyd", event_iso="2026-10-26")
+        store = {"i1": a, "i2": b}
+        self.assertEqual(scraper.scal_duplikaty(store), 0)
+
+    def test_zdarzenia_policji_nie_sa_scalane(self):
+        a = self._w(1, "Zdarzenie w gminie", neutral=True, kind="zdr")
+        b = self._w(2, "Zdarzenie w gminie", neutral=True, kind="zdr")
+        store = {"i1": a, "i2": b}
+        self.assertEqual(scraper.scal_duplikaty(store), 0)
