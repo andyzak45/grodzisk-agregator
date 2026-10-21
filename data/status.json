@@ -1,29 +1,15 @@
 {
- "run": "2026-10-21T05:14:04",
+ "run": "2026-10-21T05:23:19",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 12004,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false
-   }
+   "found": 9,
+   "new": 0
   },
   "kryzysowe": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 12052,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false
-   }
+   "found": 5,
+   "new": 0
   },
   "policja": {
    "ok": true,
@@ -38,7 +24,7 @@
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 1
   },
   "przeglad-regionalny": {
    "ok": true,
@@ -57,27 +43,13 @@
   },
   "centrum-kultury": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 11975,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false
-   }
+   "found": 15,
+   "new": 0
   },
   "mediateka": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 11924,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false
-   }
+   "found": 15,
+   "new": 0
   }
  }
 }
