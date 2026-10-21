@@ -26,7 +26,7 @@ _IKONY = {
 }
 
 WEIGHT = {"ost": 5, "zdr": 0, "wyd": 2, "inw": 2, "spo": 1, "inne": 0}   # zdarzenia nie są "jedynką dnia"
-MAX_CARDS = 14
+MAX_CARDS = 40
 SHOW_DAYS = 14
 BEZ_TERMINU_DNI = 3      # zapowiedź bez terminu pokazujemy tylko tuż po pojawieniu się
 BEZ_TERMINU_MAX = 3
