@@ -242,7 +242,7 @@
   "also": [
    "Grodzisk Twoje Miasto"
   ],
-  "opis_proba": true
+  "opis_proba": "v2"
  },
  {
   "id": "c8854eabd5ea",
@@ -705,7 +705,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "276a9c3160ea",
-  "opis_proba": true
+  "opis_proba": "v2"
  },
  {
   "id": "30eedea81dd9",

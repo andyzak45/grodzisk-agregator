@@ -1,15 +1,29 @@
 {
- "run": "2026-10-21T05:10:39",
+ "run": "2026-10-21T05:14:04",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
-   "found": 9,
-   "new": 0
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12004,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false
+   }
   },
   "kryzysowe": {
    "ok": true,
-   "found": 5,
-   "new": 0
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12052,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false
+   }
   },
   "policja": {
    "ok": true,
@@ -39,17 +53,31 @@
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "centrum-kultury": {
    "ok": true,
-   "found": 15,
-   "new": 0
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11975,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false
+   }
   },
   "mediateka": {
    "ok": true,
-   "found": 15,
-   "new": 0
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11924,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false
+   }
   }
  }
 }
