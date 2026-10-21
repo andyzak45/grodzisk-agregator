@@ -168,7 +168,8 @@
   "place": "okolica",
   "when": "21.10",
   "event_iso": "2026-10-21",
-  "tkey": "05d078cb8473"
+  "tkey": "05d078cb8473",
+  "opis_proba": "v2"
  },
  {
   "id": "aa67bcf68434",
@@ -182,7 +183,8 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "tkey": "6acc5d56422c"
+  "tkey": "6acc5d56422c",
+  "opis_proba": "v2"
  },
  {
   "id": "1bd9f9b247b1",
@@ -1117,10 +1119,7 @@
   "kind": "wyd",
   "place": "Jaktorów",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "spotkaniach publicznych). * *",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "dd4b0f3115c4",
@@ -1133,10 +1132,7 @@
   "kind": "inne",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "Policjanci z powiatu grodziskiego dołączyli do ogóln",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "22f24fd6439e",
@@ -1149,10 +1145,7 @@
   "kind": "wyd",
   "place": "Podkowa Leśna",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "(implicit from \"policjanci przeprowadzą...\"). *",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "d9f0749948cc",
@@ -1165,10 +1158,7 @@
   "kind": "wyd",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "(published 12.10.2026).",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "5b3b000123b8",
@@ -1181,10 +1171,7 @@
   "kind": "inne",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "Objective news style? Yes. - No calls to",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "7dfb1c6f66c1",
@@ -1197,10 +1184,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "9 października 2026 roku o godzinie 15:0",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "aff796453e54",
@@ -1213,10 +1197,7 @@
   "kind": "inne",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "Policjant z grodziskiej komendy przeprowadził w",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "efb04ad02b9f",
@@ -1229,10 +1210,7 @@
   "kind": "inne",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "the Summary (Facts: what, where, when):** *",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "fbc9f7863e0b",
@@ -2125,10 +2103,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "(or organized in Mediateka/by local authorities/PUP",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "149a2e9a99ec",
@@ -2141,10 +2116,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "mu, koncepcja bycia \"wystarczają",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "7ce2be4dbf4f",
@@ -2157,10 +2129,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "wartek), w godzinach 14:00–",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "1c1fe16ab5a6",
@@ -2173,10 +2142,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "W dniach od 23 do 25 października 202",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "9846fb5723a2",
@@ -2189,10 +2155,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "W dniach od 23 października do 5 listopada 202",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "f3609761caf4",
@@ -2205,10 +2168,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "W dniach 23–25 października 2026",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "a5bfbc5330a2",
@@ -2221,10 +2181,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "23 października 2026 roku w Grodzis",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "25ed0fbdb3d4",
@@ -2237,10 +2194,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "24 października 2026 roku w Mediatece w",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "88a2024e9ff4",
@@ -2267,10 +2221,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "W sobotę, 24 października 20",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "64af6274992c",
@@ -2283,10 +2234,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "Drugi dzień Grodziskiego Sejmiku",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "664fc51f0881",
@@ -2299,10 +2247,7 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "Centrum Kultury) * *Details/Cost:*",
-  "opis_auto": true
+  "event_iso": null
  },
  {
   "id": "52b752e9ff55",
