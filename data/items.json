@@ -411,6 +411,48 @@
   "tkey": "aac8c241c46e"
  },
  {
+  "id": "7ae3bdd0a57f",
+  "title": "Oferty służby w Policji na Grodziskich Targach Pracy",
+  "url": "https://grodzisk.policja.gov.pl/pgm/aktualnosci/153697,Oferty-sluzby-w-Policji-na-Grodziskich-Targach-Pracy.html",
+  "source": "KPP Grodzisk Maz.",
+  "source_id": "policja",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "e3c625aebf93"
+ },
+ {
+  "id": "c915f95876b9",
+  "title": "Dziesięcioro laureatów Nagrody Marszałka Województwa Mazowieckiego",
+  "url": "https://grodzisk.twoje-miasto.pl/art-kultura-sztuka/dziesiecioro-laureatow-nagrody-marszalka-wojewodztwa-i1255938",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "e1b1f0494fb6"
+ },
+ {
+  "id": "3bd2d775ae1c",
+  "title": "Niezły bajzel - NOWY PROGRAM 2026",
+  "url": "https://grodzisk.twoje-miasto.pl/art-wydarzenia/niezly-bajzel-nowy-program-2026-i1204266",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-13",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "3667faca87d0"
+ },
+ {
   "id": "177327129d3d",
   "title": "Bezpłatne szkolenia z obrony cywilnej już w ten weekend",
   "url": "https://grodzisk.pl/2026/10/20/bezplatne-szkolenia-z-obrony-cywilnej-juz-w-ten-weekend/",
