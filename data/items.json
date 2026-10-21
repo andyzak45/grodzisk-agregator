@@ -106,7 +106,8 @@
   "tkey": "e7c9af4fbe41",
   "opis_proba": "v2",
   "text": "Policja przeprowadziła w całym kraju blisko 258 tysięcy kontroli placówek oświatowych w związku z niedawnymi aktami przemocy. W ramach trwających od października działań funkcjonariusze zatrzymali 195 osób.",
-  "opis_auto": true
+  "opis_auto": true,
+  "also": []
  },
  {
   "id": "06dad8cacd2d",
@@ -295,20 +296,6 @@
   "opis_auto": true
  },
  {
-  "id": "4d9398efe656",
-  "title": "800+ ma być odnawiane automatycznie",
-  "url": "https://www.twoje-miasto.pl/art-spoleczne/800-ma-byc-odnawiane-automatycznie-i1252008",
-  "source": "Grodzisk Twoje Miasto",
-  "source_id": "twoje-miasto",
-  "first_seen": "2026-10-21",
-  "published": "2026-10-20",
-  "kind": "inne",
-  "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
-  "tkey": "7445240e0121"
- },
- {
   "id": "83dd9fca8045",
   "title": "Systemy ostrzegania nie są dostosowane do osób z...",
   "url": "https://warszawa.twoje-miasto.pl/art-spoleczne/systemy-ostrzegania-nie-sa-dostosowane-i1251870",
@@ -399,7 +386,8 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "7587ec13a0b8"
+  "tkey": "7587ec13a0b8",
+  "also": []
  },
  {
   "id": "c4ff71b84aa3",
@@ -431,23 +419,6 @@
   "tkey": "db8494ce2877",
   "opis_proba": "v2",
   "text": "Sąd Rejonowy w Piasecznie ukarał grzywną 10 tysięcy złotych oraz dwuletnim zakazem prowadzenia pojazdów kierowcę, który 17 maja 2026 roku stwarzał zagrożenie w Konstancinie-Jeziornie. Wina została ustalona dzięki nagraniu z internetu.",
-  "opis_auto": true
- },
- {
-  "id": "b7826f781ebf",
-  "title": "Policja: blisko 276 tys. kontroli placówek oświatowych; w sumie...",
-  "url": "https://www.twoje-miasto.pl/art-na-sygnale/policja-blisko-276-tys-kontroli-i1253076",
-  "source": "Grodzisk Twoje Miasto",
-  "source_id": "twoje-miasto",
-  "first_seen": "2026-10-21",
-  "published": "2026-10-21",
-  "kind": "inne",
-  "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
-  "tkey": "aac8c241c46e",
-  "opis_proba": "v2",
-  "text": "W związku z aktami przemocy w szkołach polska policja przeprowadziła blisko 276 tysięcy kontroli placówek oświatowych w całym kraju. W ramach trwających działań funkcjonariusze zatrzymali łącznie 195 osób.",
   "opis_auto": true
  },
  {
@@ -736,24 +707,6 @@
   "when": null,
   "event_iso": null,
   "tkey": "c74187782504"
- },
- {
-  "id": "177327129d3d",
-  "title": "Bezpłatne szkolenia z obrony cywilnej już w ten weekend",
-  "url": "https://grodzisk.pl/2026/10/20/bezplatne-szkolenia-z-obrony-cywilnej-juz-w-ten-weekend/",
-  "source": "Urząd Miejski",
-  "source_id": "um-aktualnosci",
-  "first_seen": "2026-10-20",
-  "published": "2026-10-20",
-  "kind": "inne",
-  "place": "cała gmina",
-  "when": "23.10, godz. 17:30",
-  "event_iso": "2026-10-23",
-  "tkey": "2e11c4201851",
-  "also": [
-   "Grodzisk Twoje Miasto"
-  ],
-  "opis_proba": "v2"
  },
  {
   "id": "c8854eabd5ea",
@@ -1316,7 +1269,10 @@
   "kind": "inw",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "also": [
+   "Grodzisk Twoje Miasto"
+  ]
  },
  {
   "id": "d16369d9707f",
@@ -1368,7 +1324,11 @@
   "kind": "inne",
   "place": "cała gmina",
   "when": "23.10, godz. 17:30",
-  "event_iso": "2026-10-23"
+  "event_iso": "2026-10-23",
+  "also": [
+   "Zarządzanie kryzysowe",
+   "Grodzisk Twoje Miasto"
+  ]
  },
  {
   "id": "27a1c5b335a9",
@@ -1384,19 +1344,6 @@
   "event_iso": null
  },
  {
-  "id": "e0bc9ec6a7ac",
-  "title": "Bezpłatne szkolenia z zakresu obrony cywilnej dla mieszkańców Gminy Grodzisk Mazowiecki",
-  "url": "https://zarzadzaniekryzysowe.grodzisk.pl/2026/10/01/bezplatne-szkolenia-z-zakresu-obrony-cywilnej-dla-mieszkancow-gminygrodzisk-mazowiecki/",
-  "source": "Zarządzanie kryzysowe",
-  "source_id": "kryzysowe",
-  "first_seen": "2026-10-19",
-  "published": "2026-10-01",
-  "kind": "inne",
-  "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null
- },
- {
   "id": "ed62b477eca2",
   "title": "Zagrożenie atakiem z powietrza",
   "url": "https://zarzadzaniekryzysowe.grodzisk.pl/2026/09/30/zagrozenie-atakiem-z-powietrza/",
@@ -1408,20 +1355,6 @@
   "place": "cała gmina",
   "when": null,
   "event_iso": null
- },
- {
-  "id": "be15d7d775ef",
-  "title": "Zapraszamy na Krajowy Trening Rodzinny",
-  "url": "https://grodzisk.policja.gov.pl/pgm/aktualnosci/153553,Zapraszamy-na-Krajowy-Trening-Rodzinny.html",
-  "source": "KPP Grodzisk Maz.",
-  "source_id": "policja",
-  "first_seen": "2026-10-19",
-  "published": null,
-  "kind": "wyd",
-  "place": "cała gmina",
-  "when": null,
-  "event_iso": null,
-  "opis_proba": "v2"
  },
  {
   "id": "e4e59568b772",
@@ -1787,19 +1720,6 @@
   "id": "63d8cd434eda",
   "title": "Projekt planu ogólnego jest już dostępny",
   "url": "https://grodzisk.twoje-miasto.pl/art-miasto/projekt-planu-ogolnego-jest-juz-i1216452",
-  "source": "Grodzisk Twoje Miasto",
-  "source_id": "twoje-miasto",
-  "first_seen": "2026-10-19",
-  "published": null,
-  "kind": "inw",
-  "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null
- },
- {
-  "id": "708b4f0eb76f",
-  "title": "Podpisano umowę na oświetlenie i monitoring ulic",
-  "url": "https://grodzisk.twoje-miasto.pl/art-miasto/podpisano-umowe-na-oswietlenie-i-i1216434",
   "source": "Grodzisk Twoje Miasto",
   "source_id": "twoje-miasto",
   "first_seen": "2026-10-19",
@@ -2290,7 +2210,10 @@
   "kind": "wyd",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "also": [
+   "Centrum Kultury"
+  ]
  },
  {
   "id": "f4cc5da2b8c7",
@@ -2419,19 +2342,6 @@
   "published": null,
   "kind": "inne",
   "place": "okolica",
-  "when": null,
-  "event_iso": null
- },
- {
-  "id": "bdab11acf1d4",
-  "title": "XXV Grodziskie Targi Pracy",
-  "url": "https://www.centrumkultury.eu/wydarzenie/xxv-grodziskie-targi-pracy/",
-  "source": "Centrum Kultury",
-  "source_id": "centrum-kultury",
-  "first_seen": "2026-10-19",
-  "published": null,
-  "kind": "wyd",
-  "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null
  },
