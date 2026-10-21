@@ -184,8 +184,9 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
         "systemInstruction": {"parts": [{"text": SYSTEM}]},
         "contents": [{"role": "user", "parts": [{"text": tresc}]}],
         "generationConfig": {"maxOutputTokens": 1024, "temperature": 0.2}}).encode()
-    modele = [model] if model else (_gemini_ok or GEMINI_MODELE)
-    bledy = []
+    # działający model idzie pierwszy, ale reszta zostaje jako zapas (każdy model ma własny dzienny limit)
+    modele = [model] if model else _gemini_ok + [x for x in GEMINI_MODELE if x not in _gemini_ok]
+    bledy, limity, ostatni_429 = [], 0, None
     for m in modele:
         if m.startswith("gemini-2.5"):
             # modele 2.5 domyślnie "myślą", a te tokeny liczą się do limitu odpowiedzi: notka wychodziła ucięta
@@ -202,6 +203,11 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
             try:
                 data = _otworz(req, timeout)
                 break
+            except urllib.error.HTTPError as e:      # 429: ten model wyczerpał limit, próbujemy kolejny
+                limity += 1
+                ostatni_429 = e
+                bledy.append(f"{m}: limit zapytań (429)")
+                break
             except ModelBlad as e:
                 if str(e).startswith("HTTP 5") and proba < 2:
                     time.sleep(6 * (proba + 1))
@@ -216,6 +222,8 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
         except (KeyError, IndexError, TypeError):
             return ""       # np. odpowiedź zablokowana przez filtr: brak notki, nie awaria
         return "".join(c.get("text", "") for c in czesci)
+    if ostatni_429 is not None and limity == len(modele):
+        raise ostatni_429       # wszystkie modele wyczerpane: wywołujący poczeka albo zakończy na dziś
     raise ModelBlad(" | ".join(bledy))
 
 

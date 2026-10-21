@@ -746,6 +746,29 @@ class NotkiAwariaModelu(unittest.TestCase):
         self.assertNotIn("opis_proba", store["z1"])        # dostanie nową notkę
         self.assertIn("text", store["z2"])
 
+    def test_gemini_limit_429_przechodzi_na_kolejny_model_a_gdy_wszystkie_to_429(self):
+        stare = streszczenia._otworz
+        adresy = []
+        def falsz(req, timeout):
+            adresy.append(req.full_url.split("/models/")[1].split(":")[0])
+            if len(adresy) == 1:
+                raise urllib.error.HTTPError("u", 429, "Too Many Requests", {}, None)
+            return {"candidates": [{"content": {"parts": [{"text": "Całe zdanie testowe o czterech słowach więcej."}]}}]}
+        streszczenia._otworz = falsz
+        streszczenia._gemini_ok.clear()
+        try:
+            self.assertTrue(streszczenia.wywolaj_gemini("t", "klucz"))
+            self.assertEqual(adresy, ["gemini-2.5-flash", "gemini-2.5-flash-lite"])
+            def wszystkie_429(req, timeout):
+                raise urllib.error.HTTPError("u", 429, "Too Many Requests", {}, None)
+            streszczenia._otworz = wszystkie_429
+            with self.assertRaises(urllib.error.HTTPError) as c:
+                streszczenia.wywolaj_gemini("t", "klucz")
+            self.assertEqual(c.exception.code, 429)
+        finally:
+            streszczenia._otworz = stare
+            streszczenia._gemini_ok.clear()
+
     def test_ostrzezenie_bez_notki_nie_ma_szablonu(self):
         it = {"kind": "ost", "source": "Grodziski24"}
         self.assertEqual(redakcja.opis(it, TODAY), "")
