@@ -76,6 +76,10 @@ def _otworz(req, timeout):
         except Exception:
             pass
         raise ModelBlad(f"HTTP {e.code}: {tresc!r}")
+    except urllib.error.URLError as e:      # np. brak DNS dla adresu modelu: to też awaria wariantu, nie całego bota
+        raise ModelBlad(f"połączenie z {req.full_url.split('/')[2]}: {e.reason}")
+    except OSError as e:                    # m.in. przekroczenie czasu
+        raise ModelBlad(f"połączenie z {req.full_url.split('/')[2]}: {type(e).__name__}: {e}")
 
 
 def tekst_artykulu(html):

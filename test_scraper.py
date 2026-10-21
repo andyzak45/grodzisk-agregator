@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import json
+import urllib.error
 import render
 import reczne
 import redakcja
@@ -602,6 +603,21 @@ class NotkiAwariaModelu(unittest.TestCase):
         finally:
             streszczenia._otworz = stare
             streszczenia._dzialajacy.clear()
+
+    def test_brak_dns_to_blad_wariantu_a_nie_przerwanie(self):
+        import urllib.request, socket
+        stare = urllib.request.urlopen
+        def zly(req, timeout=None):
+            raise urllib.error.URLError(socket.gaierror(-2, "Name or service not known"))
+        urllib.request.urlopen = zly
+        streszczenia._dzialajacy.clear()
+        try:
+            with self.assertRaises(streszczenia.ModelBlad) as c:
+                streszczenia.wywolaj_github("t", "tok")
+            self.assertEqual(str(c.exception).count("wariant"), len(streszczenia.WARIANTY_GITHUB))
+            self.assertIn("models.inference.ai.azure.com", str(c.exception))
+        finally:
+            urllib.request.urlopen = stare
 
     def test_ostrzezenie_bez_notki_nie_ma_szablonu(self):
         it = {"kind": "ost", "source": "Grodziski24"}
