@@ -45,8 +45,8 @@ Wpisy ręczne o zdarzeniach z wiekiem lub stanem zdrowia osób są odrzucane.
 
 ## Notki pod tytułami
 Bot pisze 1-2 zdania pod tytułem własnymi słowami (maks. 30 na przebieg, tylko wpisy z ostatnich 7 dni, tylko źródła
-z `"streszczaj": true` w `sources.json`, domyślnie instytucje publiczne, nigdy zdarzenia). Domyślnie używa darmowych
-GitHub Models (uprawnienie `models: read` w workflow, bez kluczy i opłat, z limitem zapytań). Opcjonalnie
+z `"streszczaj": true` w `sources.json`, domyślnie instytucje publiczne, nigdy zdarzenia). Domyślnie próbuje darmowego klucza Google Gemini (sekret `GEMINI_API_KEY`, model z listy w `streszczenia.py` albo ze zmiennej `SUMMARY_MODEL`),
+w ostateczności GitHub Models. Opcjonalnie
 płatne API Anthropic: sekret `ANTHROPIC_API_KEY`. Model można zmienić zmienną `SUMMARY_MODEL`.
 Notka jest odrzucana, gdy zawiera dane osób albo 7 kolejnych słów z artykułu. Karta oznacza ją jako automatyczną.
 Po przekroczeniu limitu bot kończy notki do następnego przebiegu, a strona działa dalej.

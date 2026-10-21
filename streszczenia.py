@@ -25,6 +25,8 @@ API_URL = "https://api.anthropic.com/v1/messages"
 MODEL = "claude-haiku-5-5"
 GITHUB_URL = "https://models.github.ai/inference/chat/completions"
 GITHUB_MODEL = "openai/gpt-4o-mini"
+GEMINI_MODELE = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.5-flash"]   # kolejno, do pierwszego działającego
+PRZERWA_GEMINI = 7      # sekundy między wywołaniami (darmowy limit to kilkanaście zapytań na minutę)
 PRZERWA = 4             # sekundy między wywołaniami darmowego modelu (limity zapytań na minutę)
 MAX_TEKST = 4000        # tyle znaków artykułu wysyłamy do modelu
 MIN_TEKST = 250         # krótszy tekst to zwykle menu lub zapowiedź bez treści
@@ -162,12 +164,44 @@ def wywolaj_github(tresc, token, model=GITHUB_MODEL, timeout=60):
     raise ModelBlad(" | ".join(bledy))
 
 
+_gemini_ok = []
+
+
+def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
+    """Darmowy klucz Google AI Studio (Gemini). Model z SUMMARY_MODEL albo lista GEMINI_MODELE po kolei."""
+    body = json.dumps({
+        "systemInstruction": {"parts": [{"text": SYSTEM}]},
+        "contents": [{"role": "user", "parts": [{"text": tresc}]}],
+        "generationConfig": {"maxOutputTokens": 400, "temperature": 0.2}}).encode()
+    modele = [model] if model else (_gemini_ok or GEMINI_MODELE)
+    bledy = []
+    for m in modele:
+        req = urllib.request.Request(
+            f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent", data=body,
+            headers={"x-goog-api-key": klucz, "Content-Type": "application/json", "User-Agent": "grodzisk-lokalnie-bot"})
+        try:
+            data = _otworz(req, timeout)
+        except ModelBlad as e:
+            bledy.append(f"{m}: {e}")
+            continue
+        _gemini_ok[:] = [m]
+        try:
+            czesci = data["candidates"][0]["content"]["parts"]
+        except (KeyError, IndexError, TypeError):
+            return ""       # np. odpowiedź zablokowana przez filtr: brak notki, nie awaria
+        return "".join(c.get("text", "") for c in czesci)
+    raise ModelBlad(" | ".join(bledy))
+
+
 def wybierz_model():
     """Zwraca (funkcja, przerwa w sekundach) albo (None, 0), gdy nie ma żadnego dostępnego modelu."""
     klucz = os.environ.get("ANTHROPIC_API_KEY", "").strip()
     model = os.environ.get("SUMMARY_MODEL", "").strip()
     if klucz:
         return (lambda t: wywolaj_model(t, klucz, model or MODEL)), 0
+    gemini = os.environ.get("GEMINI_API_KEY", "").strip()
+    if gemini:
+        return (lambda t: wywolaj_gemini(t, gemini, model or None)), PRZERWA_GEMINI
     token = os.environ.get("GITHUB_TOKEN", "").strip()
     if token:
         return (lambda t: wywolaj_github(t, token, model or GITHUB_MODEL)), PRZERWA
@@ -196,7 +230,7 @@ def dopisz(store, zrodla, fetcher, today, limit, llm=None):
     if llm is None:
         llm, przerwa = wybierz_model()
         if llm is None:
-            print("Brak dostępu do modelu (ANTHROPIC_API_KEY lub GITHUB_TOKEN), pomijam notki pod tytułami.")
+            print("Brak dostępu do modelu (GEMINI_API_KEY, ANTHROPIC_API_KEY lub GITHUB_TOKEN), pomijam notki pod tytułami.")
             return 0
     strony = getattr(fetcher, "strony", {})
     dodane = bledy = 0

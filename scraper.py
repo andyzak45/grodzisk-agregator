@@ -296,7 +296,9 @@ def zbierz(src, fetcher, diag=None):
     items = [i for i in items if not any(p in i["url"] for p in skip)]
     if diag is not None:
         diag.update({"bajty": len(html), "article": len(soup.find_all("article")),
-                     "naglowki": len(soup.find_all(["h2", "h3", "h4"])), "feed": bool(feed)})
+                     "naglowki": len(soup.find_all(["h2", "h3", "h4"])), "feed": bool(feed),
+                     "tytul": (soup.title.get_text(strip=True) if soup.title else "")[:80],
+                     "tekst": " ".join(soup.get_text(" ").split())[:160]})
     return items[: src.get("limit", 15)]
 
 

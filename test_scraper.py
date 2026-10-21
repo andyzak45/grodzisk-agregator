@@ -619,6 +619,39 @@ class NotkiAwariaModelu(unittest.TestCase):
         finally:
             urllib.request.urlopen = stare
 
+    def test_gemini_proba_kolejnych_modeli_i_zapamietanie(self):
+        stare = streszczenia._otworz
+        adresy = []
+        def falsz(req, timeout):
+            adresy.append(req.full_url.split("/models/")[1])
+            if len(adresy) == 1:
+                raise streszczenia.ModelBlad("HTTP 404: model nie istnieje")
+            return {"candidates": [{"content": {"parts": [{"text": "Notka "}, {"text": "z Gemini."}]}}]}
+        streszczenia._otworz = falsz
+        streszczenia._gemini_ok.clear()
+        try:
+            self.assertEqual(streszczenia.wywolaj_gemini("t", "klucz"), "Notka z Gemini.")
+            self.assertEqual(adresy, ["gemini-2.5-flash:generateContent", "gemini-2.5-flash-lite:generateContent"])
+            streszczenia.wywolaj_gemini("t", "klucz")
+            self.assertEqual(adresy[-1], "gemini-2.5-flash-lite:generateContent")   # od razu działający model
+            self.assertEqual(len(adresy), 3)
+        finally:
+            streszczenia._otworz = stare
+            streszczenia._gemini_ok.clear()
+
+    def test_wybor_gemini_przed_github(self):
+        import os
+        stare = {k: os.environ.pop(k, None) for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GITHUB_TOKEN")}
+        try:
+            os.environ["GITHUB_TOKEN"] = "x"
+            os.environ["GEMINI_API_KEY"] = "g"
+            self.assertEqual(streszczenia.wybierz_model()[1], streszczenia.PRZERWA_GEMINI)
+        finally:
+            for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GITHUB_TOKEN"):
+                os.environ.pop(k, None)
+                if stare[k]:
+                    os.environ[k] = stare[k]
+
     def test_ostrzezenie_bez_notki_nie_ma_szablonu(self):
         it = {"kind": "ost", "source": "Grodziski24"}
         self.assertEqual(redakcja.opis(it, TODAY), "")
