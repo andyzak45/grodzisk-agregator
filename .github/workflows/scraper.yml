@@ -7,6 +7,8 @@ on:
   push:
     paths:
       - 'data/manual.json'  # po edycji wpisów ręcznych strona przebudowuje się od razu
+      - 'render.py'         # zmiana wyglądu też przebudowuje stronę (tryb --render-only, bez zużycia limitu AI)
+      - 'redakcja.py'
 
 permissions:
   contents: write
@@ -35,6 +37,7 @@ jobs:
 
       - name: Uruchomienie bota
         env:
+          PYTHONUNBUFFERED: "1"                                # log widoczny na żywo, nie dopiero na końcu
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # opcjonalny: płatna alternatywa, domyślnie używamy darmowych GitHub Models
