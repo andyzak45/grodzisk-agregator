@@ -38,6 +38,7 @@ jobs:
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # opcjonalny: płatna alternatywa, domyślnie używamy darmowych GitHub Models
+                    GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SUMMARY_MODEL: ${{ vars.SUMMARY_MODEL }}              # opcjonalny: inny model niż domyślny
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
