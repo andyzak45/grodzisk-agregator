@@ -339,6 +339,76 @@
   "tkey": "3f6da002d4c2"
  },
  {
+  "id": "615bebd6920f",
+  "title": "800+ ma być przedłużane bez nowego wniosku",
+  "url": "https://www.twoje-miasto.pl/art-spoleczne/800-ma-byc-przedluzane-bez-i1253112",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-20",
+  "kind": "inw",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "684917368b11"
+ },
+ {
+  "id": "26e975c66564",
+  "title": "Projekt zakłada automatyczne odnawianie 800+",
+  "url": "https://www.twoje-miasto.pl/art-spoleczne/projekt-zaklada-automatyczne-odnawianie-800-i1253100",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-20",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "7587ec13a0b8"
+ },
+ {
+  "id": "c4ff71b84aa3",
+  "title": "Ciężarówka uderzyła w pojazd służby drogowej",
+  "url": "https://zyrardow.twoje-miasto.pl/art-na-sygnale/ciezarowka-uderzyla-w-pojazd-sluzby-i1254786",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "eaeda220be4e"
+ },
+ {
+  "id": "754ad985ccfb",
+  "title": "21-latek dostał dwuletni zakaz i 10 tys. zł grzywny",
+  "url": "https://piaseczno.twoje-miasto.pl/art-na-sygnale/21-latek-dostal-dwuletni-zakaz-i1253430",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "db8494ce2877"
+ },
+ {
+  "id": "b7826f781ebf",
+  "title": "Policja: blisko 276 tys. kontroli placówek oświatowych; w sumie...",
+  "url": "https://www.twoje-miasto.pl/art-na-sygnale/policja-blisko-276-tys-kontroli-i1253076",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "aac8c241c46e"
+ },
+ {
   "id": "177327129d3d",
   "title": "Bezpłatne szkolenia z obrony cywilnej już w ten weekend",
   "url": "https://grodzisk.pl/2026/10/20/bezplatne-szkolenia-z-obrony-cywilnej-juz-w-ten-weekend/",
@@ -1019,7 +1089,7 @@
   "place": "cała gmina",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2"
  },
  {
   "id": "e4e59568b772",
@@ -1048,7 +1118,9 @@
   "place": "Jaktorów",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "spotkaniach publicznych). * *",
+  "opis_auto": true
  },
  {
   "id": "dd4b0f3115c4",
@@ -1076,7 +1148,9 @@
   "place": "Podkowa Leśna",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "(implicit from \"policjanci przeprowadzą...\"). *",
+  "opis_auto": true
  },
  {
   "id": "d9f0749948cc",
@@ -1090,7 +1164,9 @@
   "place": "cała gmina",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "(published 12.10.2026).",
+  "opis_auto": true
  },
  {
   "id": "5b3b000123b8",
@@ -1104,7 +1180,9 @@
   "place": "cała gmina",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "Objective news style? Yes. - No calls to",
+  "opis_auto": true
  },
  {
   "id": "7dfb1c6f66c1",
@@ -1118,7 +1196,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "9 października 2026 roku o godzinie 15:0",
+  "opis_auto": true
  },
  {
   "id": "aff796453e54",
@@ -1132,7 +1212,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "Policjant z grodziskiej komendy przeprowadził w",
+  "opis_auto": true
  },
  {
   "id": "efb04ad02b9f",
@@ -1146,7 +1228,9 @@
   "place": "cała gmina",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "the Summary (Facts: what, where, when):** *",
+  "opis_auto": true
  },
  {
   "id": "fbc9f7863e0b",
@@ -2040,7 +2124,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "(or organized in Mediateka/by local authorities/PUP",
+  "opis_auto": true
  },
  {
   "id": "149a2e9a99ec",
@@ -2054,7 +2140,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "mu, koncepcja bycia \"wystarczają",
+  "opis_auto": true
  },
  {
   "id": "7ce2be4dbf4f",
@@ -2068,7 +2156,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "wartek), w godzinach 14:00–",
+  "opis_auto": true
  },
  {
   "id": "1c1fe16ab5a6",
@@ -2082,7 +2172,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "W dniach od 23 do 25 października 202",
+  "opis_auto": true
  },
  {
   "id": "9846fb5723a2",
@@ -2096,7 +2188,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "W dniach od 23 października do 5 listopada 202",
+  "opis_auto": true
  },
  {
   "id": "f3609761caf4",
@@ -2124,7 +2218,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "23 października 2026 roku w Grodzis",
+  "opis_auto": true
  },
  {
   "id": "25ed0fbdb3d4",
@@ -2138,7 +2234,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "24 października 2026 roku w Mediatece w",
+  "opis_auto": true
  },
  {
   "id": "88a2024e9ff4",
@@ -2152,7 +2250,7 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2"
  },
  {
   "id": "8aeddc4c1db5",
@@ -2166,7 +2264,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "W sobotę, 24 października 20",
+  "opis_auto": true
  },
  {
   "id": "64af6274992c",
@@ -2194,7 +2294,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "Centrum Kultury) * *Details/Cost:*",
+  "opis_auto": true
  },
  {
   "id": "52b752e9ff55",
