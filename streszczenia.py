@@ -197,9 +197,13 @@ def wybierz_model():
     """Zwraca (funkcja, przerwa w sekundach) albo (None, 0), gdy nie ma żadnego dostępnego modelu."""
     klucz = os.environ.get("ANTHROPIC_API_KEY", "").strip()
     model = os.environ.get("SUMMARY_MODEL", "").strip()
+    gemini = os.environ.get("GEMINI_API_KEY", "").strip()
+    if klucz and not klucz.startswith("sk-ant-"):
+        # Workflow przekazuje botowi sekret ANTHROPIC_API_KEY, więc klucz Gemini można wpisać też tam:
+        # klucz Anthropic zawsze zaczyna się od "sk-ant-", każdy inny traktujemy jako klucz Gemini.
+        gemini, klucz = gemini or klucz, ""
     if klucz:
         return (lambda t: wywolaj_model(t, klucz, model or MODEL)), 0
-    gemini = os.environ.get("GEMINI_API_KEY", "").strip()
     if gemini:
         return (lambda t: wywolaj_gemini(t, gemini, model or None)), PRZERWA_GEMINI
     token = os.environ.get("GITHUB_TOKEN", "").strip()

@@ -512,7 +512,7 @@ class Notki(unittest.TestCase):
             os.environ["GITHUB_TOKEN"] = "x"
             fn, przerwa = streszczenia.wybierz_model()
             self.assertTrue(fn and przerwa == streszczenia.PRZERWA)
-            os.environ["ANTHROPIC_API_KEY"] = "y"
+            os.environ["ANTHROPIC_API_KEY"] = "sk-ant-y"
             self.assertEqual(streszczenia.wybierz_model()[1], 0)
         finally:
             for k in ("ANTHROPIC_API_KEY", "GITHUB_TOKEN"):
@@ -646,6 +646,20 @@ class NotkiAwariaModelu(unittest.TestCase):
             os.environ["GITHUB_TOKEN"] = "x"
             os.environ["GEMINI_API_KEY"] = "g"
             self.assertEqual(streszczenia.wybierz_model()[1], streszczenia.PRZERWA_GEMINI)
+        finally:
+            for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GITHUB_TOKEN"):
+                os.environ.pop(k, None)
+                if stare[k]:
+                    os.environ[k] = stare[k]
+
+    def test_klucz_gemini_w_sekrecie_anthropic_jest_rozpoznany(self):
+        import os
+        stare = {k: os.environ.pop(k, None) for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GITHUB_TOKEN")}
+        try:
+            os.environ["ANTHROPIC_API_KEY"] = "AIzaSyTESTOWY"
+            self.assertEqual(streszczenia.wybierz_model()[1], streszczenia.PRZERWA_GEMINI)
+            os.environ["ANTHROPIC_API_KEY"] = "sk-ant-api03-xyz"
+            self.assertEqual(streszczenia.wybierz_model()[1], 0)
         finally:
             for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GITHUB_TOKEN"):
                 os.environ.pop(k, None)
