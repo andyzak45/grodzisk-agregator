@@ -26,7 +26,8 @@ MODEL = "claude-haiku-5-5"
 GITHUB_URL = "https://models.github.ai/inference/chat/completions"
 GITHUB_MODEL = "openai/gpt-4o-mini"
 GEMINI_MODELE = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.5-flash"]   # kolejno, do pierwszego działającego
-PRZERWA_GEMINI = 7      # sekundy między wywołaniami (darmowy limit to kilkanaście zapytań na minutę)
+LIMIT_CZEKANIE = 65     # sekundy czekania po błędzie 429 (limit na minutę) przed jedną ponowną próbą
+PRZERWA_GEMINI = 13     # sekundy między wywołaniami (darmowy model ma ok. 5 zapytań na minutę)
 PRZERWA = 4             # sekundy między wywołaniami darmowego modelu (limity zapytań na minutę)
 MAX_TEKST = 4000        # tyle znaków artykułu wysyłamy do modelu
 MIN_TEKST = 250         # krótszy tekst to zwykle menu lub zapowiedź bez treści
@@ -257,16 +258,27 @@ def dopisz(store, zrodla, fetcher, today, limit, llm=None):
         if len(tekst) < MIN_TEKST:
             it["opis_proba"] = WERSJA_PROBY
             continue
-        try:
-            surowa = llm(f"Tytuł: {it['title']}\n\nTekst:\n{tekst}")
-            blad = None
-        except urllib.error.HTTPError as e:
-            if e.code == 429:   # limit zapytań: kończymy, reszta pójdzie przy następnym przebiegu
-                print("  limit zapytań modelu, kończę notki na dziś")
+        limit = False
+        for podejscie in range(2):
+            try:
+                surowa = llm(f"Tytuł: {it['title']}\n\nTekst:\n{tekst}")
+                blad = None
                 break
-            blad = f"HTTP {e.code}"
-        except Exception as e:
-            blad = f"{type(e).__name__}: {e}"
+            except urllib.error.HTTPError as e:
+                if e.code != 429:
+                    blad = f"HTTP {e.code}"
+                    break
+                if podejscie == 0:      # darmowe limity bywają minutowe: czekamy i próbujemy raz jeszcze
+                    print(f"  limit zapytań modelu, czekam {LIMIT_CZEKANIE} s i ponawiam")
+                    time.sleep(LIMIT_CZEKANIE)
+                    continue
+                limit = True            # nadal limit (pewnie dzienny): kończymy, reszta pójdzie następnym razem
+            except Exception as e:
+                blad = f"{type(e).__name__}: {e}"
+                break
+        if limit:
+            print("  limit zapytań modelu, kończę notki na dziś")
+            break
         if blad:                # awaria modelu: wpis NIE jest oznaczany, spróbuje przy następnym przebiegu
             bledy += 1
             print(f"  model nie odpowiedział ({it['source']}): {blad}")

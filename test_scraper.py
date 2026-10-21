@@ -526,8 +526,13 @@ class Notki(unittest.TestCase):
         def llm(t):
             raise urllib.error.HTTPError("u", 429, "Too Many Requests", {}, None)
         f = self.F(f"<article>{self.ARTYKUL}</article>")
-        self.assertEqual(streszczenia.dopisz(store, self.ZR, f, TODAY, 5, llm), 0)
-        self.assertEqual(f.wywolania, 1)                       # po pierwszym 429 koniec
+        stare = streszczenia.LIMIT_CZEKANIE
+        streszczenia.LIMIT_CZEKANIE = 0
+        try:
+            self.assertEqual(streszczenia.dopisz(store, self.ZR, f, TODAY, 5, llm), 0)
+        finally:
+            streszczenia.LIMIT_CZEKANIE = stare
+        self.assertEqual(f.wywolania, 1)                       # po 429 i jednym ponowieniu koniec
         self.assertFalse(any(i.get("opis_proba") for i in store.values()))  # nic nie oznaczone, więc kolejny przebieg spróbuje znów
 
     def test_karta_oznacza_opis_automatyczny(self):
@@ -682,6 +687,23 @@ class NotkiAwariaModelu(unittest.TestCase):
         finally:
             streszczenia._otworz, streszczenia.time.sleep = stare, stary_sen
             streszczenia._gemini_ok.clear()
+
+    def test_limit_minutowy_jedno_ponowienie_i_dalej(self):
+        import urllib.error
+        store = self._store(2)
+        wywolania = []
+        def llm(t):
+            wywolania.append(1)
+            if len(wywolania) == 1:
+                raise urllib.error.HTTPError("u", 429, "Too Many Requests", {}, None)
+            return "Od 27 października przebudowa wodociągu zamknie ulicę Kościuszki, objazd pójdzie Szkolną i Piękną."
+        f = Notki.F(f"<article>{Notki.ARTYKUL}</article>")
+        stare = streszczenia.LIMIT_CZEKANIE
+        streszczenia.LIMIT_CZEKANIE = 0
+        try:
+            self.assertEqual(streszczenia.dopisz(store, Notki.ZR, f, TODAY, 5, llm), 2)
+        finally:
+            streszczenia.LIMIT_CZEKANIE = stare
 
     def test_ostrzezenie_bez_notki_nie_ma_szablonu(self):
         it = {"kind": "ost", "source": "Grodziski24"}
