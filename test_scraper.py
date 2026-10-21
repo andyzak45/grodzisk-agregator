@@ -1,7 +1,7 @@
 import sys
 import tempfile
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -810,3 +810,37 @@ class GeminiMartweModele(unittest.TestCase):
         finally:
             streszczenia._otworz = stare
             streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
+
+
+class Archiwum(unittest.TestCase):
+    def _wpis(self, i, dni_temu, **kw):
+        d = (TODAY - timedelta(days=dni_temu)).isoformat()
+        w = {"id": f"id{i}", "title": f"Tytuł {i}", "url": f"https://x.pl/{i}", "source": "Z", "source_id": "z",
+             "first_seen": d, "published": d, "kind": "inne", "place": "Grodzisk Mazowiecki",
+             "when": None, "event_iso": None, "tkey": f"k{i}"}
+        w.update(kw)
+        return w
+
+    def test_archiwum_ma_wpisy_spoza_strony_glownej_i_nic_nie_ginie(self):
+        stary = self._wpis(1, 60, text="Notka <b>starego</b>.", opis_auto=True)
+        nowy = self._wpis(2, 1)
+        items = [stary, nowy]
+        with tempfile.TemporaryDirectory() as d:
+            sz = Path(__file__).resolve().parent / "template.html"
+            pokazane = render.build(items, sz, Path(d) / "index.html", TODAY)
+            self.assertIn(nowy, pokazane)
+            self.assertNotIn(stary, pokazane)
+            n = render.build_archive(items, pokazane, sz, Path(d) / "archiwum.html", TODAY)
+            page = (Path(d) / "archiwum.html").read_text(encoding="utf-8")
+        self.assertEqual(n, 1)
+        self.assertIn("Tytuł 1", page)
+        self.assertNotIn("Tytuł 2", page)
+        self.assertIn("&lt;b&gt;starego&lt;/b&gt;", page)      # treść jest escapowana
+        self.assertIn("opis automatyczny", page)
+        self.assertIn("index.html", page)
+
+    def test_puste_archiwum(self):
+        with tempfile.TemporaryDirectory() as d:
+            sz = Path(__file__).resolve().parent / "template.html"
+            render.build_archive([], [], sz, Path(d) / "a.html", TODAY)
+            self.assertIn("jeszcze puste", (Path(d) / "a.html").read_text(encoding="utf-8"))

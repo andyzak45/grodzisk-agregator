@@ -435,8 +435,10 @@ def main():
     if r:
         print(f"Zastosowano {r} notek z data/opisy.json")
     items = zapisz_store(store, today)
-    render.build(items + reczne_wpisy, ROOT / "template.html", ROOT / "index.html", today)
-    print(f"Zapisano {len(items)} wpisów automatycznych i {len(reczne_wpisy)} ręcznych, zbudowano index.html")
+    wszystkie = items + reczne_wpisy
+    pokazane = render.build(wszystkie, ROOT / "template.html", ROOT / "index.html", today)
+    w_archiwum = render.build_archive(wszystkie, pokazane, ROOT / "template.html", ROOT / "archiwum.html", today)
+    print(f"Zapisano {len(items)} wpisów automatycznych i {len(reczne_wpisy)} ręcznych, zbudowano index.html i archiwum.html ({w_archiwum} wpisów w archiwum)")
 
 
 if __name__ == "__main__":
