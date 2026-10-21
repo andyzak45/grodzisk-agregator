@@ -179,10 +179,18 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
         req = urllib.request.Request(
             f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent", data=body,
             headers={"x-goog-api-key": klucz, "Content-Type": "application/json", "User-Agent": "grodzisk-lokalnie-bot"})
-        try:
-            data = _otworz(req, timeout)
-        except ModelBlad as e:
-            bledy.append(f"{m}: {e}")
+        data = None
+        for proba in range(3):      # HTTP 5xx ("model przeciążony, spróbuj później") to zwykle chwilowa sprawa
+            try:
+                data = _otworz(req, timeout)
+                break
+            except ModelBlad as e:
+                if str(e).startswith("HTTP 5") and proba < 2:
+                    time.sleep(6 * (proba + 1))
+                    continue
+                bledy.append(f"{m}: {str(e)[:160]}")
+                break
+        if data is None:
             continue
         _gemini_ok[:] = [m]
         try:

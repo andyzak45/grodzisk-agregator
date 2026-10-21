@@ -666,6 +666,23 @@ class NotkiAwariaModelu(unittest.TestCase):
                 if stare[k]:
                     os.environ[k] = stare[k]
 
+    def test_gemini_ponawia_przy_przeciazeniu_503(self):
+        stare, stary_sen = streszczenia._otworz, streszczenia.time.sleep
+        proby = []
+        def falsz(req, timeout):
+            proby.append(1)
+            if len(proby) < 3:
+                raise streszczenia.ModelBlad('HTTP 503: b\'{"status": "UNAVAILABLE"}\'')
+            return {"candidates": [{"content": {"parts": [{"text": "Notka po ponowieniu."}]}}]}
+        streszczenia._otworz, streszczenia.time.sleep = falsz, lambda s: None
+        streszczenia._gemini_ok.clear()
+        try:
+            self.assertEqual(streszczenia.wywolaj_gemini("t", "klucz"), "Notka po ponowieniu.")
+            self.assertEqual(len(proby), 3)       # dwa razy 503, trzecia próba tego samego modelu przeszła
+        finally:
+            streszczenia._otworz, streszczenia.time.sleep = stare, stary_sen
+            streszczenia._gemini_ok.clear()
+
     def test_ostrzezenie_bez_notki_nie_ma_szablonu(self):
         it = {"kind": "ost", "source": "Grodziski24"}
         self.assertEqual(redakcja.opis(it, TODAY), "")
