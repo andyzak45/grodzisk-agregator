@@ -584,6 +584,29 @@ class NotkiAwariaModelu(unittest.TestCase):
         self.assertTrue(store["0"]["opis_auto"])
         self.assertNotIn("text", store["1"])
 
+    def test_github_przechodzi_na_kolejny_wariant_gdy_serwer_odpowiada_ok(self):
+        stare = streszczenia._otworz
+        wywolane = []
+        def falsz(req, timeout):
+            wywolane.append(req.full_url + "|" + req.get_header("Accept"))
+            if len(wywolane) < 3:
+                raise streszczenia.ModelBlad("odpowiedź nie jest JSON-em (status 200): b'OK\\r\\n'")
+            return {"choices": [{"message": {"content": "Notka testowa o dwóch zdaniach."}}]}
+        streszczenia._otworz = falsz
+        streszczenia._dzialajacy.clear()
+        try:
+            self.assertEqual(streszczenia.wywolaj_github("t", "tok"), "Notka testowa o dwóch zdaniach.")
+            self.assertEqual(len(wywolane), 3)
+            streszczenia.wywolaj_github("t", "tok")      # drugi raz od razu działający wariant
+            self.assertEqual(len(wywolane), 4)
+        finally:
+            streszczenia._otworz = stare
+            streszczenia._dzialajacy.clear()
+
+    def test_ostrzezenie_bez_notki_nie_ma_szablonu(self):
+        it = {"kind": "ost", "source": "Grodziski24"}
+        self.assertEqual(redakcja.opis(it, TODAY), "")
+
 
 class RodzajPoprawki(unittest.TestCase):
     def test_urzad_bez_slowa_kluczowego_to_wiadomosc_nie_inwestycja(self):

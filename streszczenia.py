@@ -119,18 +119,43 @@ def wywolaj_model(tresc, klucz, model=MODEL, timeout=40):
     return "".join(b.get("text", "") for b in data.get("content", []) if b.get("type") == "text")
 
 
-def wywolaj_github(tresc, token, model=GITHUB_MODEL, timeout=60):
-    """Darmowe GitHub Models (API zgodne z OpenAI). W Actions token to GITHUB_TOKEN z uprawnieniem models: read."""
-    body = json.dumps({"model": model, "max_tokens": 300, "temperature": 0.2, "messages": [
+# Warianty wywołania darmowych GitHub Models. Serwer potrafi odpowiedzieć 200 i samym "OK" (zły adres lub
+# nagłówki), więc bot próbuje kolejno i do końca przebiegu zostaje przy pierwszym, który zwróci poprawny JSON.
+WARIANTY_GITHUB = [
+    {"url": GITHUB_URL, "accept": "application/json", "model": None},
+    {"url": GITHUB_URL, "accept": "application/vnd.github+json", "model": None},
+    {"url": "https://models.inference.ai.azure.com/chat/completions", "accept": "application/json",
+     "model": "gpt-4o-mini"},
+]
+_dzialajacy = []
+
+
+def _wywolaj_wariant(w, tresc, token, model, timeout):
+    body = json.dumps({"model": w["model"] or model, "max_tokens": 300, "temperature": 0.2, "messages": [
         {"role": "system", "content": SYSTEM}, {"role": "user", "content": tresc}]}).encode()
-    req = urllib.request.Request(GITHUB_URL, data=body, headers={
-        "Authorization": f"Bearer {token}", "Content-Type": "application/json",
-        "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
+    req = urllib.request.Request(w["url"], data=body, headers={
+        "Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": w["accept"],
+        "User-Agent": "grodzisk-lokalnie-bot", "X-GitHub-Api-Version": "2022-11-28"})
     data = _otworz(req, timeout)
     try:
         return data["choices"][0]["message"]["content"] or ""
     except (KeyError, IndexError, TypeError):
         raise ModelBlad(f"nieoczekiwany kształt odpowiedzi: {str(data)[:200]}")
+
+
+def wywolaj_github(tresc, token, model=GITHUB_MODEL, timeout=60):
+    """Darmowe GitHub Models (API zgodne z OpenAI). W Actions token to GITHUB_TOKEN z uprawnieniem models: read."""
+    warianty = _dzialajacy or WARIANTY_GITHUB
+    bledy = []
+    for n, w in enumerate(warianty):
+        try:
+            odp = _wywolaj_wariant(w, tresc, token, model, timeout)
+        except ModelBlad as e:
+            bledy.append(f"wariant {n + 1}: {e}")
+            continue
+        _dzialajacy[:] = [w]
+        return odp
+    raise ModelBlad(" | ".join(bledy))
 
 
 def wybierz_model():

@@ -89,8 +89,7 @@ def opis(it, today):
     zrodlo = it["source"].rstrip(".")
     if it["kind"] == "zdr":
         return f"Sprawę opisuje {zrodlo}. Szczegóły pod linkiem do źródła."
-    if it["kind"] == "ost":
-        return f"Komunikat ostrzegawczy. Informuje {zrodlo}."
+    # ostrzeżenia bez notki nie dostają szablonu: znacznik rodzaju i źródło są już na karcie
     return ""
 
 
