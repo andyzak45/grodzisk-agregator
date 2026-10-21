@@ -45,6 +45,39 @@ Zasady:
 Odpowiedz samą notką, bez wstępu."""
 
 
+class ModelBlad(Exception):
+    """Odpowiedź modelu nie nadaje się do użycia (pusta, nie-JSON, kod błędu). Komunikat trafia do logu."""
+
+
+WERSJA_PROBY = "v2"        # wpisy oznaczone starą flagą (True) z przebiegów, w których model nie odpowiadał, dostają drugą szansę
+MAX_BLEDOW_Z_RZEDU = 3     # tyle awarii modelu pod rząd kończy notki na dziś (zamiast spalać wpisy i limity)
+
+
+def _json_z_odpowiedzi(r):
+    status, raw = getattr(r, "status", "?"), r.read()
+    if not raw.strip():
+        raise ModelBlad(f"pusta odpowiedź serwera (status {status})")
+    try:
+        return json.loads(raw)
+    except ValueError:
+        raise ModelBlad(f"odpowiedź nie jest JSON-em (status {status}): {raw[:200]!r}")
+
+
+def _otworz(req, timeout):
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return _json_z_odpowiedzi(r)
+    except urllib.error.HTTPError as e:
+        if e.code == 429:
+            raise
+        tresc = b""
+        try:
+            tresc = e.read()[:300]
+        except Exception:
+            pass
+        raise ModelBlad(f"HTTP {e.code}: {tresc!r}")
+
+
 def tekst_artykulu(html):
     """Główny tekst strony bez menu, stopek i skryptów, przycięty do limitu."""
     soup = BeautifulSoup(html, "html.parser")
@@ -82,8 +115,7 @@ def wywolaj_model(tresc, klucz, model=MODEL, timeout=40):
                        "messages": [{"role": "user", "content": tresc}]}).encode()
     req = urllib.request.Request(API_URL, data=body, headers={
         "x-api-key": klucz, "anthropic-version": "2023-06-01", "content-type": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        data = json.load(r)
+    data = _otworz(req, timeout)
     return "".join(b.get("text", "") for b in data.get("content", []) if b.get("type") == "text")
 
 
@@ -94,9 +126,11 @@ def wywolaj_github(tresc, token, model=GITHUB_MODEL, timeout=60):
     req = urllib.request.Request(GITHUB_URL, data=body, headers={
         "Authorization": f"Bearer {token}", "Content-Type": "application/json",
         "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        data = json.load(r)
-    return data["choices"][0]["message"]["content"] or ""
+    data = _otworz(req, timeout)
+    try:
+        return data["choices"][0]["message"]["content"] or ""
+    except (KeyError, IndexError, TypeError):
+        raise ModelBlad(f"nieoczekiwany kształt odpowiedzi: {str(data)[:200]}")
 
 
 def wybierz_model():
@@ -118,7 +152,7 @@ def kandydaci(store, zrodla, today):
         src = zrodla.get(it.get("source_id"), {})
         if not src.get("streszczaj") or it["kind"] == "zdr" or it.get("neutral"):
             continue
-        if it.get("text") or it.get("opis_proba"):
+        if it.get("text") or it.get("opis_proba") == WERSJA_PROBY:
             continue
         dzien = date.fromisoformat(it.get("published") or it["first_seen"])
         if (today - dzien).days > MAX_WIEK_DNI:
@@ -136,28 +170,68 @@ def dopisz(store, zrodla, fetcher, today, limit, llm=None):
             print("Brak dostępu do modelu (ANTHROPIC_API_KEY lub GITHUB_TOKEN), pomijam notki pod tytułami.")
             return 0
     strony = getattr(fetcher, "strony", {})
-    dodane = 0
+    dodane = bledy = 0
     for it in kandydaci(store, zrodla, today)[:limit]:
-        it["opis_proba"] = True      # niezależnie od wyniku nie próbujemy ponownie przy każdym przebiegu
         try:
             html = strony.get(it["url"]) or fetcher.get(it["url"])
             tekst = tekst_artykulu(html)
-            if len(tekst) < MIN_TEKST:
-                continue
-            notka = sprawdz(llm(f"Tytuł: {it['title']}\n\nTekst:\n{tekst}"), tekst)
-            if przerwa:
-                time.sleep(przerwa)
+        except Exception as e:      # kłopot z tą jedną stroną, nie z modelem
+            it["opis_proba"] = WERSJA_PROBY
+            print(f"  notka pominięta ({it['source']}): nie pobrano artykułu: {type(e).__name__}: {e}")
+            continue
+        if len(tekst) < MIN_TEKST:
+            it["opis_proba"] = WERSJA_PROBY
+            continue
+        try:
+            surowa = llm(f"Tytuł: {it['title']}\n\nTekst:\n{tekst}")
+            blad = None
         except urllib.error.HTTPError as e:
             if e.code == 429:   # limit zapytań: kończymy, reszta pójdzie przy następnym przebiegu
-                it.pop("opis_proba", None)
                 print("  limit zapytań modelu, kończę notki na dziś")
                 break
-            print(f"  notka pominięta ({it['source']}): HTTP {e.code}")
-            continue
+            blad = f"HTTP {e.code}"
         except Exception as e:
-            print(f"  notka pominięta ({it['source']}): {type(e).__name__}: {e}")
+            blad = f"{type(e).__name__}: {e}"
+        if blad:                # awaria modelu: wpis NIE jest oznaczany, spróbuje przy następnym przebiegu
+            bledy += 1
+            print(f"  model nie odpowiedział ({it['source']}): {blad}")
+            if bledy >= MAX_BLEDOW_Z_RZEDU:
+                print("  model nie działa, kończę notki na dziś (wpisy zostają do ponowienia)")
+                break
             continue
+        bledy = 0
+        it["opis_proba"] = WERSJA_PROBY
+        if przerwa:
+            time.sleep(przerwa)
+        notka = sprawdz(surowa, tekst)
         if notka:
             it["text"], it["opis_auto"] = notka, True
             dodane += 1
     return dodane
+
+
+def zastosuj_reczne(store, sciezka):
+    """Notki dopisane ręcznie w data/opisy.json: {"adres wpisu": "notka"}. Mają pierwszeństwo przed notkami bota.
+    Ta sama kontrola co dla bota: długość i brak danych osób. Zwraca liczbę zastosowanych notek."""
+    import pathlib
+    p = pathlib.Path(sciezka)
+    if not p.exists():
+        return 0
+    try:
+        dane = json.loads(p.read_text(encoding="utf-8"))
+    except ValueError as e:
+        print(f"  data/opisy.json: błąd składni, pomijam ({e})")
+        return 0
+    po_url = {it["url"]: it for it in store.values()}
+    n = 0
+    for url, notka in dane.items():
+        it = po_url.get(url)
+        notka = re.sub(r"\s+", " ", str(notka)).strip()
+        if not it or it.get("neutral") or it["kind"] == "zdr":
+            continue
+        if not (20 <= len(notka) <= MAX_NOTKA) or wrazliwe(notka):
+            print(f"  data/opisy.json: odrzucono notkę dla {url} (długość lub dane osób)")
+            continue
+        it["text"], it["opis_auto"] = notka, True
+        n += 1
+    return n

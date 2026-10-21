@@ -21,6 +21,9 @@ def norm(text):
 # Wzorce to wyrażenia regularne na tekście bez polskich znaków; każdy zaczyna się od granicy słowa,
 # a krótkie rdzenie mają jawne końcówki (np. "pozar" nie łapie już słowa "pozarzadowych").
 KIND_RULES = [
+    # uroczystości, szkolenia i ćwiczenia: zwykłe wiadomości, nie zdarzenia ani przetargi (wygrywają z regułami niżej)
+    ("inne", [r"hold ", r"uroczysto", r"obchod", r"pamieci", r"upamietn", r"wreczen", r"szkolen", r"profilakty",
+              r"obron\w* cywiln", r"cwiczen"]),
     ("ost", [r"ostrzez", r"alert", r"awari", r"brak pradu", r"brak wody", r"utrudnien", r"objazd",
              r"wscieklizn", r"ewakuac", r"komunikat kryzysow", r"zagrozeni\w* atakiem", r"alarm",
              r"wylaczen\w* (?:pradu|wody)"]),
@@ -43,7 +46,7 @@ _KIND_RE = [(k, re.compile(r"\b(?:" + "|".join(pats) + ")")) for k, pats in KIND
 
 # Źródła z podpowiedzią "zdr" (policja) i "ost" (zarządzanie kryzysowe) publikują też dużo
 # profilaktyki i szkoleń. Dla nich liczą się tylko rodzaje poniżej, reszta to zwykła wiadomość.
-HINT_ALLOWED = {"zdr": {"ost", "zdr", "wyd"}, "ost": {"ost", "zdr", "wyd"}}
+HINT_ALLOWED = {"zdr": {"ost", "zdr", "wyd", "inne"}, "ost": {"ost", "zdr", "wyd", "inne"}}
 
 
 def klasyfikuj_rodzaj(title, hint=None):
@@ -54,8 +57,8 @@ def klasyfikuj_rodzaj(title, hint=None):
             continue
         if rx.search(t):
             return kind
-    if hint in HINT_ALLOWED:
-        return "inne"
+    if hint in HINT_ALLOWED or hint == "inw":
+        return "inne"       # "inw" tylko po słowie kluczowym, inaczej to zwykła wiadomość z urzędu
     return hint or "inne"
 
 

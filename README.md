@@ -10,7 +10,7 @@ Bot raz dziennie zbiera tytuły, daty i linki z lokalnych źródeł (`sources.js
 - `render.py` + `template.html`: wygląd strony (ikony rodzajów, daty po polsku, filtry)
 - `redakcja.py`: zasady redakcyjne w kodzie (neutralne tytuły zdarzeń, daty, opisy, powtórki tematów)
 - `reczne.py` + `data/manual.json`: wpisy ręczne (np. z Facebooka), sprawdzane przed publikacją
-- `tests/`: testy (uruchamiają się przed każdym przebiegiem bota)
+- `test_scraper.py`: testy (uruchamiają się przed każdym przebiegiem bota)
 - `data/status.json`: wynik ostatniego przebiegu dla każdego źródła, tu szukaj błędów
 
 ## Ustawienia
@@ -19,7 +19,7 @@ W repozytorium: Settings → Secrets and variables → Actions → Variables →
 
 ## Lokalnie
     pip install -r requirements.txt
-    python -m unittest discover -s tests -v
+    python -m unittest test_scraper -v
     python scraper.py --all            # wszystkie włączone źródła
     python scraper.py --only mediateka # jedno źródło
     python scraper.py --render-only    # tylko przebuduj stronę z zapisanych danych
@@ -50,3 +50,9 @@ GitHub Models (uprawnienie `models: read` w workflow, bez kluczy i opłat, z lim
 płatne API Anthropic: sekret `ANTHROPIC_API_KEY`. Model można zmienić zmienną `SUMMARY_MODEL`.
 Notka jest odrzucana, gdy zawiera dane osób albo 7 kolejnych słów z artykułu. Karta oznacza ją jako automatyczną.
 Po przekroczeniu limitu bot kończy notki do następnego przebiegu, a strona działa dalej.
+
+## Notki ręczne (data/opisy.json)
+Plik `{"adres wpisu": "notka"}`. Adres to dokładnie ten link, który wpis ma na stronie. Notka ręczna ma pierwszeństwo
+przed notką bota, przechodzi tę samą kontrolę (20-300 znaków, bez danych osób) i jest oznaczona jako automatyczna.
+Przebieg bota wypisuje w logu każdą odrzuconą notkę. Awaria modelu (np. pusta odpowiedź) nie oznacza wpisów jako
+próbowanych: po 3 awariach pod rząd bot kończy notki na dziś i próbuje ponownie następnego dnia.

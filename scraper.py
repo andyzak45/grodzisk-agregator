@@ -426,6 +426,9 @@ def main():
         zrodla = {x["id"]: x for x in sources}
         n = streszczenia.dopisz(store, zrodla, fetcher, today, MAX_NOTEK)
         print(f"Dopisano {n} notek pod tytułami")
+    r = streszczenia.zastosuj_reczne(store, ROOT / "data" / "opisy.json")
+    if r:
+        print(f"Zastosowano {r} notek z data/opisy.json")
     items = zapisz_store(store, today)
     render.build(items + reczne_wpisy, ROOT / "template.html", ROOT / "index.html", today)
     print(f"Zapisano {len(items)} wpisów automatycznych i {len(reczne_wpisy)} ręcznych, zbudowano index.html")

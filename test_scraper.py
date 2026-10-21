@@ -32,7 +32,7 @@ class Rodzaj(unittest.TestCase):
             self.assertEqual(klasyfikuj_rodzaj(title), kind, title)
 
     def test_podpowiedz_zrodla_gdy_brak_regul(self):
-        self.assertEqual(klasyfikuj_rodzaj("Nowa dyrektor szkoły", hint="inw"), "inw")
+        self.assertEqual(klasyfikuj_rodzaj("Nowa dyrektor szkoły", hint="inw"), "inne")  # urząd bez słowa kluczowego to zwykła wiadomość
         self.assertEqual(klasyfikuj_rodzaj("Nowa dyrektor szkoły"), "inne")
 
     def test_brak_falszywych_trafien_w_srodku_slowa(self):
@@ -539,6 +539,62 @@ class Notki(unittest.TestCase):
             page = out.read_text(encoding="utf-8")
         self.assertIn("ulica Kościuszki.", page)
         self.assertIn("Opis automatyczny.", page)
+
+class NotkiAwariaModelu(unittest.TestCase):
+    N = Notki
+
+    def _store(self, n=5):
+        return {str(i): dict(Notki._store(Notki())["a"], id=str(i), url=f"https://grodzisk.pl/{i}") for i in range(n)}
+
+    def test_pusta_odpowiedz_serwera_to_czytelny_blad(self):
+        class R:
+            status = 200
+            def read(self): return b""
+        with self.assertRaises(streszczenia.ModelBlad) as c:
+            streszczenia._json_z_odpowiedzi(R())
+        self.assertIn("pusta odpowiedź", str(c.exception))
+
+    def test_awaria_modelu_nie_oznacza_wpisow_i_konczy_po_trzech(self):
+        store = self._store()
+        wywolania = []
+        def llm(t):
+            wywolania.append(1)
+            raise streszczenia.ModelBlad("pusta odpowiedź serwera (status 200)")
+        f = Notki.F(f"<article>{Notki.ARTYKUL}</article>")
+        self.assertEqual(streszczenia.dopisz(store, Notki.ZR, f, TODAY, 30, llm), 0)
+        self.assertEqual(len(wywolania), streszczenia.MAX_BLEDOW_Z_RZEDU)
+        self.assertFalse(any(i.get("opis_proba") for i in store.values()))
+
+    def test_stara_flaga_nie_blokuje_ponowienia(self):
+        store = self._store(1)
+        store["0"]["opis_proba"] = True      # ślad po przebiegach z awarią modelu
+        llm = lambda t: "Od 27 października przebudowa wodociągu zamknie ulicę Kościuszki, objazd pójdzie Szkolną i Piękną."
+        f = Notki.F(f"<article>{Notki.ARTYKUL}</article>")
+        self.assertEqual(streszczenia.dopisz(store, Notki.ZR, f, TODAY, 5, llm), 1)
+
+    def test_notki_reczne_z_pliku(self):
+        import json, tempfile, os
+        store = self._store(2)
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "opisy.json")
+            with open(p, "w", encoding="utf-8") as fh:
+                json.dump({"https://grodzisk.pl/0": "Od poniedziałku zamknięta będzie ulica Kościuszki z powodu prac.",
+                           "https://grodzisk.pl/1": "Ranny 35-latek trafił do szpitala po wypadku."}, fh)
+            self.assertEqual(streszczenia.zastosuj_reczne(store, p), 1)
+        self.assertTrue(store["0"]["opis_auto"])
+        self.assertNotIn("text", store["1"])
+
+
+class RodzajPoprawki(unittest.TestCase):
+    def test_urzad_bez_slowa_kluczowego_to_wiadomosc_nie_inwestycja(self):
+        self.assertEqual(klasyfikuj_rodzaj("Bezpłatne szkolenia z obrony cywilnej już w ten weekend", "inw"), "inne")
+        self.assertEqual(klasyfikuj_rodzaj("Projekt planu ogólnego Gminy Grodzisk Mazowiecki", "inw"), "inw")
+
+    def test_policja_hold_to_nie_zdarzenie(self):
+        t = "Grodziscy policjanci oddali hołd Koledze, który zginął na służbie"
+        self.assertEqual(klasyfikuj_rodzaj(t, "zdr"), "inne")
+        self.assertEqual(klasyfikuj_rodzaj("Wypadek na DW719, jedna osoba ranna", "zdr"), "zdr")
+
 
 
 if __name__ == "__main__":
