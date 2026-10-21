@@ -110,3 +110,13 @@ def podobne(a, b, prog=0.55):
     ra, rb = _rdzenie(a), _rdzenie(b)
     wspolne = ra & rb
     return len(wspolne) >= 3 and len(wspolne) / len(ra | rb) >= prog
+
+
+# ---------- tematy spoza okolicy ----------
+
+_INNY_REGION = re.compile(r"\bwoj\.\s+(?!mazowiec)|\bwojew[oó]dzt\w*\s+(?!mazowiec)", re.I)
+
+
+def inny_region(title):
+    """Tytuł mówi wprost o innym województwie (np. 'alert RCB dla woj. lubelskiego'): to nie jest wiadomość lokalna."""
+    return bool(_INNY_REGION.search(title or ""))

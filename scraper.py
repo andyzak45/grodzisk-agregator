@@ -31,7 +31,7 @@ import render
 import reczne
 import streszczenia
 from klasyfikacja import klasyfikuj_rodzaj, norm, wyciagnij_termin, znajdz_miejsca
-from redakcja import neutralny_tytul, podobne
+from redakcja import inny_region, neutralny_tytul, podobne
 
 ROOT = Path(__file__).parent
 STORE = ROOT / "data" / "items.json"
@@ -342,7 +342,7 @@ def dodaj(store, items, src, today):
     for it in items:
         iid = id_wpisu(it["url"])
         klucz = tkey(it["title"])
-        if iid in store or klucz in klucze:
+        if iid in store or klucz in klucze or inny_region(it["title"]):
             continue
         start = it.get("start")
         when, event_iso = wyciagnij_termin(it["title"] + " " + it.get("desc", ""), today)
@@ -405,6 +405,8 @@ def scal_duplikaty(store):
         if a is None:
             zostaja.append(b)
             continue
+        if not a.get("text") and b.get("text"):      # nie gubimy notki, jeśli miał ją tylko nowszy duplikat
+            a["text"], a["opis_auto"] = b["text"], b.get("opis_auto", True)
         also = a.setdefault("also", [])
         for nazwa in [b["source"]] + b.get("also", []):
             if nazwa != a["source"] and nazwa not in also:
@@ -473,7 +475,7 @@ def main():
     if r:
         print(f"Zastosowano {r} notek z data/opisy.json")
     items = zapisz_store(store, today)
-    wszystkie = items + reczne_wpisy
+    wszystkie = render.z_notka(items) + reczne_wpisy
     pokazane = render.build(wszystkie, ROOT / "template.html", ROOT / "index.html", today)
     w_archiwum = render.build_archive(wszystkie, pokazane, ROOT / "template.html", ROOT / "archiwum.html", today)
     print(f"Zapisano {len(items)} wpisów automatycznych i {len(reczne_wpisy)} ręcznych, zbudowano index.html i archiwum.html ({w_archiwum} wpisów w archiwum)")

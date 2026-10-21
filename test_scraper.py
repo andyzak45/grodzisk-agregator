@@ -873,3 +873,61 @@ class ScalanieDuplikatow(unittest.TestCase):
         b = self._w(2, "Zdarzenie w gminie", neutral=True, kind="zdr")
         store = {"i1": a, "i2": b}
         self.assertEqual(scraper.scal_duplikaty(store), 0)
+
+
+class TylkoZNotka(unittest.TestCase):
+    def test_wpisy_bez_notki_sa_ukryte_wyjatki_zostaja(self):
+        base = {"title": "T", "url": "https://x.pl/1", "source": "Z", "source_id": "z", "first_seen": "2026-10-20",
+                "published": "2026-10-20", "place": "cała gmina", "when": None, "event_iso": None}
+        z_notka = dict(base, id="1", kind="inne", text="Notka.")
+        bez = dict(base, id="2", kind="inne")
+        ostrz = dict(base, id="3", kind="ost", source_id="kryzysowe")
+        reczny = dict(base, id="4", kind="wyd", manual=True)
+        self.assertEqual([i["id"] for i in render.z_notka([z_notka, bez, ostrz, reczny])], ["1", "3", "4"])
+
+    def test_scalenie_przenosi_notke_ze_starszego_wpisu_bez_notki(self):
+        a = {"id": "a", "title": "Umowa na oświetlenie i monitoring ulic Grodzisk", "source": "A", "source_id": "a",
+             "first_seen": "2026-10-20", "kind": "inw"}
+        b = dict(a, id="b", first_seen="2026-10-21", text="Notka.", opis_auto=True)
+        store = {"a": a, "b": b}
+        self.assertEqual(scraper.scal_duplikaty(store), 1)
+        self.assertEqual(store["a"]["text"], "Notka.")
+
+
+class TylkoLokalne(unittest.TestCase):
+    def test_inny_region_w_tytule(self):
+        self.assertTrue(redakcja.inny_region("Kolejny alert RCB dla woj. lubelskiego i podkarpackiego"))
+        self.assertTrue(redakcja.inny_region("Powódź w województwie opolskim"))
+        self.assertFalse(redakcja.inny_region("Nagroda Marszałka Województwa Mazowieckiego"))
+        self.assertFalse(redakcja.inny_region("Remont ulicy w Grodzisku"))
+
+    def test_z_notka_ukrywa_inne_regiony_i_poza_okolica(self):
+        base = {"url": "https://x.pl/1", "source": "Z", "source_id": "twoje-miasto", "first_seen": "2026-10-20",
+                "published": "2026-10-20", "place": "cała gmina", "when": None, "event_iso": None}
+        rcb = dict(base, id="1", kind="ost", title="Alert RCB dla woj. lubelskiego", text="Notka o alercie.")
+        poza = dict(base, id="2", kind="inne", title="Ceny paliw w kraju", text="Notka o cenach.", poza_okolica=True)
+        ok = dict(base, id="3", kind="inne", title="Remont w Grodzisku", text="Notka o remoncie.")
+        ost_portal = dict(base, id="4", kind="ost", title="Ostrzeżenie")          # z portalu ogólnego, bez notki
+        ost_lokalne = dict(base, id="5", kind="ost", title="Ostrzeżenie", source_id="kryzysowe")
+        self.assertEqual([i["id"] for i in render.z_notka([rcb, poza, ok, ost_portal, ost_lokalne])], ["3", "5"])
+
+    def test_model_odpowiada_poza_okolica(self):
+        it = {"id": "1", "title": "Ceny paliw w kraju", "url": "https://x.pl/1", "source": "Z", "source_id": "z",
+              "first_seen": TODAY.isoformat(), "published": TODAY.isoformat(), "kind": "inne", "place": "cała gmina"}
+        store = {"1": it}
+        class F:
+            strony = {"https://x.pl/1": "<html><body><p>" + "Ceny paliw w całym kraju rosną. " * 20 + "</p></body></html>"}
+        n = streszczenia.dopisz(store, {"z": {"streszczaj": True}}, F(), TODAY, 5, llm=lambda t: "POZA_OKOLICA")
+        self.assertEqual(n, 0)
+        self.assertTrue(it.get("poza_okolica"))
+        self.assertNotIn("text", it)
+
+
+class TylkoGminaGrodzisk(unittest.TestCase):
+    def test_wpisy_spoza_gminy_sa_ukryte(self):
+        base = {"url": "https://x.pl/1", "source": "Z", "source_id": "z", "first_seen": "2026-10-20",
+                "published": "2026-10-20", "when": None, "event_iso": None, "kind": "inne", "title": "T", "text": "Notka."}
+        ids = {m: dict(base, id=m, place=m) for m in ["Grodzisk Mazowiecki", "cała gmina", "Milanówek",
+                                                       "Podkowa Leśna", "okolica"]}
+        wynik = {i["id"] for i in render.z_notka(list(ids.values()))}
+        self.assertEqual(wynik, {"Grodzisk Mazowiecki", "cała gmina"})

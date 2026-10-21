@@ -4,7 +4,7 @@ from datetime import date
 from pathlib import Path
 
 from klasyfikacja import klucz_miejsca, w_gminie
-from redakcja import data_ui, dzien, godzina, miejsce_ui, opis, termin_ui
+from redakcja import data_ui, dzien, godzina, inny_region, miejsce_ui, opis, termin_ui
 
 KIND_UI = {
     "ost": ("Ostrzeżenia", "bg-alert"),
@@ -30,6 +30,27 @@ MAX_CARDS = 40
 SHOW_DAYS = 14
 BEZ_TERMINU_DNI = 3      # zapowiedź bez terminu pokazujemy tylko tuż po pojawieniu się
 BEZ_TERMINU_MAX = 3
+
+
+POKAZUJ_BEZ_NOTKI = {"ost"}     # rodzaje pokazywane nawet bez notki (ostrzeżenia). Pusty zbiór = tylko wpisy z notką.
+TYLKO_GMINA = True              # True: tylko gmina Grodzisk Mazowiecki (bez Milanówka, Podkowy, Pruszkowa itd.); False: też okolica
+ZRODLA_OSTRZEZEN = {"kryzysowe"}  # ...ale tylko z tych lokalnych źródeł (z portali ogólnych ostrzeżenia też wymagają notki)
+
+
+def z_notka(items):
+    """Wpisy bez streszczenia nie trafiają na stronę ani do archiwum (zostają w danych i wracają, gdy dostaną notkę).
+    Wpisy ręczne zawsze zostają."""
+    out = []
+    for i in items:
+        if i.get("manual"):
+            out.append(i)
+        elif i.get("poza_okolica") or inny_region(i["title"]):
+            continue                  # temat ogólnopolski albo z innego regionu
+        elif TYLKO_GMINA and not w_gminie(i["place"]):
+            continue                  # miejscowość spoza gminy (albo nie rozpoznano miejsca)
+        elif i.get("text") or (i["kind"] in POKAZUJ_BEZ_NOTKI and i.get("source_id") in ZRODLA_OSTRZEZEN):
+            out.append(i)
+    return out
 
 
 def ikona(kind):
