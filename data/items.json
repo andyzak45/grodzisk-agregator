@@ -1134,7 +1134,9 @@
   "place": "cała gmina",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "Policjanci z powiatu grodziskiego dołączyli do ogóln",
+  "opis_auto": true
  },
  {
   "id": "22f24fd6439e",
@@ -2204,7 +2206,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "W dniach 23–25 października 2026",
+  "opis_auto": true
  },
  {
   "id": "a5bfbc5330a2",
@@ -2280,7 +2284,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "Drugi dzień Grodziskiego Sejmiku",
+  "opis_auto": true
  },
  {
   "id": "664fc51f0881",

@@ -1,5 +1,5 @@
 {
- "run": "2026-10-21T10:31:28",
+ "run": "2026-10-21T10:42:02",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
@@ -24,7 +24,7 @@
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 5
+   "new": 0
   },
   "przeglad-regionalny": {
    "ok": true,
