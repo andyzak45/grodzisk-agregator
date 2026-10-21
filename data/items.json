@@ -11,7 +11,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "1e1999aad16c"
+  "tkey": "1e1999aad16c",
+  "opis_proba": "v2",
+  "text": "W Bibliotece Głównej w Grodzisku Mazowieckim odbędzie się bezpłatne spotkanie Młodzieżowego Klubu Książki poświęcone powieści „Igrzyska śmierci”. Wydarzenie zaplanowano na 26 października o godzinie 18:00 na drugim piętrze Mediateki przy ulicy 3 Maja.",
+  "opis_auto": true
  },
  {
   "id": "e266ae73f264",
@@ -70,7 +73,8 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "f27efdefa9e2"
+  "tkey": "f27efdefa9e2",
+  "opis_proba": "v2"
  },
  {
   "id": "e9f1d0c1802a",
@@ -84,7 +88,8 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "4844269ecc99"
+  "tkey": "4844269ecc99",
+  "opis_proba": "v2"
  },
  {
   "id": "3cd041417105",
@@ -98,7 +103,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "e7c9af4fbe41"
+  "tkey": "e7c9af4fbe41",
+  "opis_proba": "v2",
+  "text": "Policja przeprowadziła w całym kraju blisko 258 tysięcy kontroli placówek oświatowych w związku z niedawnymi aktami przemocy. W ramach trwających od października działań funkcjonariusze zatrzymali 195 osób.",
+  "opis_auto": true
  },
  {
   "id": "06dad8cacd2d",
@@ -140,7 +148,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "225fa4d13767"
+  "tkey": "225fa4d13767",
+  "opis_proba": "v2",
+  "text": "Do 23 października trwają zapisy na XXXIV Bieg Niepodległości w Skierniewicach. Finałowe wydarzenie Skierniewickiej Triady Biegowej odbędzie się 11 listopada w Parku Miejskim.",
+  "opis_auto": true
  },
  {
   "id": "576bc2e2af5b",
@@ -154,7 +165,8 @@
   "place": "Grodzisk Mazowiecki",
   "when": "11.12",
   "event_iso": "2026-12-11",
-  "tkey": "b9041fe1b2c8"
+  "tkey": "b9041fe1b2c8",
+  "opis_proba": "v2"
  },
  {
   "id": "8b4b0849d1f4",
@@ -198,7 +210,10 @@
   "place": "Pruszków",
   "when": null,
   "event_iso": null,
-  "tkey": "3f2e72f173e6"
+  "tkey": "3f2e72f173e6",
+  "opis_proba": "v2",
+  "text": "W Parku Potulickim w Pruszkowie przebywa dorosły łabędź przepędzany przez inną rodzinę ptaków na brzeg i jezdnię. Mieszkańcy apelują o zaprzestanie dokarmiania osobnika, co ma skłonić go do poszukiwania bezpieczniejszego miejsca.",
+  "opis_auto": true
  },
  {
   "id": "5f0ef372439a",
@@ -240,7 +255,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "0fe796c0d9fd"
+  "tkey": "0fe796c0d9fd",
+  "opis_proba": "v2",
+  "text": "Polski oddział ZTE wprowadził do oferty stacjonarny router G5 Ultra+ 5G z procesorem Qualcomm Snapdragon X75. Urządzenie obsługuje standard Wi-Fi 7, sieć 5G-Advanced z pobieraniem do 4,29 Gb/s oraz pozwala na jednoczesną pracę do 384 urządzeń.",
+  "opis_auto": true
  },
  {
   "id": "062eee4593b9",
@@ -254,7 +272,10 @@
   "place": "Milanówek",
   "when": null,
   "event_iso": null,
-  "tkey": "3d433ccad8df"
+  "tkey": "3d433ccad8df",
+  "opis_proba": "v2",
+  "text": "Fundacja Nowe Znaki organizuje 24 października o godz. 10.00 akcję porządkowania mogił osób zasłużonych na cmentarzu w Milanówku. Uczestnicy spotkania przy ulicy Wojska Polskiego są proszeni o zabranie ze sobą własnych sprzętów do sprzątania.",
+  "opis_auto": true
  },
  {
   "id": "59126fd6d26c",
@@ -268,7 +289,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "366321bfb5d2"
+  "tkey": "366321bfb5d2",
+  "opis_proba": "v2",
+  "text": "W dniach 3–4 października 2026 r. odbyła się 13. edycja akcji „Weekend Seniora z Kulturą”. W wydarzeniach przygotowanych przez 829 placówek w całym kraju wzięło udział około 76 tysięcy osób starszych.",
+  "opis_auto": true
  },
  {
   "id": "4d9398efe656",
@@ -296,7 +320,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "259a93a4f736"
+  "tkey": "259a93a4f736",
+  "opis_proba": "v2",
+  "text": "Rządowe Centrum Bezpieczeństwa analizuje kwestię dostosowania systemów ostrzegania do potrzeb osób z niepełnosprawnościami. Zdaniem ekspertów obecne komunikaty zawierają zbyt specjalistyczne słownictwo i nie wskazują odbiorcom konkretnych działań.",
+  "opis_auto": true
  },
  {
   "id": "f7f6c67c8e65",
@@ -310,7 +337,10 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "tkey": "960fee6e5d7f"
+  "tkey": "960fee6e5d7f",
+  "opis_proba": "v2",
+  "text": "Zabytkowy pałac w Młochowie przejdzie kompleksową renowację i modernizację za ponad 16 milionów złotych. Po zakończeniu prac odnowiony obiekt wraz z parkiem będzie służył celom kulturalnym, gospodarczym i integracji mieszkańców.",
+  "opis_auto": true
  },
  {
   "id": "e9b9398b730c",
@@ -324,7 +354,10 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "tkey": "eced500b57b8"
+  "tkey": "eced500b57b8",
+  "opis_proba": "v2",
+  "text": "Grodzisk Mazowiecki opublikował projekt planu ogólnego gminy, określający m.in. tereny pod zabudowę i obszary zielone. Oficjalne konsultacje społeczne i możliwość zgłaszania uwag zaplanowano na pierwszą połowę 2027 roku.",
+  "opis_auto": true
  },
  {
   "id": "cd870b573543",
@@ -380,7 +413,8 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "eaeda220be4e"
+  "tkey": "eaeda220be4e",
+  "opis_proba": "v2"
  },
  {
   "id": "754ad985ccfb",
@@ -394,7 +428,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "db8494ce2877"
+  "tkey": "db8494ce2877",
+  "opis_proba": "v2",
+  "text": "Sąd Rejonowy w Piasecznie ukarał grzywną 10 tysięcy złotych oraz dwuletnim zakazem prowadzenia pojazdów kierowcę, który 17 maja 2026 roku stwarzał zagrożenie w Konstancinie-Jeziornie. Wina została ustalona dzięki nagraniu z internetu.",
+  "opis_auto": true
  },
  {
   "id": "b7826f781ebf",
@@ -408,7 +445,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "aac8c241c46e"
+  "tkey": "aac8c241c46e",
+  "opis_proba": "v2",
+  "text": "W związku z aktami przemocy w szkołach polska policja przeprowadziła blisko 276 tysięcy kontroli placówek oświatowych w całym kraju. W ramach trwających działań funkcjonariusze zatrzymali łącznie 195 osób.",
+  "opis_auto": true
  },
  {
   "id": "7ae3bdd0a57f",
@@ -422,7 +462,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "e3c625aebf93"
+  "tkey": "e3c625aebf93",
+  "opis_proba": "v2",
+  "text": "Grodziscy policjanci przedstawiali zasady rekrutacji oraz specyfikę służby podczas targów pracy, które odbyły się wczoraj w tutejszej Mediatece. Funkcjonariusze prezentowali oferty oraz udzielali informacji osobom zainteresowanym zmianą zatrudnienia.",
+  "opis_auto": true
  },
  {
   "id": "c915f95876b9",
@@ -436,7 +479,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "e1b1f0494fb6"
+  "tkey": "e1b1f0494fb6",
+  "opis_proba": "v2",
+  "text": "21 października Urząd Marszałkowski Województwa Mazowieckiego ogłosił dziesięcioro laureatów XXVII edycji regionalnych wyróżnień. Nagrody przyznano osobom i instytucjom zasłużonym m.in. dla kultury, edukacji i ochrony dziedzictwa w regionie.",
+  "opis_auto": true
  },
  {
   "id": "3bd2d775ae1c",
@@ -451,6 +497,245 @@
   "when": null,
   "event_iso": null,
   "tkey": "3667faca87d0"
+ },
+ {
+  "id": "418b63f43428",
+  "title": "Policja poszukuje 45-letniego mężczyzny",
+  "url": "https://pruszkow.twoje-miasto.pl/art-na-sygnale/policja-poszukuje-45-letniego-mezczyzny-i1256394",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "7e87c2e95343",
+  "opis_proba": "v2",
+  "text": "Funkcjonariusze z Pruszkowa poszukują mężczyzny, który 10 września 2026 roku wyszedł ze szpitala przy ul. Szaserów w Warszawie i nie nawiązał kontaktu z bliskimi. Osoby posiadające informacje o jego miejscu przebywania proszone są o kontakt z policją.",
+  "opis_auto": true
+ },
+ {
+  "id": "cc63aee578b0",
+  "title": "Piłkarki z SP nr 2 awansowały do krajowej ósemki",
+  "url": "https://plonsk.twoje-miasto.pl/art-sport/pilkarki-z-sp-nr-2-i1258344",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "spo",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "ce1f109c7ca6",
+  "opis_proba": "v2"
+ },
+ {
+  "id": "d7d981397153",
+  "title": "Zawodnik klubu bokserskiego piąty na ME młodzików",
+  "url": "https://nowydwormazowiecki.twoje-miasto.pl/art-sport/zawodnik-klubu-bokserskiego-piaty-na-i1255440",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "spo",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "435f661e452c",
+  "opis_proba": "v2",
+  "text": "Reprezentant Klubu Bokserskiego Nowy Dwór Mazowiecki zajął piąte miejsce na Mistrzostwach Europy Młodzików w boksie. W starciu o strefę medalową przegrał z bardziej doświadczonym zawodnikiem z Azerbejdżanu.",
+  "opis_auto": true
+ },
+ {
+  "id": "f6acc3258a4f",
+  "title": "Zaginął 45-letni mężczyzna. Opuścił szpital w Warszawie",
+  "url": "https://www.przegladregionalny.pl/artykul/11395,zaginal-45-letni-mezczyzna-opuscil-szpital-w-warszawie",
+  "source": "Przegląd Regionalny",
+  "source_id": "przeglad-regionalny",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "okolica",
+  "when": "10.09",
+  "event_iso": "2026-09-10",
+  "tkey": "88e91940ac1a",
+  "opis_proba": "v2",
+  "text": "Policjanci z Pruszkowa poszukują pacjenta, który 10 września 2026 roku wyszedł ze szpitala przy ul. Szaserów w Warszawie i nie nawiązał kontaktu z bliskimi. Funkcjonariusze apelują do wszystkich osób o przekazywanie informacji mogących pomóc w ustaleniu jego miejsca pobytu.",
+  "opis_auto": true
+ },
+ {
+  "id": "8cf004208364",
+  "title": "Nowa atrakcja w gminie Nadarzyn. Pochłonie ponad pół miliona",
+  "url": "https://www.przegladregionalny.pl/artykul/11394,nowa-atrakcja-w-gminie-nadarzyn-pochlonie-ponad-pol-miliona",
+  "source": "Przegląd Regionalny",
+  "source_id": "przeglad-regionalny",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "7f50a1c53ec5",
+  "opis_proba": "v2",
+  "text": "W Krakowianach w gminie Nadarzyn trwa budowa nowego terenu rekreacyjnego z alejkami i altaną. Inwestycja o wartości blisko 650 tysięcy złotych ma zakończyć się w grudniu 2026 roku.",
+  "opis_auto": true
+ },
+ {
+  "id": "4ce4da4cac63",
+  "title": "Wypadek drogowy w okolicy",
+  "url": "https://www.przegladregionalny.pl/artykul/11393,katastrofa-kolejowa-na-mazowszu-zmarl-kierowca-ktory-doprowadzil-do-wypadku",
+  "source": "Przegląd Regionalny",
+  "source_id": "przeglad-regionalny",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "zdr",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "ecfbd36f2010",
+  "neutral": true
+ },
+ {
+  "id": "09f48af90466",
+  "title": "Autobusy linii nr 3 wracają na trasę do Piastowa Warszawska",
+  "url": "https://www.przegladregionalny.pl/artykul/11388,autobusy-linii-nr-3-wracaja-na-trase-do-piastowa-warszawska",
+  "source": "Przegląd Regionalny",
+  "source_id": "przeglad-regionalny",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "okolica",
+  "when": "22.10",
+  "event_iso": "2026-10-22",
+  "tkey": "f12efb39b2ea",
+  "opis_proba": "v2"
+ },
+ {
+  "id": "935424756520",
+  "title": "Remont al. Krakowskiej w Raszynie. Kierowców czekają utrudnienia",
+  "url": "https://www.przegladregionalny.pl/artykul/11387,remont-al-krakowskiej-w-raszynie-kierowcow-czekaja-utrudnienia",
+  "source": "Przegląd Regionalny",
+  "source_id": "przeglad-regionalny",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "ost",
+  "place": "Raszyn",
+  "when": "22.10",
+  "event_iso": "2026-10-22",
+  "tkey": "846e5e4ee827",
+  "opis_proba": "v2",
+  "text": "Od 22 do 24 października 2026 roku potrwa remont nawierzchni alei Krakowskiej w Raszynie. Kierowcy poruszający się w stronę Janek muszą liczyć się z utrudnieniami i ruchem kierowanym przez pracowników budowy.",
+  "opis_auto": true
+ },
+ {
+  "id": "a2098498e0ad",
+  "title": "OSiR szuka kasjera. Nabór do 26 października",
+  "url": "https://grodziskinfo.pl/osir-szuka-kasjera-nabor-do-26-pazdziernika/",
+  "source": "Grodzisk INFO",
+  "source_id": "grodziskinfo",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "okolica",
+  "when": "26.10, godz. 16:00",
+  "event_iso": "2026-10-26",
+  "tkey": "c7387ac479ad",
+  "opis_proba": "v2",
+  "text": "Ośrodek Sportu i Rekreacji w Grodzisku Mazowieckim prowadzi nabór na pełny etat kasjera. Dokumenty aplikacyjne można składać do 26 października 2026 roku.",
+  "opis_auto": true
+ },
+ {
+  "id": "8839b92cf379",
+  "title": "Podkowa Leśna szuka specjalisty od płac",
+  "url": "https://grodziskinfo.pl/podkowa-lesna-szuka-specjalisty-od-plac/",
+  "source": "Grodzisk INFO",
+  "source_id": "grodziskinfo",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "Podkowa Leśna",
+  "when": null,
+  "event_iso": null,
+  "tkey": "43cc2a18e839",
+  "opis_proba": "v2"
+ },
+ {
+  "id": "beb074f6ab42",
+  "title": "Upadek wieloryba w Kinie Centrum Kultury",
+  "url": "https://grodziskinfo.pl/upadek-wieloryba-w-kinie-centrum-kultury/",
+  "source": "Grodzisk INFO",
+  "source_id": "grodziskinfo",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "07456ae72876",
+  "opis_proba": "v2",
+  "text": "W Kinie Centrum Kultury wyświetlany jest film „Upadek wieloryba” w reżyserii Briana Duffielda. Produkcja ukazuje historię nurka, który po zagłębieniu się w wody u wybrzeży Kalifornii zostaje uwięziony wewnątrz kaszalota.",
+  "opis_auto": true
+ },
+ {
+  "id": "315f006cb686",
+  "title": "Bogoria gra z mistrzem. W czwartek rewanż za finał",
+  "url": "https://grodziskinfo.pl/bogoria-gra-z-mistrzem-w-czwartek-rewanz-za-final/",
+  "source": "Grodzisk INFO",
+  "source_id": "grodziskinfo",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "spo",
+  "place": "okolica",
+  "when": "22.10, godz. 16:55",
+  "event_iso": "2026-10-22",
+  "tkey": "27408fcb01a2",
+  "opis_proba": "v2",
+  "text": "W czwartek 22 października 2026 roku w Grodzisku Mazowieckim drużyna Orlen Bogoria podejmie zespół Olimpia Grudziądz. To pierwsze starcie obu ekip od ubiegłorocznego finału mistrzostw Polski.",
+  "opis_auto": true
+ },
+ {
+  "id": "6f7e1c3739f4",
+  "title": "Podkowa Leśna: bezpłatny pokaz filmu Egzamin",
+  "url": "https://grodziskinfo.pl/podkowa-lesna-bezplatny-pokaz-filmu-egzamin/",
+  "source": "Grodzisk INFO",
+  "source_id": "grodziskinfo",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "Podkowa Leśna",
+  "when": "25.10, godz. 17:00",
+  "event_iso": "2026-10-25",
+  "tkey": "faab607388c5",
+  "opis_proba": "v2"
+ },
+ {
+  "id": "f4ee925bdc46",
+  "title": "WKD zainwestuje 250 mln zł. Przewoźnik ujawnia plany do 2030 roku",
+  "url": "https://wpr24.pl/wkd-zainwestuje-250-mln-zl-przewoznik-ujawnia-plany-do-2030-roku/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "9ee76de2f3a8"
+ },
+ {
+  "id": "fcecf1973f3a",
+  "title": "Czysta woda dla pruszkowskich uczniów",
+  "url": "https://wpr24.pl/czysta-woda-dla-pruszkowskich-uczniow/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-10-21",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "Pruszków",
+  "when": null,
+  "event_iso": null,
+  "tkey": "c74187782504"
  },
  {
   "id": "177327129d3d",
@@ -580,7 +865,10 @@
   "place": "Podkowa Leśna",
   "when": null,
   "event_iso": null,
-  "tkey": "6eba44f48591"
+  "tkey": "6eba44f48591",
+  "also": [
+   "Grodzisk INFO"
+  ]
  },
  {
   "id": "b1116c898fa3",
