@@ -25,7 +25,7 @@ API_URL = "https://api.anthropic.com/v1/messages"
 MODEL = "claude-haiku-5-5"
 GITHUB_URL = "https://models.github.ai/inference/chat/completions"
 GITHUB_MODEL = "openai/gpt-4o-mini"
-GEMINI_MODELE = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.5-flash"]   # kolejno, do pierwszego działającego
+GEMINI_MODELE = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-2.5-flash-lite"]   # kolejno, do pierwszego działającego
 LIMIT_CZEKANIE = 65     # sekundy czekania po błędzie 429 (limit na minutę) przed jedną ponowną próbą
 PRZERWA_GEMINI = 13     # sekundy między wywołaniami (darmowy model ma ok. 5 zapytań na minutę)
 PRZERWA = 4             # sekundy między wywołaniami darmowego modelu (limity zapytań na minutę)
@@ -176,6 +176,7 @@ def wywolaj_github(tresc, token, model=GITHUB_MODEL, timeout=60):
 
 
 _gemini_ok = []
+_gemini_martwe = set()     # modele, które Google odrzucił jako niedostępne (404): nie próbujemy ich więcej w tym przebiegu
 
 
 def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
@@ -186,8 +187,10 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
         "generationConfig": {"maxOutputTokens": 1024, "temperature": 0.2}}).encode()
     # działający model idzie pierwszy, ale reszta zostaje jako zapas (każdy model ma własny dzienny limit)
     modele = [model] if model else _gemini_ok + [x for x in GEMINI_MODELE if x not in _gemini_ok]
-    bledy, limity, ostatni_429 = [], 0, None
+    modele = [x for x in modele if x not in _gemini_martwe] or modele
+    bledy, limity, ostatni_429, probowane = [], 0, None, 0
     for m in modele:
+        probowane += 1
         if m.startswith("gemini-2.5"):
             # modele 2.5 domyślnie "myślą", a te tokeny liczą się do limitu odpowiedzi: notka wychodziła ucięta
             cfg = json.loads(body)
@@ -206,6 +209,11 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
             except urllib.error.HTTPError as e:      # 429: ten model wyczerpał limit, próbujemy kolejny
                 limity += 1
                 ostatni_429 = e
+                try:
+                    szczegol = e.read()[:250].decode("utf-8", "replace").replace("\n", " ")
+                except Exception:
+                    szczegol = ""
+                print(f"  {m}: limit 429 {szczegol}")      # w logu widać, czy to limit minutowy czy dzienny
                 bledy.append(f"{m}: limit zapytań (429)")
                 break
             except ModelBlad as e:
@@ -213,6 +221,8 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
                     time.sleep(6 * (proba + 1))
                     continue
                 bledy.append(f"{m}: {str(e)[:160]}")
+                if str(e).startswith("HTTP 404"):
+                    _gemini_martwe.add(m)
                 break
         if data is None:
             continue
@@ -222,7 +232,7 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
         except (KeyError, IndexError, TypeError):
             return ""       # np. odpowiedź zablokowana przez filtr: brak notki, nie awaria
         return "".join(c.get("text", "") for c in czesci)
-    if ostatni_429 is not None and limity == len(modele):
+    if ostatni_429 is not None and limity == probowane:
         raise ostatni_429       # wszystkie modele wyczerpane: wywołujący poczeka albo zakończy na dziś
     raise ModelBlad(" | ".join(bledy))
 

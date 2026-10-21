@@ -633,16 +633,16 @@ class NotkiAwariaModelu(unittest.TestCase):
                 raise streszczenia.ModelBlad("HTTP 404: model nie istnieje")
             return {"candidates": [{"content": {"parts": [{"text": "Notka "}, {"text": "z Gemini."}]}}]}
         streszczenia._otworz = falsz
-        streszczenia._gemini_ok.clear()
+        streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
         try:
             self.assertEqual(streszczenia.wywolaj_gemini("t", "klucz"), "Notka z Gemini.")
-            self.assertEqual(adresy, ["gemini-2.5-flash:generateContent", "gemini-2.5-flash-lite:generateContent"])
+            self.assertEqual(adresy, ["gemini-3.5-flash:generateContent", "gemini-flash-latest:generateContent"])
             streszczenia.wywolaj_gemini("t", "klucz")
-            self.assertEqual(adresy[-1], "gemini-2.5-flash-lite:generateContent")   # od razu działający model
+            self.assertEqual(adresy[-1], "gemini-flash-latest:generateContent")   # od razu działający model
             self.assertEqual(len(adresy), 3)
         finally:
             streszczenia._otworz = stare
-            streszczenia._gemini_ok.clear()
+            streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
 
     def test_wybor_gemini_przed_github(self):
         import os
@@ -680,13 +680,13 @@ class NotkiAwariaModelu(unittest.TestCase):
                 raise streszczenia.ModelBlad('HTTP 503: b\'{"status": "UNAVAILABLE"}\'')
             return {"candidates": [{"content": {"parts": [{"text": "Notka po ponowieniu."}]}}]}
         streszczenia._otworz, streszczenia.time.sleep = falsz, lambda s: None
-        streszczenia._gemini_ok.clear()
+        streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
         try:
             self.assertEqual(streszczenia.wywolaj_gemini("t", "klucz"), "Notka po ponowieniu.")
             self.assertEqual(len(proby), 3)       # dwa razy 503, trzecia próba tego samego modelu przeszła
         finally:
             streszczenia._otworz, streszczenia.time.sleep = stare, stary_sen
-            streszczenia._gemini_ok.clear()
+            streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
 
     def test_limit_minutowy_jedno_ponowienie_i_dalej(self):
         import urllib.error
@@ -718,12 +718,12 @@ class NotkiAwariaModelu(unittest.TestCase):
             zlapane.append(json.loads(req.data))
             return {"candidates": [{"content": {"parts": [{"text": "Całe zdanie testowe o czterech słowach więcej."}]}}]}
         streszczenia._otworz = falsz
-        streszczenia._gemini_ok.clear()
+        streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
         try:
-            streszczenia.wywolaj_gemini("t", "klucz")
+            streszczenia.wywolaj_gemini("t", "klucz", model="gemini-2.5-flash")
         finally:
             streszczenia._otworz = stare
-            streszczenia._gemini_ok.clear()
+            streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
         cfg = zlapane[0]["generationConfig"]
         self.assertEqual(cfg["thinkingConfig"], {"thinkingBudget": 0})
         self.assertGreaterEqual(cfg["maxOutputTokens"], 1024)
@@ -755,10 +755,10 @@ class NotkiAwariaModelu(unittest.TestCase):
                 raise urllib.error.HTTPError("u", 429, "Too Many Requests", {}, None)
             return {"candidates": [{"content": {"parts": [{"text": "Całe zdanie testowe o czterech słowach więcej."}]}}]}
         streszczenia._otworz = falsz
-        streszczenia._gemini_ok.clear()
+        streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
         try:
             self.assertTrue(streszczenia.wywolaj_gemini("t", "klucz"))
-            self.assertEqual(adresy, ["gemini-2.5-flash", "gemini-2.5-flash-lite"])
+            self.assertEqual(adresy, ["gemini-3.5-flash", "gemini-flash-latest"])
             def wszystkie_429(req, timeout):
                 raise urllib.error.HTTPError("u", 429, "Too Many Requests", {}, None)
             streszczenia._otworz = wszystkie_429
@@ -767,7 +767,7 @@ class NotkiAwariaModelu(unittest.TestCase):
             self.assertEqual(c.exception.code, 429)
         finally:
             streszczenia._otworz = stare
-            streszczenia._gemini_ok.clear()
+            streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
 
     def test_ostrzezenie_bez_notki_nie_ma_szablonu(self):
         it = {"kind": "ost", "source": "Grodziski24"}
@@ -788,3 +788,25 @@ class RodzajPoprawki(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class GeminiMartweModele(unittest.TestCase):
+    def test_model_404_jest_pomijany_przy_kolejnych_wywolaniach(self):
+        stare = streszczenia._otworz
+        adresy = []
+        def falsz(req, timeout):
+            m = req.full_url.split("/models/")[1].split(":")[0]
+            adresy.append(m)
+            if m != "gemini-flash-lite-latest":
+                raise streszczenia.ModelBlad("HTTP 404: model niedostepny")
+            return {"candidates": [{"content": {"parts": [{"text": "Notka."}]}}]}
+        streszczenia._otworz = falsz
+        streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
+        try:
+            streszczenia.wywolaj_gemini("t", "k")
+            n = len(adresy)
+            streszczenia.wywolaj_gemini("t", "k")
+            self.assertEqual(adresy[n:], ["gemini-flash-lite-latest"])
+        finally:
+            streszczenia._otworz = stare
+            streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
