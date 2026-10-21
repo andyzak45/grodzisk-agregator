@@ -320,6 +320,9 @@ def wczytaj_store(sources=None):
             i["tkey"] = tkey(i["title"])
             i["title"] = neutralny_tytul(i["title"], i["place"])
             i["neutral"] = True
+        if i.get("opis_auto") and not streszczenia.ksztalt_ok(i.get("text")):
+            for k in ("text", "opis_auto", "opis_proba"):     # zepsuta notka (np. ucięta): usuwamy i generujemy od nowa
+                i.pop(k, None)
         store[i["id"]] = i
     return store
 

@@ -86,10 +86,7 @@ def opis(it, today):
     """Jedno zdanie z faktów. Pusty tekst, gdy nic nie wnosi ponad tytuł i znaczniki na karcie."""
     if it.get("text"):
         return it["text"]
-    zrodlo = it["source"].rstrip(".")
-    if it["kind"] == "zdr":
-        return f"Sprawę opisuje {zrodlo}. Szczegóły pod linkiem do źródła."
-    # ostrzeżenia bez notki nie dostają szablonu: znacznik rodzaju i źródło są już na karcie
+    # bez notki napisanej własnymi słowami karta nie dostaje żadnego szablonu: tytuł, znaczniki i źródło mówią resztę
     return ""
 
 

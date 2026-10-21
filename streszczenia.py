@@ -107,12 +107,22 @@ def przepisane(notka, zrodlo, n=N_PRZEPISANE):
     return any(" ".join(w[i:i + n]) in pary for i in range(len(w) - n + 1))
 
 
+def ksztalt_ok(notka):
+    """Notka ma wyglądać jak całe zdanie: wielka litera na początku, kropka na końcu, bez znaczników markdown i urywków."""
+    n = (notka or "").strip()
+    if len(n.split()) < 6 or "*" in n or "#" in n or "`" in n:
+        return False
+    if not re.match(r"[A-ZĄĆĘŁŃÓŚŹŻ0-9„\"]", n):
+        return False
+    return n.rstrip('"”’)').endswith((".", "!", "?", "…"))
+
+
 def sprawdz(notka, zrodlo):
     """Zwraca oczyszczoną notkę albo None, gdy nie nadaje się do publikacji."""
     notka = re.sub(r"\s+", " ", (notka or "")).strip().strip('"„”')
     if not notka or notka.upper().startswith("BRAK") or len(notka) > MAX_NOTKA or len(notka) < 20:
         return None
-    if wrazliwe(notka) or przepisane(notka, zrodlo):
+    if not ksztalt_ok(notka) or wrazliwe(notka) or przepisane(notka, zrodlo):
         return None
     return notka
 
@@ -173,12 +183,19 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
     body = json.dumps({
         "systemInstruction": {"parts": [{"text": SYSTEM}]},
         "contents": [{"role": "user", "parts": [{"text": tresc}]}],
-        "generationConfig": {"maxOutputTokens": 400, "temperature": 0.2}}).encode()
+        "generationConfig": {"maxOutputTokens": 1024, "temperature": 0.2}}).encode()
     modele = [model] if model else (_gemini_ok or GEMINI_MODELE)
     bledy = []
     for m in modele:
+        if m.startswith("gemini-2.5"):
+            # modele 2.5 domyślnie "myślą", a te tokeny liczą się do limitu odpowiedzi: notka wychodziła ucięta
+            cfg = json.loads(body)
+            cfg["generationConfig"]["thinkingConfig"] = {"thinkingBudget": 0}
+            tresc_zadania = json.dumps(cfg).encode()
+        else:
+            tresc_zadania = body
         req = urllib.request.Request(
-            f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent", data=body,
+            f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent", data=tresc_zadania,
             headers={"x-goog-api-key": klucz, "Content-Type": "application/json", "User-Agent": "grodzisk-lokalnie-bot"})
         data = None
         for proba in range(3):      # HTTP 5xx ("model przeciążony, spróbuj później") to zwykle chwilowa sprawa
@@ -316,7 +333,7 @@ def zastosuj_reczne(store, sciezka):
         notka = re.sub(r"\s+", " ", str(notka)).strip()
         if not it or it.get("neutral") or it["kind"] == "zdr":
             continue
-        if not (20 <= len(notka) <= MAX_NOTKA) or wrazliwe(notka):
+        if not (20 <= len(notka) <= MAX_NOTKA) or not ksztalt_ok(notka) or wrazliwe(notka):
             print(f"  data/opisy.json: odrzucono notkę dla {url} (długość lub dane osób)")
             continue
         it["text"], it["opis_auto"] = notka, True

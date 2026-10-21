@@ -394,7 +394,7 @@ class StronaRedakcyjna(unittest.TestCase):
 
     def test_zdarzenie_ma_opis_bez_szczegolow_i_nie_jest_jedynka(self):
         page = self._strona([self._it(kind="zdr", title="Wypadek drogowy: Kozerki", place="Kozerki", neutral=True)])
-        self.assertIn("Sprawę opisuje Źródło", page)
+        self.assertNotIn("Sprawę opisuje", page)         # bez notki własnymi słowami karta nie ma szablonu
         self.assertNotIn("hero-tile\"", page)
 
     def test_jedynka_dnia_woli_gmine_od_okolicy(self):
@@ -405,7 +405,7 @@ class StronaRedakcyjna(unittest.TestCase):
 
     def test_brak_podwojnej_kropki_po_skrocie_zrodla(self):
         it = self._it(kind="zdr", neutral=True, source="KPP Grodzisk Maz.")
-        self.assertEqual(redakcja.opis(it, TODAY), "Sprawę opisuje KPP Grodzisk Maz. Szczegóły pod linkiem do źródła.")
+        self.assertEqual(redakcja.opis(it, TODAY), "")
 
     def test_okolica_nie_jest_miejscowoscia_na_liscie(self):
         page = self._strona([self._it(place="okolica"), self._it(id="2", url="https://x.pl/2", place="Natolin")])
@@ -704,6 +704,47 @@ class NotkiAwariaModelu(unittest.TestCase):
             self.assertEqual(streszczenia.dopisz(store, Notki.ZR, f, TODAY, 5, llm), 2)
         finally:
             streszczenia.LIMIT_CZEKANIE = stare
+
+    def test_ksztalt_notki(self):
+        self.assertFalse(streszczenia.ksztalt_ok("spotkaniach publicznych). * *"))          # prawdziwy urywek z Gemini
+        self.assertFalse(streszczenia.ksztalt_ok("Urząd zaprasza na bezpłatne kursy obrony cywilnej w weekend"))  # bez kropki
+        self.assertFalse(streszczenia.ksztalt_ok("**Urząd** zaprasza na bezpłatne kursy obrony cywilnej."))      # markdown
+        self.assertTrue(streszczenia.ksztalt_ok("Urząd zaprasza na bezpłatne kursy obrony cywilnej w ten weekend."))
+
+    def test_gemini_25_bez_myslenia_i_z_duzym_limitem(self):
+        stare = streszczenia._otworz
+        zlapane = []
+        def falsz(req, timeout):
+            zlapane.append(json.loads(req.data))
+            return {"candidates": [{"content": {"parts": [{"text": "Całe zdanie testowe o czterech słowach więcej."}]}}]}
+        streszczenia._otworz = falsz
+        streszczenia._gemini_ok.clear()
+        try:
+            streszczenia.wywolaj_gemini("t", "klucz")
+        finally:
+            streszczenia._otworz = stare
+            streszczenia._gemini_ok.clear()
+        cfg = zlapane[0]["generationConfig"]
+        self.assertEqual(cfg["thinkingConfig"], {"thinkingBudget": 0})
+        self.assertGreaterEqual(cfg["maxOutputTokens"], 1024)
+
+    def test_zepsuta_notka_jest_czyszczona_przy_wczytaniu(self):
+        import tempfile, pathlib
+        wpis = dict(Notki._store(Notki())["a"], id="z1", url="https://grodzisk.pl/z1",
+                    text="spotkaniach publicznych). * *", opis_auto=True, opis_proba="v2")
+        dobry = dict(wpis, id="z2", url="https://grodzisk.pl/z2",
+                     text="Urząd zaprasza na bezpłatne kursy obrony cywilnej w ten weekend.")
+        stary = scraper.STORE
+        with tempfile.TemporaryDirectory() as d:
+            scraper.STORE = pathlib.Path(d) / "items.json"
+            scraper.STORE.write_text(json.dumps([wpis, dobry]), encoding="utf-8")
+            try:
+                store = scraper.wczytaj_store([])
+            finally:
+                scraper.STORE = stary
+        self.assertNotIn("text", store["z1"])
+        self.assertNotIn("opis_proba", store["z1"])        # dostanie nową notkę
+        self.assertIn("text", store["z2"])
 
     def test_ostrzezenie_bez_notki_nie_ma_szablonu(self):
         it = {"kind": "ost", "source": "Grodziski24"}
