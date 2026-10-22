@@ -1,5 +1,5 @@
 {
- "run": "2026-10-22T14:33:59",
+ "run": "2026-10-22T21:22:29",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
@@ -29,12 +29,12 @@
   "przeglad-regionalny": {
    "ok": true,
    "found": 15,
-   "new": 2
+   "new": 1
   },
   "grodziskinfo": {
    "ok": true,
    "found": 15,
-   "new": 2
+   "new": 0
   },
   "wpr24": {
    "ok": true,
