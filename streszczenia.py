@@ -33,7 +33,7 @@ MAX_TEKST = 4000        # tyle znaków artykułu wysyłamy do modelu
 MIN_TEKST = 250         # krótszy tekst to zwykle menu lub zapowiedź bez treści
 MAX_NOTKA = 300
 MAX_WIEK_DNI = 7        # starszych wpisów nie uzupełniamy
-N_PRZEPISANE = 7        # tyle kolejnych słów z artykułu w notce uznajemy za przepisanie
+N_PRZEPISANE = 9        # tyle kolejnych słów z artykułu w notce uznajemy za przepisanie
 
 SYSTEM = """Jesteś redaktorem lokalnego portalu informacyjnego. Z podanego tekstu napisz notkę do dwóch zdań
 (najwyżej 280 znaków) po polsku, własnymi słowami, w stylu rzeczowej gazety.
@@ -56,7 +56,7 @@ class ModelBlad(Exception):
     """Odpowiedź modelu nie nadaje się do użycia (pusta, nie-JSON, kod błędu). Komunikat trafia do logu."""
 
 
-WERSJA_PROBY = "v2"        # wpisy oznaczone starą flagą (True) z przebiegów, w których model nie odpowiadał, dostają drugą szansę
+WERSJA_PROBY = "v3"        # wpisy oznaczone starą flagą (True) z przebiegów, w których model nie odpowiadał, dostają drugą szansę
 MAX_BLEDOW_Z_RZEDU = 3     # tyle awarii modelu pod rząd kończy notki na dziś (zamiast spalać wpisy i limity)
 
 
@@ -235,7 +235,7 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
             czesci = data["candidates"][0]["content"]["parts"]
         except (KeyError, IndexError, TypeError):
             return ""       # np. odpowiedź zablokowana przez filtr: brak notki, nie awaria
-        return "".join(c.get("text", "") for c in czesci)
+        return "".join(c.get("text", "") for c in czesci if not c.get("thought"))      # bez "myśli" modelu
     if ostatni_429 is not None and limity == probowane:
         raise ostatni_429       # wszystkie modele wyczerpane: wywołujący poczeka albo zakończy na dziś
     raise ModelBlad(" | ".join(bledy))
@@ -356,7 +356,7 @@ def dopisz(store, zrodla, fetcher, today, limit, llm=None):
             dodane += 1
             licz("dodano notkę", it)
         else:
-            licz("notka odrzucona", it, (surowa or "pusta odpowiedź")[:60].replace("\n", " "))
+            licz("notka odrzucona", it, f"model {(_gemini_ok or ['?'])[0]}: " + (surowa or "pusta odpowiedź")[:300].replace("\n", " "))
     if wynik:
         print("  Notki, podsumowanie: " + ", ".join(f"{k}: {v}" for k, v in wynik.items()) + f"; zapytań do modelu: {proby}")
     return dodane
