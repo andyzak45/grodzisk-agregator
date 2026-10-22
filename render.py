@@ -6,13 +6,15 @@ from pathlib import Path
 from klasyfikacja import klucz_miejsca, miejsce_wpisu, w_gminie
 from redakcja import data_ui, dzien, godzina, inny_region, miejsce_ui, opis, termin_ui
 
+# Kolejność sekcji na stronie i w menu: najpierw to, co dzieje się w okolicy (wydarzenia), potem wiadomości.
+# Puste kategorie nie są pokazywane (ostrzeżenie o dużej wadze i tak trafia na górę jako główny temat strony).
 KIND_UI = {
+    "wyd": ("Wydarzenia", "bg-kultura"),
+    "inne": ("Wiadomości", "bg-neutralny"),
     "ost": ("Ostrzeżenia", "bg-alert"),
     "zdr": ("Zdarzenia", "bg-alert"),
-    "wyd": ("Wydarzenia", "bg-kultura"),
     "inw": ("Inwestycje i przetargi", "bg-drogi"),
     "spo": ("Sport", "bg-sport"),
-    "inne": ("Wiadomości", "bg-neutralny"),
 }
 
 # Proste ikony liniowe 24x24 (własne, bez zewnętrznych plików).
@@ -34,6 +36,8 @@ NAJNOWSZE = 5            # tyle pozycji w pasku "Najnowsze"
 NA_START = 4              # tyle wpisów widać w każdej kategorii od razu
 MAX_W_KATEGORII = 12      # tyle najwyżej na stronie (reszta w archiwum); ponad NA_START po kliknięciu "Pokaż więcej"
 SHOW_DAYS = 14
+ZAWSZE_W_MENU = {"ost", "zdr"}   # te kategorie zostają w menu nawet puste (przyciemnione, z zerem); sekcji bez wpisów i tak nie ma
+DNI_OSTRZEZEN = 3        # ostrzeżenia (pogoda, komunikaty kryzysowe) są aktualne krótko: potem idą do archiwum
 BEZ_TERMINU_DNI = 3      # zapowiedź bez terminu pokazujemy tylko tuż po pojawieniu się
 BEZ_TERMINU_MAX = 3
 
@@ -86,7 +90,8 @@ def widoczne(items, today):
             continue
         upcoming = (it.get("event_iso") or "") >= today.isoformat()
         past_event = it.get("event_iso") and it["event_iso"] < today.isoformat()
-        if (wiek(it, today) <= SHOW_DAYS and not past_event) or upcoming:
+        limit_dni = DNI_OSTRZEZEN if it["kind"] == "ost" else SHOW_DAYS
+        if (wiek(it, today) <= limit_dni and not past_event) or upcoming:
             out.append(it)
     return out
 
@@ -182,11 +187,13 @@ def filtry(items):
 
 
 def nawigacja(po_rodzajach):
-    """Menu wszystkich kategorii (zawsze wszystkie, także puste); każda pozycja skacze do swojej sekcji."""
+    """Menu kategorii: z wpisami oraz stałe (ostrzeżenia, zdarzenia), reszta pustych jest pomijana."""
     out = []
     for k, (label, bg) in KIND_UI.items():
         n = len(po_rodzajach.get(k, []))
-        out.append(f'<a class="cat-link c-{k}{"" if n else " zero"}" href="#kat-{k}" data-kind="{k}">'
+        if not n and k not in ZAWSZE_W_MENU:
+            continue
+        out.append(f'<a class="cat-link c-{k}{"" if n else " zero"}" href="#kat-{k}" data-kind="{k}"{" data-stale" if k in ZAWSZE_W_MENU else ""}>'
                    f'<span class="cat-name">{e(label)}</span> <span class="cat-count">{n}</span></a>')
     return '<nav class="cat-nav" aria-label="Kategorie">' + "".join(out) + "</nav>"
 
@@ -206,6 +213,8 @@ def sekcje(po_rodzajach, wyrozniane, today):
     out = []
     for k, (label, bg) in KIND_UI.items():
         lista = po_rodzajach.get(k, [])
+        if not lista:
+            continue                  # pusta kategoria: bez sekcji
         reszta = [i for i in lista if not any(i is w for w in wyrozniane)]
         karty = "".join(karta(i, today) for i in reszta)
         out.append(

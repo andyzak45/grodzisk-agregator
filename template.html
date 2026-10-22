@@ -94,6 +94,7 @@
         <!-- TICKER_PLACEHOLDER -->
         <!-- FRONT_PLACEHOLDER -->
         <!-- DYNAMIC_CARDS_PLACEHOLDER -->
+        <p class="empty" id="brak" hidden>Brak aktualnych wpisów.</p>
     </main>
     <footer>
         <p>Informacje zbierane z publicznych stron lokalnych instytucji i mediów oraz opracowywane przez redakcję. Pokazujemy fakty i link do oryginału, pełne treści czytaj u wydawców. Przy zdarzeniach nie podajemy danych osób. Zauważyłeś błąd? Napisz do redakcji.</p>
@@ -122,9 +123,13 @@
                 var total = n;
                 document.querySelectorAll('.front .portal-card[data-kind="' + kind + '"]:not([hidden])').forEach(function () { total++; });
                 sec.querySelector(".kat-count").textContent = total;
+                sec.hidden = total === 0;      // pusta kategoria (także po wybraniu miejscowości) znika
                 var link = document.querySelector('.cat-link[data-kind="' + kind + '"]');
-                link.querySelector(".cat-count").textContent = total;
-                link.classList.toggle("zero", total === 0);
+                if (link) {
+                    link.querySelector(".cat-count").textContent = total;
+                    link.classList.toggle("zero", total === 0);
+                    link.hidden = total === 0 && !("stale" in link.dataset);
+                }
                 var empty = sec.querySelector(".kat-empty");
                 empty.hidden = n > 0;
                 empty.textContent = total === 0
@@ -135,6 +140,12 @@
                 btn.textContent = rozwiniete[kind] ? "Pokaż mniej" : "Pokaż więcej (" + (n - start) + ")";
             });
         }
+        var brak = document.getElementById("brak");
+        function pustaStrona() {
+            if (!brak) return;
+            brak.hidden = !!document.querySelector(".kat:not([hidden]), .front:not([hidden])");
+            brak.textContent = place ? "Brak wpisów dla wybranej miejscowości." : "Brak aktualnych wpisów.";
+        }
         document.querySelectorAll(".more").forEach(function (b) {
             b.addEventListener("click", function () {
                 var kind = b.closest(".kat").dataset.kind;
@@ -143,8 +154,9 @@
             });
         });
         var sel = document.getElementById("place");
-        if (sel) sel.addEventListener("change", function () { place = sel.value; apply(); });
+        if (sel) sel.addEventListener("change", function () { place = sel.value; apply(); pustaStrona(); });
         apply();
+        pustaStrona();
         var now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         document.querySelectorAll("time[datetime]").forEach(function (t) {
             var p = t.getAttribute("datetime").split("-");
