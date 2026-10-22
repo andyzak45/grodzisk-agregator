@@ -397,12 +397,43 @@ class StronaRedakcyjna(unittest.TestCase):
         self.assertNotIn("Sprawę opisuje", page)         # bez notki własnymi słowami karta nie ma szablonu
         self.assertNotIn("hero-tile\"", page)
 
-    def test_wszystkie_kategorie_widac_na_gorze_nawet_puste(self):
+    def test_puste_kategorie_nie_maja_sekcji_a_ostrzezenia_i_zdarzenia_zostaja_w_menu(self):
         page = self._strona([self._it(kind="inw", title="Remont drogi")])
-        for k in ("ost", "zdr", "wyd", "inw", "spo", "inne"):
+        self.assertIn('id="kat-inw"', page)
+        for k in ("wyd", "inne", "spo"):            # puste: bez sekcji i bez pozycji w menu
+            self.assertNotIn(f'id="kat-{k}"', page)
+            self.assertNotIn(f'href="#kat-{k}"', page)
+        for k in ("ost", "zdr"):                    # stałe pozycje menu, przyciemnione, bez sekcji
             self.assertIn(f'href="#kat-{k}"', page)
-            self.assertIn(f'id="kat-{k}"', page)
-        self.assertIn("Brak aktualnych wpisów w tej kategorii.", page)
+            self.assertNotIn(f'id="kat-{k}"', page)
+        self.assertRegex(page, r'cat-link c-ost zero')
+
+    def test_sekcje_w_kolejnosci_wydarzenia_wiadomosci_ostrzezenia(self):
+        items = [self._it(id="1", url="https://x.pl/1", kind="ost", title="Ostrzeżenie A"),
+                 self._it(id="2", url="https://x.pl/2", kind="inne", title="Wiadomość B"),
+                 self._it(id="3", url="https://x.pl/3", kind="wyd", title="Wydarzenie C", event_iso="2026-10-30", when="30.10")]
+        page = self._strona(items)
+        idx = [page.index(f'id="kat-{k}"') for k in ("wyd", "inne", "ost")]
+        self.assertEqual(idx, sorted(idx))
+
+    def test_pusta_strona_ma_komunikat(self):
+        page = self._strona([])
+        self.assertNotIn('<section class="kat', page)
+        self.assertIn('id="brak"', page)
+
+    def test_ostrzezenie_bez_terminu_wygasa_po_kilku_dniach(self):
+        swieze = self._it(id="1", url="https://x.pl/1", kind="ost", title="Świeże ostrzeżenie",
+                          first_seen="2026-10-18", published="2026-10-18")
+        stare = self._it(id="2", url="https://x.pl/2", kind="ost", title="Stare ostrzeżenie",
+                         first_seen="2026-10-10", published="2026-10-10")
+        z_data_w_przyszlosci = self._it(id="3", url="https://x.pl/3", kind="ost", title="Ostrzeżenie do soboty",
+                                        first_seen="2026-10-10", published="2026-10-10",
+                                        event_iso="2026-10-24", when="24.10")
+        z_data_minela = self._it(id="4", url="https://x.pl/4", kind="ost", title="Ostrzeżenie minione",
+                                 first_seen="2026-10-17", published="2026-10-17",
+                                 event_iso="2026-10-18", when="18.10")
+        ids = {i["id"] for i in render.widoczne([swieze, stare, z_data_w_przyszlosci, z_data_minela], TODAY)}
+        self.assertEqual(ids, {"1", "3"})
 
     def test_wydarzenia_najblizszy_termin_pierwszy(self):
         pozniej = self._it(id="a", url="https://x.pl/a", kind="wyd", title="Koncert grudniowy", event_iso="2026-12-05", when="5.12")
@@ -445,8 +476,10 @@ class StronaRedakcyjna(unittest.TestCase):
 
     def test_wpis_bez_daty_jest_oznaczony_a_nie_udaje_dzisiejszego(self):
         page = self._strona([self._it(published=None, first_seen="2026-10-18")])
-        self.assertIn("zauważono", page)
-        self.assertNotIn("dzisiaj", page.split("<main>")[1].split("<script>")[0])
+        glowna = page.split("<main>")[1].split("<script>")[0]
+        self.assertNotIn("zauważono", page)         # bez dopisków w stylu bota
+        self.assertIn("18.10", glowna)              # widać dzień, w którym wpis się pojawił
+        self.assertNotIn("dzisiaj", glowna)
 
     def test_zapowiedzi_bez_terminu_sa_ograniczone(self):
         items = [self._it(id=str(i), url=f"https://x.pl/{i}", kind="wyd", title=f"Zapowiedź {i}") for i in range(6)]
@@ -863,6 +896,25 @@ class Archiwum(unittest.TestCase):
         self.assertIn("&lt;b&gt;starego&lt;/b&gt;", page)      # treść jest escapowana
         self.assertNotIn("opis automatyczny", page)
         self.assertIn("index.html", page)
+
+    def test_archiwum_jest_podzielone_na_kategorie_a_w_nich_na_miesiace(self):
+        items = [self._wpis(1, 60, kind="wyd"), self._wpis(2, 70, kind="inne"), self._wpis(3, 65, kind="wyd"),
+                 self._wpis(4, 1, kind="spo")]
+        with tempfile.TemporaryDirectory() as d:
+            sz = Path(__file__).resolve().parent / "template.html"
+            pokazane = render.build(items, sz, Path(d) / "index.html", TODAY)
+            render.build_archive(items, pokazane, sz, Path(d) / "archiwum.html", TODAY)
+            page = (Path(d) / "archiwum.html").read_text(encoding="utf-8")
+        for k in ("wyd", "inne"):
+            self.assertIn(f'id="arch-{k}"', page)
+        self.assertNotIn('id="arch-ost"', page)                 # kategoria bez wpisów w archiwum nie ma sekcji
+        self.assertLess(page.index('id="arch-wyd"'), page.index('id="arch-inne"'))
+        wyd = page[page.index('id="arch-wyd"'):page.index('id="arch-inne"')]
+        self.assertIn("Tytuł 1", wyd)
+        self.assertIn("Tytuł 3", wyd)
+        self.assertNotIn("Tytuł 2", wyd)
+        self.assertIn('class="arch-month"', page)
+        self.assertIn('href="#arch-wyd"', page)                  # menu kategorii archiwum
 
     def test_puste_archiwum(self):
         with tempfile.TemporaryDirectory() as d:
