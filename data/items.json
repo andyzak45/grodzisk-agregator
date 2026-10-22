@@ -1515,7 +1515,9 @@
   "kind": "wyd",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "5b3b000123b8",
@@ -1528,7 +1530,9 @@
   "kind": "inne",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "7dfb1c6f66c1",
@@ -1541,7 +1545,10 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "W Mediatece w Grodzisku Mazowieckim zaplanowano debatę społeczną poświęconą wnioskom z ubiegłego roku oraz spotkanie edukacyjne o bezpieczeństwie seniorów. Wydarzenie odbędzie się 9 października 2026 roku o godzinie 15:00.",
+  "opis_auto": true
  },
  {
   "id": "aff796453e54",
@@ -1554,7 +1561,10 @@
   "kind": "inne",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "Policjant z grodziskiej komendy przeprowadził w październiku 2026 roku cykl zajęć z bezpieczeństwa ruchu drogowego dla uczniów Szkoły Podstawowej Nr 1 w Grodzisku Mazowieckim. Dzieci przypomniały sobie zasady przechodzenia przez jezdnię, jazdy rowerem oraz używania elementów odblaskowych.",
+  "opis_auto": true
  },
  {
   "id": "efb04ad02b9f",
@@ -1567,7 +1577,9 @@
   "kind": "inne",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "fbc9f7863e0b",
@@ -1608,7 +1620,9 @@
   "kind": "inne",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "bf27486cfb28",
@@ -1795,7 +1809,8 @@
   "event_iso": null,
   "also": [
    "KPP Grodzisk Maz."
-  ]
+  ],
+  "opis_proba": "v2"
  },
  {
   "id": "c340f49024ee",
@@ -1808,7 +1823,9 @@
   "kind": "inw",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "63d8cd434eda",
@@ -1821,7 +1838,8 @@
   "kind": "inw",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2"
  },
  {
   "id": "6045cc3fb1ce",
@@ -1834,7 +1852,10 @@
   "kind": "inne",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "13 października 2026 roku w Centrum Kultury w Grodzisku Mazowieckim odbyły się obchody Dnia Edukacji Narodowej. Podczas uroczystości wręczono nagrody pracownikom oświaty oraz przyznano dwa tytuły zasłużonego dla gminy.",
+  "opis_auto": true
  },
  {
   "id": "ab525db397c4",
@@ -1847,7 +1868,9 @@
   "kind": "inne",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "8c1750ab228d",
@@ -1860,7 +1883,9 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "6541b144a00b",
@@ -1873,7 +1898,8 @@
   "kind": "inw",
   "place": "Szczęsne",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2"
  },
  {
   "id": "a6b4f7aea68e",
@@ -2450,7 +2476,9 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "7ce2be4dbf4f",
@@ -2463,7 +2491,10 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "Mobilna pracownia mammograficzna zaprasza mieszkanki Grodziska Mazowieckiego na bezpłatne badania. Pojazd stanie 22 października 2026 roku przy Centrum Kultury przy ul. Spółdzielczej 9.",
+  "opis_auto": true
  },
  {
   "id": "1c1fe16ab5a6",
@@ -2476,7 +2507,9 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "9846fb5723a2",
@@ -2489,7 +2522,9 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "f3609761caf4",
@@ -2502,7 +2537,9 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "a5bfbc5330a2",
@@ -2515,7 +2552,10 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "23 października 2026 roku w Mediatece odbędzie się Grodziski Sejmik Muzyczny obejmujący wystawę i koncert. Wydarzenie otrzymało 38 587 zł dofinansowania z budżetu gminy.",
+  "opis_auto": true
  },
  {
   "id": "25ed0fbdb3d4",
@@ -2528,7 +2568,10 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "W Mediatece w Grodzisku Mazowieckim odbędzie się 24 października 2026 roku bezpłatny pokaz opery „Traviata” z audiodeskrypcją dla osób z dysfunkcją wzroku. Spotkanie rozpocznie się o godzinie 10:45.",
+  "opis_auto": true
  },
  {
   "id": "88a2024e9ff4",
@@ -2555,7 +2598,9 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "64af6274992c",
@@ -2568,7 +2613,10 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "24 października 2026 roku w Centrum Kultury odbędzie się drugi dzień Grodziskiego Sejmiku Muzycznego. Na przedsięwzięcie z budżetu gminy przeznaczono 38 587 zł.",
+  "opis_auto": true
  },
  {
   "id": "664fc51f0881",
@@ -2581,7 +2629,10 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "25 października 2026 roku w sali widowiskowej Centrum Kultury w Grodzisku Mazowieckim odbędzie się spektakl „Czarownica Smerfy i urodzinowy bałagan”. Bilety kosztują 25 zł, a część dochodu wesprze potrzebujące dziecko.",
+  "opis_auto": true
  },
  {
   "id": "52b752e9ff55",
@@ -2712,7 +2763,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "17 października 2026 roku w Pawilonie Kultury przy ul. Westfala w Grodzisku Mazowieckim odbędzie się wydarzenie profilaktyczne poświęcone zdrowiu kobiet. Uczestniczki będą mogły skorzystać z pakietów badań oraz stoisk edukacyjnych.",
+  "opis_auto": true
  },
  {
   "id": "e8a3e2cacc4a",
@@ -2726,7 +2779,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "W piątek, 16 października 2026 roku, Biblioteka Główna przy ul. 3 Maja w Grodzisku Mazowieckim będzie gospodarzem ogólnopolskiej inauguracji Nocy Bibliotek. W programie przewidziano m.in. seanse filmowe, spotkania literackie i koncert.",
+  "opis_auto": true
  },
  {
   "id": "f85e32270b38",
@@ -2740,7 +2795,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "24 października w świetlicy w Mościskach odbędą się charytatywne warsztaty szycia poduszek i woreczków dla pacjentów onkologicznych. Wymagane są wcześniejsze zapisy.",
+  "opis_auto": true
  },
  {
   "id": "d5987652432f",
@@ -2754,7 +2811,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "21 października o godz. 18:00 w Mediatece w Grodzisku Mazowieckim odbędzie się bezpłatne spotkanie autorskie z pisarką. Wydarzenie w tamtejszej bibliotece będzie tłumaczone na polski język migowy.",
+  "opis_auto": true
  },
  {
   "id": "f5eb173a3f28",
@@ -2768,7 +2827,9 @@
   "place": "Kady",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "17 października o godzinie 12:00 w Filii nr 1 w Kadach odbędą się bezpłatne warsztaty plastyczne dla dzieci od szóstego roku życia z ilustratorem książek. Spotkanie zorganizowano w ramach gminnego programu bibliotecznego.",
+  "opis_auto": true
  },
  {
   "id": "946467f12886",
@@ -2782,7 +2843,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "W dniach 5–25 października w Pawilonie Kultury przy ul. Westfala w Grodzisku Mazowieckim można bezpłatnie oglądać wystawę poświęconą doświadczeniu migracji i utraty domu. Ekspozycja przygotowana przez gminną bibliotekę i partnerów składa się z jedenastu plansz.",
+  "opis_auto": true
  },
  {
   "id": "bcf491e3424f",
@@ -2796,7 +2859,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": true
+  "opis_proba": "v2",
+  "text": "Biblioteka Publiczna Gminy Grodzisk Mazowiecki organizuje bezpłatne warsztaty programowania w grze Minecraft dla dzieci od ośmiu lat. Zajęcia odbywają się w poniedziałki w salach Mediateki, a na wydarzenie obowiązują wcześniejsze zapisy.",
+  "opis_auto": true
  },
  {
   "id": "911cdb7f9edb",

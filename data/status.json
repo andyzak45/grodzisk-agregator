@@ -1,5 +1,5 @@
 {
- "run": "2026-10-22T04:27:04",
+ "run": "2026-10-22T04:45:36",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
@@ -29,7 +29,7 @@
   "przeglad-regionalny": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "grodziskinfo": {
    "ok": true,
@@ -44,7 +44,7 @@
   "centrum-kultury": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "mediateka": {
    "ok": true,
