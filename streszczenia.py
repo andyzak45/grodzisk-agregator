@@ -188,7 +188,7 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
     body = json.dumps({
         "systemInstruction": {"parts": [{"text": SYSTEM}]},
         "contents": [{"role": "user", "parts": [{"text": tresc}]}],
-        "generationConfig": {"maxOutputTokens": 1024, "temperature": 0.2}}).encode()
+        "generationConfig": {"maxOutputTokens": 4096, "temperature": 0.2}}).encode()
     # działający model idzie pierwszy, ale reszta zostaje jako zapas (każdy model ma własny dzienny limit)
     modele = [model] if model else _gemini_ok + [x for x in GEMINI_MODELE if x not in _gemini_ok]
     modele = [x for x in modele if x not in _gemini_martwe] or modele
@@ -230,11 +230,17 @@ def wywolaj_gemini(tresc, klucz, model=None, timeout=60):
                 break
         if data is None:
             continue
-        _gemini_ok[:] = [m]
         try:
-            czesci = data["candidates"][0]["content"]["parts"]
+            kandydat = data["candidates"][0]
+            czesci = kandydat["content"]["parts"]
         except (KeyError, IndexError, TypeError):
+            _gemini_ok[:] = [m]
             return ""       # np. odpowiedź zablokowana przez filtr: brak notki, nie awaria
+        if kandydat.get("finishReason") == "MAX_TOKENS":
+            print(f"  {m}: odpowiedź ucięta (MAX_TOKENS, myślenie modelu zjadło limit), próbuję następny model")
+            bledy.append(f"{m}: odpowiedź ucięta")
+            continue
+        _gemini_ok[:] = [m]
         return "".join(c.get("text", "") for c in czesci if not c.get("thought"))      # bez "myśli" modelu
     if ostatni_429 is not None and limity == probowane:
         raise ostatni_429       # wszystkie modele wyczerpane: wywołujący poczeka albo zakończy na dziś
