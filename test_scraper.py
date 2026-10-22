@@ -397,11 +397,35 @@ class StronaRedakcyjna(unittest.TestCase):
         self.assertNotIn("Sprawę opisuje", page)         # bez notki własnymi słowami karta nie ma szablonu
         self.assertNotIn("hero-tile\"", page)
 
-    def test_jedynka_dnia_woli_gmine_od_okolicy(self):
-        milanowek = self._it(id="m", url="https://x.pl/m", kind="ost", place="Milanówek", title="Ostrzeżenie w Milanówku")
-        gmina = self._it(id="g", url="https://x.pl/g", kind="inw", place="Natolin", title="Remont drogi w Natolinie")
-        page = self._strona([milanowek, gmina])
-        self.assertLess(page.index("Remont drogi w Natolinie"), page.index("Ostrzeżenie w Milanówku"))
+    def test_wszystkie_kategorie_widac_na_gorze_nawet_puste(self):
+        page = self._strona([self._it(kind="inw", title="Remont drogi")])
+        for k in ("ost", "zdr", "wyd", "inw", "spo", "inne"):
+            self.assertIn(f'href="#kat-{k}"', page)
+            self.assertIn(f'id="kat-{k}"', page)
+        self.assertIn("Brak aktualnych wpisów w tej kategorii.", page)
+
+    def test_wydarzenia_najblizszy_termin_pierwszy(self):
+        pozniej = self._it(id="a", url="https://x.pl/a", kind="wyd", title="Koncert grudniowy", event_iso="2026-12-05", when="5.12")
+        wczesniej = self._it(id="b", url="https://x.pl/b", kind="wyd", title="Spotkanie listopadowe", event_iso="2026-11-02", when="2.11")
+        page = self._strona([pozniej, wczesniej])
+        self.assertLess(page.index("Spotkanie listopadowe"), page.index("Koncert grudniowy"))
+
+    def test_kategoria_ma_limit_wpisow_na_stronie(self):
+        items = [self._it(id=str(n), url=f"https://x.pl/{n}", title=f"Wiadomość numer {n}") for n in range(render.MAX_W_KATEGORII + 5)]
+        page = self._strona(items)
+        self.assertEqual(page.count('<article class="portal-card'), render.MAX_W_KATEGORII)   # razem z główną i bocznymi
+
+    def test_pierwsza_strona_ma_glowny_temat_date_i_pasek_najnowszych(self):
+        items = [self._it(id="1", url="https://x.pl/1", kind="ost", title="Ostrzeżenie dla gminy"),
+                 self._it(id="2", url="https://x.pl/2", kind="inw", title="Remont drogi"),
+                 self._it(id="3", url="https://x.pl/3", kind="zdr", title="Interwencja policji", neutral=True)]
+        page = self._strona(items)
+        self.assertIn("poniedziałek, 19 października", page)
+        self.assertIn('class="portal-card hero', page)
+        self.assertIn('class="ticker"', page)
+        glowna = page[page.index('class="portal-card hero'):page.index('class="front-side"')]
+        self.assertIn("Ostrzeżenie dla gminy", glowna)
+        self.assertNotIn("Interwencja policji", page[page.index('class="front"'):page.index('class="kat c-ost"')])
 
     def test_brak_podwojnej_kropki_po_skrocie_zrodla(self):
         it = self._it(kind="zdr", neutral=True, source="KPP Grodzisk Maz.")
@@ -876,14 +900,14 @@ class ScalanieDuplikatow(unittest.TestCase):
 
 
 class TylkoZNotka(unittest.TestCase):
-    def test_wpisy_bez_notki_sa_ukryte_wyjatki_zostaja(self):
+    def test_wpisy_bez_notki_sa_ukryte_tylko_reczne_zostaja(self):
         base = {"title": "T", "url": "https://x.pl/1", "source": "Z", "source_id": "z", "first_seen": "2026-10-20",
                 "published": "2026-10-20", "place": "cała gmina", "when": None, "event_iso": None}
         z_notka = dict(base, id="1", kind="inne", text="Notka.")
         bez = dict(base, id="2", kind="inne")
         ostrz = dict(base, id="3", kind="ost", source_id="kryzysowe")
         reczny = dict(base, id="4", kind="wyd", manual=True)
-        self.assertEqual([i["id"] for i in render.z_notka([z_notka, bez, ostrz, reczny])], ["1", "3", "4"])
+        self.assertEqual([i["id"] for i in render.z_notka([z_notka, bez, ostrz, reczny])], ["1", "4"])
 
     def test_scalenie_przenosi_notke_ze_starszego_wpisu_bez_notki(self):
         a = {"id": "a", "title": "Umowa na oświetlenie i monitoring ulic Grodzisk", "source": "A", "source_id": "a",
@@ -909,7 +933,47 @@ class TylkoLokalne(unittest.TestCase):
         ok = dict(base, id="3", kind="inne", title="Remont w Grodzisku", text="Notka o remoncie.")
         ost_portal = dict(base, id="4", kind="ost", title="Ostrzeżenie")          # z portalu ogólnego, bez notki
         ost_lokalne = dict(base, id="5", kind="ost", title="Ostrzeżenie", source_id="kryzysowe")
-        self.assertEqual([i["id"] for i in render.z_notka([rcb, poza, ok, ost_portal, ost_lokalne])], ["3", "5"])
+        self.assertEqual([i["id"] for i in render.z_notka([rcb, poza, ok, ost_portal, ost_lokalne])], ["3"])   # bez notki nic się nie pokazuje
+
+    def test_portal_ogolny_wymaga_gminy_w_tytule_lub_tresci(self):
+        base = {"url": "https://x.pl/1", "source": "Z", "source_id": "twoje-miasto", "first_seen": "2026-10-20",
+                "published": "2026-10-20", "place": "Grodzisk Mazowiecki", "kind": "inne", "when": None, "event_iso": None}
+        krajowy = dict(base, id="1", title="Kontrole placówek w całym kraju", text="Policja przeprowadziła kontrole w całym kraju.")
+        cudzy = dict(base, id="2", title="Zawodnik klubu z Nowego Dworu piąty na ME", text="Reprezentant klubu zajął piąte miejsce.")
+        lokalny = dict(base, id="3", title="Zmiany w ruchu", text="W Grodzisku Mazowieckim zmienia się organizacja ruchu.")
+        lokalny_zrodlo = dict(base, id="4", source_id="policja", title="Policja ostrzega", text="Notka.")
+        self.assertEqual([i["id"] for i in render.z_notka([krajowy, cudzy, lokalny, lokalny_zrodlo])], ["3", "4"])
+
+    def test_dopisz_nie_zuzywa_limitu_na_portal_ogolny_bez_gminy(self):
+        it = {"id": "1", "title": "Ceny paliw w kraju", "url": "https://x.pl/1", "source": "Z", "source_id": "twoje-miasto",
+              "first_seen": TODAY.isoformat(), "published": TODAY.isoformat(), "kind": "inne", "place": "Grodzisk Mazowiecki"}
+        class F:
+            strony = {"https://x.pl/1": "<html><body><p>" + "Ceny paliw w całym kraju rosną. " * 20 + "</p></body></html>"}
+        wywolania = []
+        n = streszczenia.dopisz({"1": it}, {"twoje-miasto": {"streszczaj": True}}, F(), TODAY, 5,
+                                llm=lambda t: wywolania.append(t) or "Notka.")
+        self.assertEqual((n, wywolania), (0, []))
+        self.assertTrue(it.get("poza_okolica"))
+
+    def test_limit_liczy_zapytania_do_modelu_a_nie_odrzucone_wpisy(self):
+        def wpis(n, zrodlo, tytul):
+            return {"id": str(n), "title": tytul, "url": f"https://x.pl/{n}", "source": "Z", "source_id": zrodlo,
+                    "first_seen": TODAY.isoformat(), "published": TODAY.isoformat(), "kind": "inne", "place": "Grodzisk Mazowiecki"}
+        store = {str(n): wpis(n, "twoje-miasto", f"Ceny paliw w kraju {n}") for n in range(5)}
+        store["9"] = wpis(9, "policja", "Policja w Grodzisku Mazowieckim zaprasza")
+        class F:
+            strony = {f"https://x.pl/{n}": "<html><body><p>" + "Ceny paliw w całym kraju rosną. " * 20 + "</p></body></html>" for n in range(5)}
+            strony["https://x.pl/9"] = "<html><body><p>" + "Policja w Grodzisku Mazowieckim zaprasza na spotkanie z mieszkańcami. " * 10 + "</p></body></html>"
+        zrodla = {"twoje-miasto": {"streszczaj": True}, "policja": {"streszczaj": True}}
+        wywolania = []
+        n = streszczenia.dopisz(store, zrodla, F(), TODAY, 2, llm=lambda t: wywolania.append(t) or "Policja zaprasza mieszkańców gminy na spotkanie informacyjne.")
+        self.assertEqual((len(wywolania), n), (1, 1))      # 5 wpisów ogólnopolskich odpadło bez modelu i nie zjadło limitu 2
+
+    def test_stary_wpis_z_przyszlym_terminem_dostaje_notke(self):
+        it = {"id": "1", "title": "Stopnie alarmowe", "url": "https://x.pl/1", "source": "Z", "source_id": "z",
+              "first_seen": TODAY.isoformat(), "published": "2026-01-01", "kind": "ost", "place": "cała gmina",
+              "event_iso": (TODAY + timedelta(days=30)).isoformat()}
+        self.assertEqual(len(streszczenia.kandydaci({"1": it}, {"z": {"streszczaj": True}}, TODAY)), 1)
 
     def test_model_odpowiada_poza_okolica(self):
         it = {"id": "1", "title": "Ceny paliw w kraju", "url": "https://x.pl/1", "source": "Z", "source_id": "z",

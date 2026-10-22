@@ -41,7 +41,7 @@ USER_AGENT = f"GrodziskLokalnieBot/1.0 (agregator linków; kontakt: {BOT_CONTACT
 MAX_BYTES = 2_000_000
 MAX_AGE_DAYS = 30        # starszych wpisów (wg daty publikacji) nie bierzemy
 KEEP_DAYS = 45           # tyle trzymamy wpisy w pliku danych
-MAX_NOTEK = 30           # tyle notek pod tytułami piszemy na przebieg (koszt i czas)
+MAX_NOTEK = 60           # tyle zapytań do modelu na przebieg (limit dzienny Google i tak zatrzyma wcześniej)
 MAX_SZCZEGOLOW = 25      # tyle podstron na przebieg otwieramy, żeby znaleźć brakujące daty
 DUPLIKAT_DNI = 7         # w tym oknie szukamy tego samego tematu w innych źródłach
 

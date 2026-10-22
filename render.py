@@ -3,7 +3,7 @@ import html
 from datetime import date
 from pathlib import Path
 
-from klasyfikacja import klucz_miejsca, w_gminie
+from klasyfikacja import klucz_miejsca, miejsce_wpisu, w_gminie
 from redakcja import data_ui, dzien, godzina, inny_region, miejsce_ui, opis, termin_ui
 
 KIND_UI = {
@@ -25,14 +25,20 @@ _IKONY = {
     "inne": '<path d="M4 5h13a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2V5Z"/><path d="M8 9h7M8 13h7M8 16h4"/>',
 }
 
-WEIGHT = {"ost": 5, "zdr": 0, "wyd": 2, "inw": 2, "spo": 1, "inne": 0}   # zdarzenia nie są "jedynką dnia"
-MAX_CARDS = 40
+WEIGHT = {"ost": 5, "wyd": 2, "inw": 2, "spo": 1, "inne": 0}   # zdarzenia (zdr) nigdy nie trafiają na pierwszą stronę
+BOCZNE = 2               # tyle wpisów obok głównego tematu
+DNI = ["poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"]
+MIESIACE_DOP = ["stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września",
+                "października", "listopada", "grudnia"]
+NAJNOWSZE = 5            # tyle pozycji w pasku "Najnowsze"
+NA_START = 4              # tyle wpisów widać w każdej kategorii od razu
+MAX_W_KATEGORII = 12      # tyle najwyżej na stronie (reszta w archiwum); ponad NA_START po kliknięciu "Pokaż więcej"
 SHOW_DAYS = 14
 BEZ_TERMINU_DNI = 3      # zapowiedź bez terminu pokazujemy tylko tuż po pojawieniu się
 BEZ_TERMINU_MAX = 3
 
 
-POKAZUJ_BEZ_NOTKI = {"ost"}     # rodzaje pokazywane nawet bez notki (ostrzeżenia). Pusty zbiór = tylko wpisy z notką.
+POKAZUJ_BEZ_NOTKI = set()       # rodzaje pokazywane nawet bez notki. Pusty zbiór = na stronie tylko wpisy z notką.
 TYLKO_GMINA = True              # True: tylko gmina Grodzisk Mazowiecki (bez Milanówka, Podkowy, Pruszkowa itd.); False: też okolica
 ZRODLA_OSTRZEZEN = {"kryzysowe"}  # ...ale tylko z tych lokalnych źródeł (z portali ogólnych ostrzeżenia też wymagają notki)
 
@@ -46,7 +52,7 @@ def z_notka(items):
             out.append(i)
         elif i.get("poza_okolica") or inny_region(i["title"]):
             continue                  # temat ogólnopolski albo z innego regionu
-        elif TYLKO_GMINA and not w_gminie(i["place"]):
+        elif TYLKO_GMINA and not w_gminie(miejsce_wpisu(i.get("source_id"), i["title"], i.get("text"), i["place"])):
             continue                  # miejscowość spoza gminy (albo nie rozpoznano miejsca)
         elif i.get("text") or (i["kind"] in POKAZUJ_BEZ_NOTKI and i.get("source_id") in ZRODLA_OSTRZEZEN):
             out.append(i)
@@ -85,18 +91,20 @@ def widoczne(items, today):
     return out
 
 
+def _punkty(it, today):
+    return WEIGHT[it["kind"]] + max(0, 10 - wiek(it, today)) - (0 if w_gminie(it["place"]) else 6)
+
+
 def wybierz_jedynke(items, today):
-    def score(it):
-        return WEIGHT[it["kind"]] + max(0, 10 - wiek(it, today)) - (0 if w_gminie(it["place"]) else 6)
-    fresh = [i for i in items if wiek(i, today) <= 3 and i["kind"] != "zdr"]
-    return max(fresh, key=score) if fresh else None
+    return max(items, key=lambda i: _punkty(i, today)) if items else None
 
 
 def e(s):
     return html.escape(str(s), quote=True)
 
 
-def karta(it, today, hero=False):
+def _czesci(it, today):
+    """Wspólne kawałki kart: znacznik kategorii, data, miejscowość, notka, termin, źródło."""
     label, bg = KIND_UI[it["kind"]]
     miejsce = miejsce_ui(it["place"])
     termin = termin_ui(it, today)
@@ -112,47 +120,122 @@ def karta(it, today, hero=False):
         data = f'<span class="zauwazono">zauważono {e(dzien(it["first_seen"]))}</span>' if not termin else ""
     znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
     tekst = opis(it, today)
-    auto = ""      # dopisek przy każdej notce usunięty; informacja o automatycznych opisach jest w stopce
-    opis_html = f'<p class="opis">{e(tekst)}{auto}</p>' if tekst else ""
+    opis_html = f'<p class="opis">{e(tekst)}</p>' if tekst else ""
     zrodlo = e(it["source"]) + (f' <span class="also">oraz {e(", ".join(it["also"]))}</span>' if it.get("also") else "")
-    return (
-        f'<article class="portal-card{" hero-tile" if hero else ""}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
-        f'<div class="img-container {bg}">{ikona(it["kind"])}<div class="tile-category-text">{e(label)}</div></div>'
-        f'<div class="card-body"><div class="meta-bar">{znaczek}{data}<span>{zrodlo}</span></div>'
-        f'<h2>{e(it["title"])}</h2>{opis_html}{when}'
-        f'<a href="{e(it["url"])}" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a>'
-        f'</div></article>')
+    tag = f'<span class="tag t-{e(it["kind"])}">{e(label)}</span>'
+    meta = f'<div class="meta-bar">{tag}{znaczek}{data}<span>{zrodlo}</span></div>'
+    link = f'<a href="{e(it["url"])}" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a>'
+    return bg, meta, opis_html, when, link
+
+
+def karta(it, today):
+    """Wpis w sekcji kategorii: sam tekst, bez ramek."""
+    bg, meta, opis_html, when, link = _czesci(it, today)
+    return (f'<article class="portal-card" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
+            f'<div class="card-body">{meta}<h3>{e(it["title"])}</h3>{opis_html}{when}{link}</div></article>')
+
+
+def karta_glowna(it, today):
+    """Główny temat strony: duży kolorowy blok (zamiast zdjęcia)."""
+    bg, meta, opis_html, when, link = _czesci(it, today)
+    return (f'<article class="portal-card hero {bg}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
+            f'{ikona(it["kind"])}<div class="hero-body">{meta}<h2>{e(it["title"])}</h2>{opis_html}{when}{link}</div></article>')
+
+
+def karta_boczna(it, today):
+    bg, meta, opis_html, when, link = _czesci(it, today)
+    return (f'<article class="portal-card side" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
+            f'<div class="card-body">{meta}<h3>{e(it["title"])}</h3>{opis_html}{when}{link}</div></article>')
+
+
+def pasek_najnowszych(pool, today):
+    """Pasek najnowszych wpisów (jak \"Nowe\" na portalach): data i tytuł, link do źródła."""
+    najnowsze = sorted(pool, key=lambda i: (data_wpisu(i), i["first_seen"]), reverse=True)[:NAJNOWSZE]
+    if not najnowsze:
+        return ""
+    poz = "".join(
+        f'<a class="tick" href="{e(i["url"])}" target="_blank" rel="noopener" data-place="{e(i["place"])}">'
+        f'<time datetime="{e(data_wpisu(i))}">{e(data_ui(data_wpisu(i), today))}</time> {e(i["title"])}</a>'
+        for i in najnowsze)
+    return f'<div class="ticker"><span class="ticker-label">Najnowsze</span><div class="ticker-list">{poz}</div></div>'
+
+
+def pierwsza_strona(pool, today):
+    """Główny temat + wpisy boczne. Zdarzenia policji nie są wyróżniane. Zwraca (html, wyróżnione wpisy)."""
+    kandydaci = [i for i in pool if i["kind"] != "zdr"]
+    glowny = wybierz_jedynke(kandydaci, today)
+    if not glowny:
+        return "", []
+    reszta = sorted((i for i in kandydaci if i is not glowny), key=lambda i: -_punkty(i, today))[:BOCZNE]
+    boczne = "".join(karta_boczna(i, today) for i in reszta)
+    html_ = (f'<div class="front">{karta_glowna(glowny, today)}'
+             f'<div class="front-side">{boczne}</div></div>')
+    return html_, [glowny] + reszta
 
 
 def filtry(items):
-    kinds = [k for k in KIND_UI if any(i["kind"] == k for i in items)]
     places = sorted({p for i in items for p in i["place"].split("|") if p not in ("cała gmina", "okolica")},
                     key=klucz_miejsca)
-    chips = '<button class="chip on" data-kind="">Wszystko</button>' + "".join(
-        f'<button class="chip" data-kind="{k}">{e(KIND_UI[k][0])}</button>' for k in kinds)
-    opts = '<option value="">Cała okolica</option>' + "".join(
+    opts = '<option value="">Cała gmina</option>' + "".join(
         f'<option value="{e(p)}">{e(p)}</option>' for p in places)
-    return f'<div class="filters"><div class="chips">{chips}</div><select id="place" aria-label="Miejscowość">{opts}</select></div>'
+    return f'<div class="filters"><label for="place">Miejscowość:</label><select id="place">{opts}</select></div>'
+
+
+def nawigacja(po_rodzajach):
+    """Menu wszystkich kategorii (zawsze wszystkie, także puste); każda pozycja skacze do swojej sekcji."""
+    out = []
+    for k, (label, bg) in KIND_UI.items():
+        n = len(po_rodzajach.get(k, []))
+        out.append(f'<a class="cat-link c-{k}{"" if n else " zero"}" href="#kat-{k}" data-kind="{k}">'
+                   f'<span class="cat-name">{e(label)}</span> <span class="cat-count">{n}</span></a>')
+    return '<nav class="cat-nav" aria-label="Kategorie">' + "".join(out) + "</nav>"
+
+
+def kolejnosc(kind, items, today):
+    """Wydarzenia: najbliższe terminy najpierw; reszta kategorii: od najświeższych."""
+    swieze = sorted(items, key=lambda i: date.fromisoformat(data_wpisu(i)).toordinal(), reverse=True)
+    if kind != "wyd":
+        return swieze
+    nadchodzace = sorted((i for i in items if (i.get("event_iso") or "") >= today.isoformat()),
+                         key=lambda i: i["event_iso"])
+    reszta = [i for i in swieze if i not in nadchodzace]
+    return nadchodzace + reszta
+
+
+def sekcje(po_rodzajach, wyrozniane, today):
+    out = []
+    for k, (label, bg) in KIND_UI.items():
+        lista = po_rodzajach.get(k, [])
+        reszta = [i for i in lista if not any(i is w for w in wyrozniane)]
+        karty = "".join(karta(i, today) for i in reszta)
+        out.append(
+            f'<section class="kat c-{k}" id="kat-{k}" data-kind="{k}" data-start="{NA_START}">'
+            f'<div class="kat-head">{ikona(k)}<h2>{e(label)}</h2><span class="kat-count">{len(lista)}</span></div>'
+            f'<div class="kat-grid">{karty}</div>'
+            f'<p class="kat-empty"{" hidden" if reszta else ""}>'
+            f'{"Pozostałe wpisy tej kategorii są wyróżnione wyżej." if lista else "Brak aktualnych wpisów w tej kategorii."}</p>'
+            f'<button type="button" class="more" hidden></button>'
+            f'</section>')
+    return "".join(out)
 
 
 def build(items, template_path, out_path, today=None):
     today = today or date.today()
     pool = widoczne(items, today)
-    hero = wybierz_jedynke(pool, today)
-    rest = [i for i in pool if i is not hero]
-    rest.sort(key=lambda i: (i["kind"] != "ost", i["kind"] != "zdr", -date.fromisoformat(data_wpisu(i)).toordinal()))
-    cards = ""
-    if hero:
-        cards += karta(hero, today, hero=True)
-    cards += "".join(karta(i, today) for i in rest[:MAX_CARDS])
-    if not cards:
-        cards = '<p class="empty">Dziś nie znaleziono nowych informacji. Spróbuj ponownie później.</p>'
+    po_rodzajach = {k: kolejnosc(k, [i for i in pool if i["kind"] == k], today)[:MAX_W_KATEGORII] for k in KIND_UI}
+    pokazane = [i for k in KIND_UI for i in po_rodzajach[k]]
+    front, wyrozniane = pierwsza_strona(pokazane, today)
+    miesiac = MIESIACE_DOP[today.month - 1]
     page = Path(template_path).read_text(encoding="utf-8")
-    page = page.replace("<!-- DYNAMIC_CARDS_PLACEHOLDER -->", cards)
+    page = page.replace("<!-- DATE_PLACEHOLDER -->", f"{DNI[today.weekday()]}, {today.day} {miesiac}")
+    page = page.replace("<!-- NAV_PLACEHOLDER -->", nawigacja(po_rodzajach))
     page = page.replace("<!-- FILTERS_PLACEHOLDER -->", filtry(pool))
+    page = page.replace("<!-- TICKER_PLACEHOLDER -->", pasek_najnowszych(pokazane, today))
+    page = page.replace("<!-- FRONT_PLACEHOLDER -->", front)
+    page = page.replace("<!-- DYNAMIC_CARDS_PLACEHOLDER -->", sekcje(po_rodzajach, wyrozniane, today))
     page = page.replace("<!-- UPDATED_PLACEHOLDER -->", f"Ostatnia aktualizacja: {today.strftime('%d.%m.%Y')}")
     Path(out_path).write_text(page, encoding="utf-8")
-    return ([hero] if hero else []) + rest[:MAX_CARDS]
+    return pokazane
 
 
 MIESIACE = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień",

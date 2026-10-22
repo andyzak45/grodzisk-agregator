@@ -18,7 +18,7 @@ from datetime import date
 
 from bs4 import BeautifulSoup
 
-from klasyfikacja import norm
+from klasyfikacja import ZRODLA_OGOLNE, miejsce_wpisu, norm, w_gminie
 from redakcja import wrazliwe
 
 API_URL = "https://api.anthropic.com/v1/messages"
@@ -270,8 +270,8 @@ def kandydaci(store, zrodla, today):
         if it.get("text") or it.get("opis_proba") == WERSJA_PROBY:
             continue
         dzien = date.fromisoformat(it.get("published") or it["first_seen"])
-        if (today - dzien).days > MAX_WIEK_DNI:
-            continue
+        if (today - dzien).days > MAX_WIEK_DNI and (it.get("event_iso") or "") < today.isoformat():
+            continue                # stary wpis kwalifikuje się tylko, gdy jego termin jeszcze nie minął (np. stopnie alarmowe)
         out.append(it)
     return sorted(out, key=lambda i: i.get("published") or i["first_seen"], reverse=True)
 
@@ -285,19 +285,36 @@ def dopisz(store, zrodla, fetcher, today, limit, llm=None):
             print("Brak dostępu do modelu (GEMINI_API_KEY, ANTHROPIC_API_KEY lub GITHUB_TOKEN), pomijam notki pod tytułami.")
             return 0
     strony = getattr(fetcher, "strony", {})
-    dodane = bledy = 0
-    for it in kandydaci(store, zrodla, today)[:limit]:
+    dodane = bledy = proby = 0
+    wynik = {}      # powód -> liczba wpisów, drukowane na końcu w logu
+
+    def licz(powod, it, szczegol=""):
+        wynik[powod] = wynik.get(powod, 0) + 1
+        print(f"  [{powod}] {it['source']}: {it['title'][:70]}{(' (' + szczegol + ')') if szczegol else ''}")
+
+    # limit dotyczy zapytań do modelu, a nie przeglądanych wpisów: odrzucone bez modelu nie zjadają miejsca
+    for it in kandydaci(store, zrodla, today)[:limit * 4]:
+        if proby >= limit:
+            break
         try:
             html = strony.get(it["url"]) or fetcher.get(it["url"])
             tekst = tekst_artykulu(html)
         except Exception as e:      # kłopot z tą jedną stroną, nie z modelem
             it["opis_proba"] = WERSJA_PROBY
-            print(f"  notka pominięta ({it['source']}): nie pobrano artykułu: {type(e).__name__}: {e}")
+            licz("nie pobrano artykułu", it, f"{type(e).__name__}: {e}")
             continue
         if len(tekst) < MIN_TEKST:
             it["opis_proba"] = WERSJA_PROBY
+            licz("tekst za krótki", it, f"{len(tekst)} znaków")
             continue
-        limit = False
+        if it.get("source_id") in ZRODLA_OGOLNE and not w_gminie(
+                miejsce_wpisu(it["source_id"], it["title"], tekst, it["place"])):
+            it["opis_proba"] = WERSJA_PROBY
+            it["poza_okolica"] = True       # portal ogólny, a w tytule i artykule nic o gminie: oszczędzamy limit modelu
+            licz("poza regionem, bez modelu", it)
+            continue
+        proby += 1
+        limit_dzienny = False
         for podejscie in range(2):
             try:
                 surowa = llm(f"Tytuł: {it['title']}\n\nTekst:\n{tekst}")
@@ -311,11 +328,11 @@ def dopisz(store, zrodla, fetcher, today, limit, llm=None):
                     print(f"  limit zapytań modelu, czekam {LIMIT_CZEKANIE} s i ponawiam")
                     time.sleep(LIMIT_CZEKANIE)
                     continue
-                limit = True            # nadal limit (pewnie dzienny): kończymy, reszta pójdzie następnym razem
+                limit_dzienny = True    # nadal limit (pewnie dzienny): kończymy, reszta pójdzie następnym razem
             except Exception as e:
                 blad = f"{type(e).__name__}: {e}"
                 break
-        if limit:
+        if limit_dzienny:
             print("  limit zapytań modelu, kończę notki na dziś")
             break
         if blad:                # awaria modelu: wpis NIE jest oznaczany, spróbuje przy następnym przebiegu
@@ -331,11 +348,17 @@ def dopisz(store, zrodla, fetcher, today, limit, llm=None):
             time.sleep(przerwa)
         if re.sub(r"[^A-Za-z]", "", surowa or "").upper() == "POZAOKOLICA":
             it["poza_okolica"] = True       # ogólnopolskie albo z innego regionu: nie pokazujemy
+            licz("poza regionem (model)", it)
             continue
         notka = sprawdz(surowa, tekst)
         if notka:
             it["text"], it["opis_auto"] = notka, True
             dodane += 1
+            licz("dodano notkę", it)
+        else:
+            licz("notka odrzucona", it, (surowa or "pusta odpowiedź")[:60].replace("\n", " "))
+    if wynik:
+        print("  Notki, podsumowanie: " + ", ".join(f"{k}: {v}" for k, v in wynik.items()) + f"; zapytań do modelu: {proby}")
     return dodane
 
 

@@ -129,6 +129,19 @@ def w_gminie(place):
     return any(p == CALA_GMINA or p in _POZIOM for p in place.split("|"))
 
 
+# Portale ogólne: piszą też o całym kraju i innych powiatach, więc ich domyślna miejscowość nic nie znaczy.
+# Wpis z takiego portalu zostaje tylko wtedy, gdy tytuł albo treść wprost wskazuje miejscowość z gminy.
+ZRODLA_OGOLNE = {"twoje-miasto", "przeglad-regionalny", "wpr24", "grodziskinfo", "grodziski24"}
+
+
+def miejsce_wpisu(source_id, title, text, place):
+    """Miejscowość wpisu. Dla portali ogólnych liczona z tytułu i treści (pusta, gdy nic nie wskazuje na gminę)."""
+    if source_id in ZRODLA_OGOLNE:
+        m = znajdz_miejsca(f"{title} {text or ''}", default=CALA_GMINA, limit=5)
+        return "" if m == CALA_GMINA else m      # CALA_GMINA tu znaczy "nic nie znaleziono"
+    return place
+
+
 def klucz_miejsca(name):
     """Sortowanie listy miejscowości: poziom (większe najpierw), potem alfabetycznie; spoza gminy na końcu."""
     return (_POZIOM.get(name, 7), norm(name))
