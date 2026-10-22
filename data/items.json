@@ -1,5 +1,35 @@
 [
  {
+  "id": "0b689879c493",
+  "title": "Zaginął 45-letni mężczyzna. Pruszkowska policja prosi o pomoc",
+  "url": "https://www.przegladregionalny.pl/artykul/11395,zaginal-45-letni-mezczyzna-pruszkowska-policja-prosi-o-pomoc",
+  "source": "Przegląd Regionalny",
+  "source_id": "przeglad-regionalny",
+  "first_seen": "2026-10-22",
+  "published": "2026-10-21",
+  "kind": "inne",
+  "place": "Pruszków",
+  "when": "10.09",
+  "event_iso": "2026-09-10",
+  "tkey": "7da337dac54a",
+  "opis_proba": "v2",
+  "poza_okolica": true
+ },
+ {
+  "id": "fb4049ba6ea8",
+  "title": "Spektakl Teatru Kamienica „Zacznijmy jeszcze raz”",
+  "url": "https://www.centrumkultury.eu/wydarzenie/spektakl-teatru-kamienica-zacznijmy-jeszcze-raz/",
+  "source": "Centrum Kultury",
+  "source_id": "centrum-kultury",
+  "first_seen": "2026-10-22",
+  "published": "2026-06-19",
+  "kind": "wyd",
+  "place": "Grodzisk Mazowiecki",
+  "when": "26.10",
+  "event_iso": "2026-10-26",
+  "tkey": "d363c6becfe4"
+ },
+ {
   "id": "b39ecea79f2d",
   "title": "Młodzi czytelnicy biorą na warsztat „Igrzyska śmierci”",
   "url": "https://grodziski24.pl/20261020562946/mlodzi-czytelnicy-biora-na-warsztat-igrzyska-smierci",
@@ -372,7 +402,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "684917368b11"
+  "tkey": "684917368b11",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "26e975c66564",
@@ -387,7 +419,9 @@
   "when": null,
   "event_iso": null,
   "tkey": "7587ec13a0b8",
-  "also": []
+  "also": [],
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "c4ff71b84aa3",
@@ -734,7 +768,10 @@
   "place": "Kady",
   "when": null,
   "event_iso": null,
-  "tkey": "48848e797f73"
+  "tkey": "48848e797f73",
+  "opis_proba": "v2",
+  "text": "W piątek, 30 października, o godz. 18:00 w filii biblioteki w Kadach przy ul. Środkowej 72 odbędzie się spotkanie Dyskusyjnego Klubu Książki. Tematem bezpłatnej, otwartej rozmowy będzie powieść „Grobowa cisza, żałobny zgiełk”.",
+  "opis_auto": true
  },
  {
   "id": "028c62bfc8dc",
@@ -748,7 +785,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "712c27aa16e0"
+  "tkey": "712c27aa16e0",
+  "opis_proba": "v2",
+  "text": "Biblioteka Publiczna w Grodzisku Mazowieckim organizuje bezpłatne warsztaty z robotyki, programowania klocków LEGO, druku 3D i gogli VR dla dzieci od 6. roku życia. Zajęcia ruszają 29 października w Pawilonie Kultury przy ul. Westfala 3B, a o udziale decyduje kolejność zgłoszeń.",
+  "opis_auto": true
  },
  {
   "id": "a1da40e0a7b8",
@@ -762,7 +802,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "75df9570c89e"
+  "tkey": "75df9570c89e",
+  "opis_proba": "v2",
+  "text": "27 października o godzinie 18:00 w Bibliotece Głównej w Grodzisku Mazowieckim odbędzie się spotkanie Dyskusyjnego Klubu Książki. Uczestnicy omówią powieść „Yellowface”. Wstęp na wydarzenie jest bezpłatny.",
+  "opis_auto": true
  },
  {
   "id": "85548f3104a2",
@@ -776,7 +819,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "b1246104ab27"
+  "tkey": "b1246104ab27",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "94f574241130",
@@ -790,7 +835,9 @@
   "place": "Milanówek",
   "when": null,
   "event_iso": null,
-  "tkey": "e9106bf97290"
+  "tkey": "e9106bf97290",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "92c14fc460d2",
@@ -804,7 +851,9 @@
   "place": "Podkowa Leśna",
   "when": null,
   "event_iso": null,
-  "tkey": "95ebf91fe2ea"
+  "tkey": "95ebf91fe2ea",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "e4a042f2aa87",
@@ -821,7 +870,9 @@
   "tkey": "6eba44f48591",
   "also": [
    "Grodzisk INFO"
-  ]
+  ],
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "b1116c898fa3",
@@ -835,7 +886,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "cd456a95a07c"
+  "tkey": "cd456a95a07c",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "4f089fcff83f",
@@ -849,7 +902,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "32ecd1a17b0e"
+  "tkey": "32ecd1a17b0e",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "df8c1a63d76d",
@@ -863,7 +918,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "99d9b22422e0"
+  "tkey": "99d9b22422e0",
+  "opis_proba": "v2",
+  "text": "Zakład Wodociągów i Kanalizacji w Grodzisku Mazowieckim prowadzi kampanię informacyjną na temat dwóch technologii: grawitacyjnej i ciśnieniowej. Obecnie sieć kanalizacyjna w gminie liczy 226 kilometrów, z czego 38 km stanowią odcinki ciśnieniowe.",
+  "opis_auto": true
  },
  {
   "id": "e2445c453196",
@@ -877,7 +935,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "898160f2cc6f"
+  "tkey": "898160f2cc6f",
+  "opis_proba": "v2",
+  "text": "W gminie Grodzisk Mazowiecki działa już 38 kilometrów sieci kanalizacji ciśnieniowej, a Zakład Wodociągów i Kanalizacji eksploatuje 675 przydomowych przepompowni. W planach jest budowa kolejnych 40 kilometrów tej infrastruktury.",
+  "opis_auto": true
  },
  {
   "id": "b34be64fbe5e",
@@ -919,7 +980,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "e22c1ace2027"
+  "tkey": "e22c1ace2027",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "904c6ba71123",
@@ -933,7 +996,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "327818da9698"
+  "tkey": "327818da9698",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "31ead0e05232",
@@ -947,7 +1012,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "ccb7df6ba221"
+  "tkey": "ccb7df6ba221",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "fbae4fcced52",
@@ -961,7 +1028,9 @@
   "place": "okolica",
   "when": "17.10",
   "event_iso": "2026-10-17",
-  "tkey": "513d4930c7a3"
+  "tkey": "513d4930c7a3",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "8d603ff98596",
@@ -975,7 +1044,9 @@
   "place": "Pruszków",
   "when": "7.05.2027",
   "event_iso": "2027-05-07",
-  "tkey": "dd4fef4ee074"
+  "tkey": "dd4fef4ee074",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "7f36593da94b",
@@ -989,7 +1060,9 @@
   "place": "Milanówek",
   "when": "20.10",
   "event_iso": "2026-10-20",
-  "tkey": "2113c4428cdc"
+  "tkey": "2113c4428cdc",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "5820b34d691f",
@@ -1003,7 +1076,8 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "tkey": "f1e425f6eb7a"
+  "tkey": "f1e425f6eb7a",
+  "opis_proba": "v2"
  },
  {
   "id": "5a1ca4e34efc",
@@ -1017,7 +1091,9 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "tkey": "4e7659d63955"
+  "tkey": "4e7659d63955",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "c309487fac6d",
@@ -1031,7 +1107,9 @@
   "place": "Milanówek",
   "when": null,
   "event_iso": null,
-  "tkey": "46b227bc8b89"
+  "tkey": "46b227bc8b89",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "7eef88f875f6",
@@ -1045,7 +1123,9 @@
   "place": "Pruszków",
   "when": null,
   "event_iso": null,
-  "tkey": "429f292ae550"
+  "tkey": "429f292ae550",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "5a2404f4d88a",
@@ -1059,7 +1139,10 @@
   "place": "okolica",
   "when": "4.10",
   "event_iso": "2026-10-04",
-  "tkey": "9440e1e1fd95"
+  "tkey": "9440e1e1fd95",
+  "opis_proba": "v2",
+  "text": "W niedzielę, 4 października, w Hali Widowiskowo-Sportowej CAIIS w Grodzisku Mazowieckim odbył się IV Festiwal Integracyjny „TAK JAK TY!”. W programie imprezy znalazły się m.in. występy lokalnej orkiestry, pokazy iluzji oraz koncerty zaproszonych artystów.",
+  "opis_auto": true
  },
  {
   "id": "895a5e69282a",
@@ -1073,7 +1156,9 @@
   "place": "Pruszków",
   "when": null,
   "event_iso": null,
-  "tkey": "f0c61eaa1cee"
+  "tkey": "f0c61eaa1cee",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "52dbac79e72b",
@@ -1087,7 +1172,9 @@
   "place": "Milanówek",
   "when": "20.10",
   "event_iso": "2026-10-20",
-  "tkey": "a11452fd1fa1"
+  "tkey": "a11452fd1fa1",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "c783625a6b5f",
@@ -1382,7 +1469,9 @@
   "kind": "wyd",
   "place": "Jaktorów",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "dd4b0f3115c4",
@@ -1395,7 +1484,10 @@
   "kind": "inne",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "Funkcjonariusze z grodziskiej komendy wzięli udział w kampanii „Dzieciństwo bez przemocy”, trwającej od 5 października do 19 listopada 2026 roku. W jej ramach prowadzą spotkania profilaktyczne skupione na przeciwdziałaniu krzywdzeniu najmłodszych.",
+  "opis_auto": true
  },
  {
   "id": "22f24fd6439e",
@@ -1408,7 +1500,9 @@
   "kind": "wyd",
   "place": "Podkowa Leśna",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "d9f0749948cc",
