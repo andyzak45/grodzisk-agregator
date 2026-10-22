@@ -12,7 +12,7 @@
   "when": "10.09",
   "event_iso": "2026-09-10",
   "tkey": "7da337dac54a",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -28,7 +28,7 @@
   "when": "26.10",
   "event_iso": "2026-10-26",
   "tkey": "d363c6becfe4",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -58,7 +58,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "057f2dcc7a48",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -74,7 +74,7 @@
   "when": "24.10",
   "event_iso": "2026-10-24",
   "tkey": "ff3d1c886352",
-  "opis_proba": "v2"
+  "opis_proba": "v3"
  },
  {
   "id": "a5b2ebc4f9f4",
@@ -89,7 +89,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "461c675750f6",
-  "opis_proba": "v2"
+  "opis_proba": "v3"
  },
  {
   "id": "690e58ae2e99",
@@ -104,7 +104,9 @@
   "when": null,
   "event_iso": null,
   "tkey": "8be301406a05",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "text": "W Grodzisku Mazowieckim 20 października odbyła się 25. edycja Grodziskich Targów Pracy. Osoby poszukujące zatrudnienia miały okazję spotkać się z pracodawcami, przejrzeć aktualne oferty zatrudnienia i skorzystać z porad doradców zawodowych.",
+  "opis_auto": true
  },
  {
   "id": "fe9c5c4dd5f1",
@@ -119,7 +121,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "996eff9c9db8",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -135,7 +137,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "be7ea388800a",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -151,7 +153,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "277d8725a7fe",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -167,7 +169,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "69ebb754832c",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -183,7 +185,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "aea2866c76cf",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -199,7 +201,7 @@
   "when": "26.10",
   "event_iso": "2026-10-26",
   "tkey": "d033e1af5aa7",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -229,6 +231,22 @@
   "when": null,
   "event_iso": null,
   "tkey": "a95358ee65c9"
+ },
+ {
+  "id": "14c825600225",
+  "title": "Cztery projekty na pograniczu wybrane do wsparcia",
+  "url": "https://www.twoje-miasto.pl/art-komunikacja-transport/cztery-projekty-na-pograniczu-wybrane-i1261026",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-22",
+  "published": "2026-10-22",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "1a4ac515f0e2",
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "b39ecea79f2d",
@@ -305,7 +323,8 @@
   "when": null,
   "event_iso": null,
   "tkey": "f27efdefa9e2",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "e9f1d0c1802a",
@@ -320,7 +339,8 @@
   "when": null,
   "event_iso": null,
   "tkey": "4844269ecc99",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "3cd041417105",
@@ -398,7 +418,8 @@
   "when": "11.12",
   "event_iso": "2026-12-11",
   "tkey": "b9041fe1b2c8",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "8b4b0849d1f4",
@@ -413,7 +434,8 @@
   "when": "21.10",
   "event_iso": "2026-10-21",
   "tkey": "05d078cb8473",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "aa67bcf68434",
@@ -428,7 +450,8 @@
   "when": null,
   "event_iso": null,
   "tkey": "6acc5d56422c",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "1bd9f9b247b1",
@@ -604,7 +627,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "684917368b11",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -621,7 +644,7 @@
   "event_iso": null,
   "tkey": "7587ec13a0b8",
   "also": [],
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -637,7 +660,8 @@
   "when": null,
   "event_iso": null,
   "tkey": "eaeda220be4e",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "754ad985ccfb",
@@ -734,7 +758,8 @@
   "when": null,
   "event_iso": null,
   "tkey": "ce1f109c7ca6",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "d7d981397153",
@@ -815,7 +840,8 @@
   "when": "22.10",
   "event_iso": "2026-10-22",
   "tkey": "f12efb39b2ea",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "935424756520",
@@ -864,7 +890,8 @@
   "when": null,
   "event_iso": null,
   "tkey": "43cc2a18e839",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "beb074f6ab42",
@@ -913,7 +940,8 @@
   "when": "25.10, godz. 17:00",
   "event_iso": "2026-10-25",
   "tkey": "faab607388c5",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "f4ee925bdc46",
@@ -956,7 +984,7 @@
   "when": "30.11, godz. 0:00",
   "event_iso": "2026-11-30",
   "tkey": "ffdcef326a5e",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1023,7 +1051,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "b1246104ab27",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1039,7 +1067,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "e9106bf97290",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1055,7 +1083,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "95ebf91fe2ea",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1074,7 +1102,7 @@
   "also": [
    "Grodzisk INFO"
   ],
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1090,7 +1118,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "cd456a95a07c",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1106,7 +1134,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "32ecd1a17b0e",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1173,7 +1201,9 @@
   "when": null,
   "event_iso": null,
   "tkey": "abd5197161bb",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "text": "Powiat grodziski zorganizował w Grodzisku Mazowieckim uroczystość z okazji Dnia Edukacji Narodowej. Podczas spotkania wręczono nagrody zasłużonym pedagogom i pracownikom oświaty.",
+  "opis_auto": true
  },
  {
   "id": "a66316bac6d4",
@@ -1188,7 +1218,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "e22c1ace2027",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1204,7 +1234,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "327818da9698",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1220,7 +1250,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "ccb7df6ba221",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1236,7 +1266,7 @@
   "when": "17.10",
   "event_iso": "2026-10-17",
   "tkey": "513d4930c7a3",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1252,7 +1282,7 @@
   "when": "7.05.2027",
   "event_iso": "2027-05-07",
   "tkey": "dd4fef4ee074",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1268,7 +1298,7 @@
   "when": "20.10",
   "event_iso": "2026-10-20",
   "tkey": "2113c4428cdc",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1284,7 +1314,8 @@
   "when": null,
   "event_iso": null,
   "tkey": "f1e425f6eb7a",
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "5a1ca4e34efc",
@@ -1299,7 +1330,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "4e7659d63955",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1315,7 +1346,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "46b227bc8b89",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1331,7 +1362,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "429f292ae550",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1364,7 +1395,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "f0c61eaa1cee",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1380,7 +1411,7 @@
   "when": "20.10",
   "event_iso": "2026-10-20",
   "tkey": "a11452fd1fa1",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1466,7 +1497,7 @@
   "when": null,
   "event_iso": null,
   "tkey": "276a9c3160ea",
-  "opis_proba": "v2"
+  "opis_proba": "v3"
  },
  {
   "id": "30eedea81dd9",
@@ -1632,7 +1663,7 @@
    "Zarządzanie kryzysowe",
    "Grodzisk Twoje Miasto"
   ],
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1688,7 +1719,7 @@
   "place": "Jaktorów",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1719,7 +1750,7 @@
   "place": "Podkowa Leśna",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1734,7 +1765,7 @@
   "place": "cała gmina",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1749,7 +1780,7 @@
   "place": "cała gmina",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1796,7 +1827,7 @@
   "place": "cała gmina",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1842,7 +1873,7 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1857,7 +1888,7 @@
   "place": "Milanówek",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1872,7 +1903,7 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2"
+  "opis_proba": "v3"
  },
  {
   "id": "dd3a28a2bf91",
@@ -1886,7 +1917,7 @@
   "place": "Milanówek",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1901,7 +1932,7 @@
   "place": "Podkowa Leśna",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1916,7 +1947,7 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1931,7 +1962,7 @@
   "place": "Milanówek",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -1946,7 +1977,7 @@
   "place": "Milanówek",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2047,7 +2078,8 @@
   "also": [
    "KPP Grodzisk Maz."
   ],
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "c340f49024ee",
@@ -2061,7 +2093,7 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2076,7 +2108,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "text": "14 października 2026 roku Urząd Miejski w Grodzisku Mazowieckim udostępnił projekt planu ogólnego gminy. Dokument określa zasady zagospodarowania przestrzennego, a mieszkańcy mogą zapoznać się z propozycjami rozwoju zabudowy i ochrony zieleni.",
+  "opis_auto": true
  },
  {
   "id": "6045cc3fb1ce",
@@ -2106,7 +2140,7 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2121,7 +2155,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2136,7 +2170,9 @@
   "place": "Szczęsne",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "text": "Gmina pozyskała ponad 2,6 mln zł z funduszy unijnych na budowę parkingu „Parkuj i Jedź” przy ulicy Orlanej w Szczęsnem. W ramach inwestycji o wartości ponad 5,2 mln zł powstanie także infrastruktura dla rowerzystów oraz nowoczesne systemy informacyjne.",
+  "opis_auto": true
  },
  {
   "id": "a6b4f7aea68e",
@@ -2150,7 +2186,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2165,7 +2201,7 @@
   "place": "Pruszków",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2180,7 +2216,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2195,7 +2231,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2210,7 +2246,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2"
+  "opis_proba": "v3"
  },
  {
   "id": "d95b9c82ba41",
@@ -2224,7 +2260,7 @@
   "place": "Żabia Wola",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2239,7 +2275,7 @@
   "place": "Pruszków",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2254,7 +2290,7 @@
   "place": "Pruszków",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2269,7 +2305,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2284,7 +2320,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2299,7 +2335,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2314,7 +2350,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2390,7 +2426,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2405,7 +2441,7 @@
   "place": "Milanówek",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2420,7 +2456,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2451,7 +2487,7 @@
   "place": "Milanówek",
   "when": "22.10",
   "event_iso": "2026-10-22",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2466,7 +2502,7 @@
   "place": "Milanówek",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2497,7 +2533,9 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "text": "17 października 2026 roku w Zespole Szkół Technicznych i Licealnych nr 2 w Grodzisku Mazowieckim odbędzie się Krajowy Trening Rodzinny. Uczestnicy zajęć zaplanowanych od 10:00 do 14:00 zdobędą wiedzę z zakresu bezpieczeństwa w sytuacjach kryzysowych.",
+  "opis_auto": true
  },
  {
   "id": "30a1fb37dab3",
@@ -2511,7 +2549,7 @@
   "place": "Żabia Wola",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2526,7 +2564,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2541,7 +2579,7 @@
   "place": "okolica",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2769,7 +2807,7 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2800,7 +2838,7 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2815,7 +2853,7 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2830,7 +2868,7 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
@@ -2877,7 +2915,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "text": "24 października 2026 roku w Grodzisku Mazowieckim odbędą się meteorologiczne warsztaty dla dzieci poświęcone zjawiskom zachodzącym na niebie. Spotkanie Klubu Małego Odkrywcy w przestrzeni Poczekalni PKP potrwa od godziny 11:00 do 12:00, a wstęp wymaga wcześniejszej rezerwacji miejsc.",
+  "opis_auto": true
  },
  {
   "id": "8aeddc4c1db5",
@@ -2891,8 +2931,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2",
-  "poza_okolica": true
+  "opis_proba": "v3",
+  "poza_okolica": true,
+  "text": "W sobotę 24 października 2026 roku o godzinie 14:00 odbędzie się spacer historyczny po starym cmentarzu w Grodzisku Mazowieckim. Uczestnicy wędrujący od bramy przy ulicy Radońskiej poznają zabytkowe nagrobki oraz historię zasłużonych postaci.",
+  "opis_auto": true
  },
  {
   "id": "64af6274992c",
@@ -3167,7 +3209,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "text": "W Pawilonie Kultury przy ul. Westfala w Grodzisku Mazowieckim odbywają się bezpłatne spotkania Bibliotecznego Klubu Seniora. Zajęcia organizowane są w poniedziałki w godzinach 14:00–16:00.",
+  "opis_auto": true
  },
  {
   "id": "9c0d87577f5e",
@@ -3181,7 +3225,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "text": "Biblioteka Publiczna Gminy Grodzisk Mazowiecki organizuje bezpłatne korepetycje z języka angielskiego dla młodzieży od 14. roku życia. Spotkania z native speakerem odbywają się w poniedziałki o godzinie 15:30 w Mediatece przy ulicy 3 Maja.",
+  "opis_auto": true
  },
  {
   "id": "10576cce70d3",
@@ -3195,7 +3241,9 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "opis_proba": "v2"
+  "opis_proba": "v3",
+  "text": "Biblioteka Główna w Grodzisku Mazowieckim organizuje bezpłatne warsztaty z programowania w grze Minecraft dla dzieci od 8. roku życia. Zajęcia odbywają się w poniedziałki w godzinach 16:00–17:30, a na uczestników obowiązują zapisy.",
+  "opis_auto": true
  },
  {
   "id": "655f1b228058",
@@ -3332,7 +3380,7 @@
   "place": "cała gmina",
   "when": "25.10",
   "event_iso": "2026-10-25",
-  "opis_proba": "v2",
+  "opis_proba": "v3",
   "poza_okolica": true
  },
  {
