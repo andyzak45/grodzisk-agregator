@@ -27,7 +27,23 @@
   "place": "Grodzisk Mazowiecki",
   "when": "26.10",
   "event_iso": "2026-10-26",
-  "tkey": "d363c6becfe4"
+  "tkey": "d363c6becfe4",
+  "opis_proba": "v2",
+  "poza_okolica": true
+ },
+ {
+  "id": "f2d1df56ad98",
+  "title": "Szyją poduszki i woreczki dla pacjentów onkologicznych",
+  "url": "https://wpr24.pl/szyja-poduszki-i-woreczki-dla-pacjentow-onkologicznych/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-10-22",
+  "published": "2026-10-22",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "36ecd86f177a"
  },
  {
   "id": "b39ecea79f2d",
@@ -754,7 +770,9 @@
   "place": "cała gmina",
   "when": "30.11, godz. 0:00",
   "event_iso": "2026-11-30",
-  "tkey": "ffdcef326a5e"
+  "tkey": "ffdcef326a5e",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "a9d1b7747519",
@@ -952,7 +970,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "7bc0d1a298ba"
+  "tkey": "7bc0d1a298ba",
+  "opis_proba": "v2",
+  "text": "16 października w Bibliotece Publicznej Gminy Grodzisk Mazowiecki odbyła się XII Ogólnopolska Noc Bibliotek. W programie znalazły się spotkania autorskie, pokazy filmowe, gra interaktywna oraz koncert.",
+  "opis_auto": true
  },
  {
   "id": "eb64a3cde911",
@@ -966,7 +987,8 @@
   "place": "Grodzisk Mazowiecki",
   "when": null,
   "event_iso": null,
-  "tkey": "abd5197161bb"
+  "tkey": "abd5197161bb",
+  "opis_proba": "v2"
  },
  {
   "id": "a66316bac6d4",
@@ -1273,7 +1295,10 @@
   "place": "Grodzisk Mazowiecki",
   "when": "29.07",
   "event_iso": "2027-07-29",
-  "tkey": "4f94d62f20ff"
+  "tkey": "4f94d62f20ff",
+  "opis_proba": "v2",
+  "text": "Ośrodek Kultury Gminy Grodzisk Mazowiecki prowadzi do 19 sierpnia 2026 roku zapisy dla wystawców na Jarmark Dożynkowy w Makówce. Wydarzenie zaplanowano na 30 sierpnia 2026 roku przy ulicy Radziejowickiej.",
+  "opis_auto": true
  },
  {
   "id": "5dc743218dee",
@@ -1314,7 +1339,10 @@
   "kind": "wyd",
   "place": "cała gmina",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "W Bibliotece Publicznej Gminy Grodzisk Mazowiecki odbyła się inauguracja XII Ogólnopolskiej Nocy Bibliotek. W programie znalazły się projekcje filmów, spotkania autorskie, gry interaktywne oraz koncert.",
+  "opis_auto": true
  },
  {
   "id": "7b56b244cfdc",
@@ -1330,7 +1358,10 @@
   "event_iso": null,
   "also": [
    "Grodzisk Twoje Miasto"
-  ]
+  ],
+  "opis_proba": "v2",
+  "text": "Gmina Grodzisk Mazowiecki pozyskała unijne dofinansowanie na trzy inwestycje o łącznej wartości ponad 32 mln zł. Do końca 2028 roku powstaną nowe ścieżki rowerowe, parking „Parkuj i Jedź” w Szczęsnym oraz zmodernizowane zostaną zabytkowe budynki.",
+  "opis_auto": true
  },
  {
   "id": "1d57b2d65289",
@@ -1415,7 +1446,9 @@
   "also": [
    "Zarządzanie kryzysowe",
    "Grodzisk Twoje Miasto"
-  ]
+  ],
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "27a1c5b335a9",
@@ -1607,7 +1640,10 @@
   "kind": "spo",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "W sobotnim meczu 11. kolejki Betclic 1. ligi Pogoń Grodzisk Mazowiecki przegrała u siebie z Polonią Warszawa 0:1. Jedyną bramkę dla gości zdobył w 85. minucie Dave Gnaase.",
+  "opis_auto": true
  },
  {
   "id": "09f1a8ef56e2",
@@ -1635,7 +1671,9 @@
   "kind": "inw",
   "place": "Milanówek",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "dd3c52aeaf5e",
@@ -1648,7 +1686,8 @@
   "kind": "inne",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2"
  },
  {
   "id": "dd3a28a2bf91",
@@ -1661,7 +1700,9 @@
   "kind": "inne",
   "place": "Milanówek",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "98f5b300b40c",
@@ -1674,7 +1715,9 @@
   "kind": "inne",
   "place": "Podkowa Leśna",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "1b432e00c8c8",
@@ -1687,7 +1730,9 @@
   "kind": "inw",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "79f9c1f18fc4",
@@ -1700,7 +1745,9 @@
   "kind": "inw",
   "place": "Milanówek",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "4ce112d37c80",
@@ -1713,7 +1760,9 @@
   "kind": "inne",
   "place": "Milanówek",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "c46764a5864b",
@@ -1726,7 +1775,10 @@
   "kind": "inw",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "Gmina Grodzisk Mazowiecki pozyskała unijne dofinansowanie na remonty zabytkowych kamienic oraz budowę nowych tras pieszo-rowerowych i parkingu. Pieniądze te są częścią puli ponad 35 mln zł przeznaczonej na inwestycje w podwarszawskich samorządach.",
+  "opis_auto": true
  },
  {
   "id": "19db6bf2fd54",
@@ -1912,7 +1964,9 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "adf006fefb43",
@@ -1925,7 +1979,9 @@
   "kind": "inne",
   "place": "Pruszków",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "c21e3e6eb709",
@@ -1938,7 +1994,9 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "0d7cc46696f2",
@@ -1951,7 +2009,9 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "d52ae32d7b56",
@@ -1964,7 +2024,8 @@
   "kind": "inw",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2"
  },
  {
   "id": "d95b9c82ba41",
@@ -1977,7 +2038,9 @@
   "kind": "inw",
   "place": "Żabia Wola",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "6189d33dd0da",
@@ -1990,7 +2053,9 @@
   "kind": "inw",
   "place": "Pruszków",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "5d7eda93c025",
@@ -2003,7 +2068,9 @@
   "kind": "inw",
   "place": "Pruszków",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "f58cb6a31e15",
@@ -2016,7 +2083,9 @@
   "kind": "ost",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "d4d9f876a445",
@@ -2029,7 +2098,9 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "8a1745eef540",
@@ -2042,7 +2113,9 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "a3fea6832ac0",
@@ -2055,7 +2128,9 @@
   "kind": "inw",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "f8b70a2a2d8f",
@@ -2081,7 +2156,10 @@
   "kind": "inne",
   "place": "okolica",
   "when": "19.10",
-  "event_iso": "2026-10-19"
+  "event_iso": "2026-10-19",
+  "opis_proba": "v2",
+  "text": "Mieszkańcy Grodziska Mazowieckiego mogą od 19 października zapisywać się na zaplanowaną na 7 listopada wycieczkę do warszawskich nekropolii i Fabryki Norblina. Koszt biletów wynosi 105 zł lub 80 zł dla dzieci, a wyjazd z miasta nastąpi o godzinie 8:00.",
+  "opis_auto": true
  },
  {
   "id": "8ff574819791",
@@ -2094,7 +2172,10 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "Jednostka straży pożarnej w Grodzisku Mazowieckim wzbogaciła się o dwie pary nogawic antyprzecięciowych do pracy z pilarkami. Nowy sprzęt ochronny zwiększy bezpieczeństwo ratowników podczas usuwania wiatrołomów.",
+  "opis_auto": true
  },
  {
   "id": "2cecb7ba6dfb",
@@ -2107,7 +2188,10 @@
   "kind": "wyd",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "W Grodzisku Mazowieckim odbyła się XII Noc Bibliotek pod hasłem „Biblioteka (się) sprawdza”. W programie placówki znalazły się seanse filmowe, gry literackie, spotkania autorskie oraz koncert.",
+  "opis_auto": true
  },
  {
   "id": "5b0e4a8d843f",
@@ -2120,7 +2204,9 @@
   "kind": "wyd",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "e227f57d2a7d",
@@ -2133,7 +2219,9 @@
   "kind": "inne",
   "place": "Milanówek",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "1bf389b3021a",
@@ -2146,7 +2234,9 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "a9f80e5959b9",
@@ -2159,7 +2249,10 @@
   "kind": "wyd",
   "place": "okolica",
   "when": "25.10",
-  "event_iso": "2026-10-25"
+  "event_iso": "2026-10-25",
+  "opis_proba": "v2",
+  "text": "W sobotę, 25 października, w grodziskim Centrum Kultury odbędą się dwa spektakle charytatywne „Czarownica Smerfy i urodzinowy bałagan”. Bilety w cenie 25 zł można kupić w kasie kina.",
+  "opis_auto": true
  },
  {
   "id": "4648c7c2af2c",
@@ -2172,7 +2265,9 @@
   "kind": "inne",
   "place": "Milanówek",
   "when": "22.10",
-  "event_iso": "2026-10-22"
+  "event_iso": "2026-10-22",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "11a326a40e08",
@@ -2185,7 +2280,9 @@
   "kind": "inw",
   "place": "Milanówek",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "2ab6e6cbb25c",
@@ -2198,7 +2295,10 @@
   "kind": "inne",
   "place": "Szczęsne",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "We wsi Szczęsne w gminie Grodzisk Mazowiecki ruszyła rewitalizacja zbiornika wodnego przy ul. Sasankowej. W ramach inwestycji powstanie park z alejkami, oświetleniem i placem zabaw, której zakończenie zaplanowano na sierpień 2027 roku.",
+  "opis_auto": true
  },
  {
   "id": "f6b76157cf44",
@@ -2211,7 +2311,8 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2"
  },
  {
   "id": "30a1fb37dab3",
@@ -2224,7 +2325,9 @@
   "kind": "inw",
   "place": "Żabia Wola",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "4bca24378093",
@@ -2237,7 +2340,9 @@
   "kind": "inw",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "4a1a4a40696a",
@@ -2250,7 +2355,9 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "b6fb38207da5",
@@ -2874,7 +2981,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2"
  },
  {
   "id": "9c0d87577f5e",
@@ -2887,7 +2995,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2"
  },
  {
   "id": "10576cce70d3",
@@ -2900,7 +3009,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2"
  },
  {
   "id": "655f1b228058",
@@ -2913,7 +3023,10 @@
   "kind": "spo",
   "place": "Grodzisk Mazowiecki",
   "when": "22.10",
-  "event_iso": "2026-10-22"
+  "event_iso": "2026-10-22",
+  "opis_proba": "v2",
+  "text": "W czwartek, 22 października, tenisści stołowi z Grodziska Mazowieckiego zmierzą się na własnej sali przy ul. Sportowej z drużyną z Grudziądza. Spotkanie w ramach LOTTO Superligi rozpocznie się o godzinie 16.55, a wstęp dla kibiców jest bezpłatny.",
+  "opis_auto": true
  },
  {
   "id": "bbcf9518e784",
@@ -2926,7 +3039,10 @@
   "kind": "spo",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "opis_proba": "v2",
+  "text": "Pięcioro tenisistów stołowych z Grodziska Mazowieckiego wystartowało w Mistrzostwach Europy w Ljublanie. Dwóch zawodników grodziskiego klubu dotarło do 1/8 finału turnieju singlowego.",
+  "opis_auto": true
  },
  {
   "id": "044128ea2efa",
@@ -3030,7 +3146,9 @@
   "kind": "inw",
   "place": "cała gmina",
   "when": "25.10",
-  "event_iso": "2026-10-25"
+  "event_iso": "2026-10-25",
+  "opis_proba": "v2",
+  "poza_okolica": true
  },
  {
   "id": "76d224d09e12",
