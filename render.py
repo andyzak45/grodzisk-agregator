@@ -122,7 +122,7 @@ def _czesci(it, today):
         data = (f'<time datetime="{e(it["published"])}">{e(data_ui(it["published"], today))}</time>'
                 if not termin else "")
     else:
-        data = f'<span class="zauwazono">zauważono {e(dzien(it["first_seen"]))}</span>' if not termin else ""
+        data = f'<span>{e(dzien(it["first_seen"]))}</span>' if not termin else ""
     znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
     tekst = opis(it, today)
     opis_html = f'<p class="opis">{e(tekst)}</p>' if tekst else ""
@@ -254,7 +254,13 @@ _ARCH_CSS = """
         .arch-link { font-size: 0.9rem; font-weight: 700; color: var(--accent); text-decoration: none; }
         .arch-tools { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem; }
         .arch-tools input { font: inherit; padding: 0.5rem 1rem; border-radius: 99px; border: 1px solid #cbd5e1; min-width: 16rem; flex: 1; max-width: 28rem; }
-        .arch-month { font-size: 1.2rem; margin: 2rem 0 0.5rem; padding-bottom: 0.3rem; border-bottom: 2px solid #e2e8f0; }
+        .arch-kat { margin-top: 2.2rem; scroll-margin-top: 90px; }
+        .arch-kat-h { display: flex; justify-content: space-between; align-items: center; margin: 0 0 0.4rem; padding-bottom: 0.35rem; border-bottom: 4px solid var(--c-inne); font-family: var(--cond); font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; }
+        .arch-kat.c-ost .arch-kat-h, .arch-kat.c-zdr .arch-kat-h { border-color: var(--c-ost); } .arch-kat.c-wyd .arch-kat-h { border-color: var(--c-wyd); }
+        .arch-kat.c-inw .arch-kat-h { border-color: var(--c-inw); } .arch-kat.c-spo .arch-kat-h { border-color: var(--c-spo); }
+        .arch-kat-h .arch-n { color: var(--text-muted); }
+        .arch-month { font-size: 1rem; margin: 1.2rem 0 0.4rem; padding-bottom: 0.2rem; border-bottom: 1px solid #e2e8f0; color: var(--text-muted); }
+        .arch-nav { margin: 0 0 0.5rem; }
         .arch-list { list-style: none; margin: 0; padding: 0; }
         .arch-list li { background: var(--card-bg); border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.7rem 1rem; margin-bottom: 0.5rem; }
         .arch-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -274,8 +280,15 @@ _ARCH_JS = """
       var ok = (!t || li.dataset.s.indexOf(t) > -1) && (!kind || li.dataset.kind === kind);
       li.hidden = !ok; if (ok) n++;
     });
-    document.querySelectorAll('.arch-group').forEach(function (g) {
+    document.querySelectorAll('.arch-sub').forEach(function (g) {
       g.hidden = !g.querySelector('li:not([hidden])');
+    });
+    document.querySelectorAll('.arch-kat').forEach(function (g) {
+      var m = g.querySelectorAll('li:not([hidden])').length;
+      g.hidden = !m;
+      g.querySelector('.arch-n').textContent = m;
+      var a = document.querySelector('.arch-nav a[href="#' + g.id + '"]');
+      if (a) { a.hidden = !m; a.querySelector('.cat-count').textContent = m; }
     });
     cnt.textContent = n + ' wpisów';
   }
@@ -292,7 +305,7 @@ def wiersz_archiwum(it, today):
     tekst = opis(it, today)
     auto = ""
     haystack = " ".join([it["title"], tekst, it["source"], miejsce, label]).lower()
-    zauw = "" if it.get("published") else " (zauważono)"
+    zauw = ""
     meta = (f'<span>{d.day}.{d.month:02d}.{d.year}{zauw}</span><span>{e(label)}</span>'
             + (f'<span>{e(miejsce)}</span>' if miejsce else "") + f'<span>{e(it["source"])}</span>')
     return (f'<li data-kind="{e(it["kind"])}" data-s="{e(haystack)}">'
@@ -302,19 +315,30 @@ def wiersz_archiwum(it, today):
 
 
 def build_archive(items, shown, template_path, out_path, today=None):
-    """Archiwum: wszystko, czego nie ma na stronie głównej, miesiącami od najnowszych. Nic nie jest usuwane."""
+    """Archiwum: wszystko, czego nie ma na stronie głównej, podzielone na kategorie (w nich miesiącami od najnowszych). Nic nie jest usuwane."""
     today = today or date.today()
     na_glownej = {id(i) for i in shown}
     reszta = sorted((i for i in items if id(i) not in na_glownej), key=data_wpisu, reverse=True)
-    grupy, biezacy = [], None
-    for it in reszta:
-        d = date.fromisoformat(data_wpisu(it))
-        if (d.year, d.month) != biezacy:
-            biezacy = (d.year, d.month)
-            grupy.append((f"{MIESIACE[d.month - 1]} {d.year}", []))
-        grupy[-1][1].append(wiersz_archiwum(it, today))
-    body = "".join(f'<section class="arch-group"><h2 class="arch-month">{e(t)}</h2><ul class="arch-list">{"".join(r)}</ul></section>'
-                   for t, r in grupy) or '<p class="empty">Archiwum jest jeszcze puste.</p>'
+    sekcje_arch, nav = [], []
+    for k, (label, _bg) in KIND_UI.items():
+        wpisy = [i for i in reszta if i["kind"] == k]
+        if not wpisy:
+            continue
+        podgrupy, biezacy = [], None
+        for it in wpisy:                      # w kategorii: miesiącami, od najnowszych
+            d = date.fromisoformat(data_wpisu(it))
+            if (d.year, d.month) != biezacy:
+                biezacy = (d.year, d.month)
+                podgrupy.append((f"{MIESIACE[d.month - 1]} {d.year}", []))
+            podgrupy[-1][1].append(wiersz_archiwum(it, today))
+        wnetrze = "".join(f'<div class="arch-sub"><h3 class="arch-month">{e(t)}</h3><ul class="arch-list">{"".join(r)}</ul></div>'
+                          for t, r in podgrupy)
+        sekcje_arch.append(f'<section class="arch-kat c-{k}" id="arch-{k}"><h2 class="arch-kat-h"><span>{e(label)}</span>'
+                           f'<span class="arch-n">{len(wpisy)}</span></h2>{wnetrze}</section>')
+        nav.append(f'<a class="cat-link c-{k}" href="#arch-{k}"><span class="cat-name">{e(label)}</span> '
+                   f'<span class="cat-count">{len(wpisy)}</span></a>')
+    body = "".join(sekcje_arch) or '<p class="empty">Archiwum jest jeszcze puste.</p>'
+    nav_html = f'<nav class="cat-nav arch-nav" aria-label="Kategorie archiwum">{"".join(nav)}</nav>' if nav else ""
     kinds = [k for k in KIND_UI if any(i["kind"] == k for i in reszta)]
     opts = '<option value="">Wszystkie rodzaje</option>' + "".join(
         f'<option value="{k}">{e(KIND_UI[k][0])}</option>' for k in kinds)
@@ -325,7 +349,7 @@ def build_archive(items, shown, template_path, out_path, today=None):
             '<a class="arch-link" href="index.html">&larr; Strona główna</a></div></header>\n<main>'
             '<div class="arch-tools"><input id="q" type="search" placeholder="Szukaj w archiwum…" aria-label="Szukaj">'
             f'<select id="k" aria-label="Rodzaj">{opts}</select></div><div class="arch-count" id="cnt"></div>'
-            f'{body}</main>\n<footer><p>Archiwum zawiera starsze wpisy zebrane z publicznych stron lokalnych instytucji i mediów. '
+            f'{nav_html}{body}</main>\n<footer><p>Archiwum zawiera starsze wpisy zebrane z publicznych stron lokalnych instytucji i mediów. '
             'Pełne treści czytaj u wydawców.</p></footer>'
             f'{_ARCH_JS}</body></html>')
     Path(out_path).write_text(page, encoding="utf-8")
