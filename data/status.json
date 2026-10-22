@@ -1,10 +1,10 @@
 {
- "run": "2026-10-22T06:55:53",
+ "run": "2026-10-22T10:05:41",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
    "found": 9,
-   "new": 0
+   "new": 1
   },
   "kryzysowe": {
    "ok": true,
@@ -13,8 +13,8 @@
   },
   "policja": {
    "ok": true,
-   "found": 11,
-   "new": 0
+   "found": 12,
+   "new": 1
   },
   "grodziski24": {
    "ok": true,
@@ -24,7 +24,7 @@
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 6
   },
   "przeglad-regionalny": {
    "ok": true,
@@ -39,7 +39,7 @@
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 2
   },
   "centrum-kultury": {
    "ok": true,
