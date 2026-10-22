@@ -386,6 +386,10 @@ class StronaRedakcyjna(unittest.TestCase):
             render.build(items, Path(__file__).resolve().parent / "template.html", out, TODAY)
             return out.read_text(encoding="utf-8")
 
+    def _karty(self, page):
+        """Liczba kart na stronie bez ukrytych kopii wyróżnionych wpisów (kopie służą tylko filtrowi kategorii)."""
+        return page.count('<article class="portal-card') - page.count('<article class="portal-card copy')
+
     def _it(self, **kw):
         base = {"id": "1", "title": "Tytuł", "url": "https://x.pl/1", "source": "Źródło", "first_seen": "2026-10-19",
                 "published": "2026-10-19", "kind": "inne", "place": "cała gmina", "when": None, "event_iso": None}
@@ -397,24 +401,35 @@ class StronaRedakcyjna(unittest.TestCase):
         self.assertNotIn("Sprawę opisuje", page)         # bez notki własnymi słowami karta nie ma szablonu
         self.assertNotIn("hero-tile\"", page)
 
-    def test_puste_kategorie_nie_maja_sekcji_a_ostrzezenia_i_zdarzenia_zostaja_w_menu(self):
+    def test_menu_to_filtr_kategorii_a_ostrzezenia_i_zdarzenia_zostaja_w_menu(self):
         page = self._strona([self._it(kind="inw", title="Remont drogi")])
-        self.assertIn('id="kat-inw"', page)
-        for k in ("wyd", "inne", "spo"):            # puste: bez sekcji i bez pozycji w menu
-            self.assertNotIn(f'id="kat-{k}"', page)
-            self.assertNotIn(f'href="#kat-{k}"', page)
-        for k in ("ost", "zdr"):                    # stałe pozycje menu, przyciemnione, bez sekcji
-            self.assertIn(f'href="#kat-{k}"', page)
-            self.assertNotIn(f'id="kat-{k}"', page)
-        self.assertRegex(page, r'cat-link c-ost zero')
+        self.assertIn('id="feed"', page)
+        self.assertNotRegex(page, r'id="kat-')                # nie ma sekcji kategorii, jest jeden strumień
+        self.assertIn('data-kind=""', page)                   # pozycja "Wszystko"
+        self.assertIn('data-kind="inw"', page.split("<main>")[0])
+        for k in ("wyd", "inne", "spo"):                      # puste kategorie: bez pozycji w menu
+            self.assertNotIn(f'class="cat-link c-{k}', page)
+        for k in ("ost", "zdr"):                              # stałe pozycje menu, przyciemnione
+            self.assertIn(f'class="cat-link c-{k} zero"', page)
 
-    def test_sekcje_w_kolejnosci_wydarzenia_wiadomosci_ostrzezenia(self):
-        items = [self._it(id="1", url="https://x.pl/1", kind="ost", title="Ostrzeżenie A"),
-                 self._it(id="2", url="https://x.pl/2", kind="inne", title="Wiadomość B"),
-                 self._it(id="3", url="https://x.pl/3", kind="wyd", title="Wydarzenie C", event_iso="2026-10-30", when="30.10")]
+    def test_strumien_jest_sortowany_waznoscia_i_swiezoscia_a_nie_kategoria(self):
+        items = [self._it(id="1", url="https://x.pl/1", kind="inne", title="Wiadomość stara", published="2026-10-12", first_seen="2026-10-12"),
+                 self._it(id="2", url="https://x.pl/2", kind="inne", title="Wiadomość świeża"),
+                 self._it(id="3", url="https://x.pl/3", kind="wyd", title="Wydarzenie jutro", event_iso="2026-10-20", when="20.10",
+                          published="2026-10-14", first_seen="2026-10-14"),
+                 self._it(id="4", url="https://x.pl/4", kind="inw", title="Inwestycja średnia", published="2026-10-16", first_seen="2026-10-16"),
+                 self._it(id="5", url="https://x.pl/5", kind="ost", title="Ostrzeżenie dzisiaj")]
         page = self._strona(items)
-        idx = [page.index(f'id="kat-{k}"') for k in ("wyd", "inne", "ost")]
-        self.assertEqual(idx, sorted(idx))
+        strumien = page[page.index('id="feed"'):]
+        # kategorie się mieszają: wiadomość świeża idzie przed inwestycją, a zbliżające się wydarzenie przed starą wiadomością
+        self.assertLess(strumien.index("Wiadomość świeża"), strumien.index("Inwestycja średnia"))
+        self.assertLess(strumien.index("Wydarzenie jutro"), strumien.index("Wiadomość stara"))
+        self.assertNotIn('class="kat c-inne"', page)
+
+    def test_wyrozniony_wpis_ma_ukryta_kopie_w_strumieniu_dla_filtra(self):
+        page = self._strona([self._it(id="1", url="https://x.pl/1", kind="ost", title="Ostrzeżenie dla gminy")])
+        self.assertEqual(page.count("Ostrzeżenie dla gminy</h"), 2)       # hero + ukryta kopia
+        self.assertIn('class="portal-card copy"', page)
 
     def test_pusta_strona_ma_komunikat(self):
         page = self._strona([])
@@ -444,7 +459,7 @@ class StronaRedakcyjna(unittest.TestCase):
     def test_kategoria_ma_limit_wpisow_na_stronie(self):
         items = [self._it(id=str(n), url=f"https://x.pl/{n}", title=f"Wiadomość numer {n}") for n in range(render.MAX_W_KATEGORII + 5)]
         page = self._strona(items)
-        self.assertEqual(page.count('<article class="portal-card'), render.MAX_W_KATEGORII)   # razem z główną i bocznymi
+        self.assertEqual(self._karty(page), render.MAX_W_KATEGORII)   # razem z główną i bocznymi
 
     def test_pierwsza_strona_ma_glowny_temat_date_i_pasek_najnowszych(self):
         items = [self._it(id="1", url="https://x.pl/1", kind="ost", title="Ostrzeżenie dla gminy"),
@@ -456,7 +471,7 @@ class StronaRedakcyjna(unittest.TestCase):
         self.assertIn('class="ticker"', page)
         glowna = page[page.index('class="portal-card hero'):page.index('class="front-side"')]
         self.assertIn("Ostrzeżenie dla gminy", glowna)
-        self.assertNotIn("Interwencja policji", page[page.index('class="front"'):page.index('class="kat c-ost"')])
+        self.assertNotIn("Interwencja policji", page[page.index('class="front"'):page.index('id="feed"')])
 
     def test_brak_podwojnej_kropki_po_skrocie_zrodla(self):
         it = self._it(kind="zdr", neutral=True, source="KPP Grodzisk Maz.")
@@ -486,7 +501,7 @@ class StronaRedakcyjna(unittest.TestCase):
         items.append(self._it(id="stara", url="https://x.pl/s", kind="wyd", title="Stara zapowiedź",
                               first_seen="2026-10-10", published=None))
         page = self._strona(items)
-        self.assertEqual(page.count('<article class="portal-card'), render.BEZ_TERMINU_MAX)
+        self.assertEqual(self._karty(page), render.BEZ_TERMINU_MAX)
         self.assertNotIn("Stara zapowiedź", page)
 
     def test_wpis_reczny_pokazuje_wlasny_opis_i_ikone(self):

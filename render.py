@@ -1,4 +1,4 @@
-"""Buduje index.html z zapisanych wpisów (bez losowania, od najważniejszych i najświeższych)."""
+"""Buduje index.html z zapisanych wpisów: jeden strumień od najważniejszych i najświeższych (bez losowania). Archiwum dzieli wpisy na kategorie."""
 import html
 from datetime import date
 from pathlib import Path
@@ -27,14 +27,14 @@ _IKONY = {
     "inne": '<path d="M4 5h13a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2V5Z"/><path d="M8 9h7M8 13h7M8 16h4"/>',
 }
 
-WEIGHT = {"ost": 5, "wyd": 2, "inw": 2, "spo": 1, "inne": 0}   # zdarzenia (zdr) nigdy nie trafiają na pierwszą stronę
+WEIGHT = {"ost": 5, "wyd": 2, "inw": 2, "spo": 1, "inne": 0}   # zdarzenia (zdr, waga -2) nie trafiają na górę strony, ale w strumieniu idą za resztą
 BOCZNE = 2               # tyle wpisów obok głównego tematu
 DNI = ["poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"]
 MIESIACE_DOP = ["stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września",
                 "października", "listopada", "grudnia"]
 NAJNOWSZE = 5            # tyle pozycji w pasku "Najnowsze"
-NA_START = 4              # tyle wpisów widać w każdej kategorii od razu
-MAX_W_KATEGORII = 12      # tyle najwyżej na stronie (reszta w archiwum); ponad NA_START po kliknięciu "Pokaż więcej"
+NA_START = 12             # tyle wpisów widać od razu w strumieniu aktualności (reszta po kliknięciu "Pokaż więcej")
+MAX_W_KATEGORII = 12      # tyle najwyżej z jednej kategorii na stronie (reszta w archiwum), żeby jedna nie zalała reszty
 SHOW_DAYS = 14
 ZAWSZE_W_MENU = {"ost", "zdr"}   # te kategorie zostają w menu nawet puste (przyciemnione, z zerem); sekcji bez wpisów i tak nie ma
 DNI_OSTRZEZEN = 3        # ostrzeżenia (pogoda, komunikaty kryzysowe) są aktualne krótko: potem idą do archiwum
@@ -96,8 +96,17 @@ def widoczne(items, today):
     return out
 
 
+def _swiezosc(it, today):
+    """10 punktów dla wpisu z dzisiaj, 0 po 10 dniach. Wydarzenie, które się zbliża, jest "świeże" tak, jak bliski jest jego termin."""
+    w = wiek(it, today)
+    ev = it.get("event_iso")
+    if ev and ev >= today.isoformat():
+        w = min(w, (date.fromisoformat(ev) - today).days)
+    return max(0, 10 - w)
+
+
 def _punkty(it, today):
-    return WEIGHT[it["kind"]] + max(0, 10 - wiek(it, today)) - (0 if w_gminie(it["place"]) else 6)
+    return WEIGHT.get(it["kind"], -2) + _swiezosc(it, today) - (0 if w_gminie(it["place"]) else 6)
 
 
 def wybierz_jedynke(items, today):
@@ -133,10 +142,11 @@ def _czesci(it, today):
     return bg, meta, opis_html, when, link
 
 
-def karta(it, today):
-    """Wpis w sekcji kategorii: sam tekst, bez ramek."""
+def karta(it, today, kopia=False):
+    """Wpis w strumieniu: sam tekst, bez ramek. Kopia wyróżnionego wpisu jest ukryta i pokazuje się dopiero przy filtrze kategorii."""
     bg, meta, opis_html, when, link = _czesci(it, today)
-    return (f'<article class="portal-card" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
+    klasa, ukryta = ("portal-card copy", " hidden") if kopia else ("portal-card", "")
+    return (f'<article class="{klasa}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}"{ukryta}>'
             f'<div class="card-body">{meta}<h3>{e(it["title"])}</h3>{opis_html}{when}{link}</div></article>')
 
 
@@ -187,15 +197,17 @@ def filtry(items):
 
 
 def nawigacja(po_rodzajach):
-    """Menu kategorii: z wpisami oraz stałe (ostrzeżenia, zdarzenia), reszta pustych jest pomijana."""
-    out = []
+    """Filtr kategorii nad strumieniem: "Wszystko" oraz kategorie z wpisami i stałe (ostrzeżenia, zdarzenia)."""
+    wszystkie = sum(len(v) for v in po_rodzajach.values())
+    out = [f'<a class="cat-link c-all active" href="#feed" data-kind="">'
+           f'<span class="cat-name">Wszystko</span> <span class="cat-count">{wszystkie}</span></a>']
     for k, (label, bg) in KIND_UI.items():
         n = len(po_rodzajach.get(k, []))
         if not n and k not in ZAWSZE_W_MENU:
             continue
-        out.append(f'<a class="cat-link c-{k}{"" if n else " zero"}" href="#kat-{k}" data-kind="{k}"{" data-stale" if k in ZAWSZE_W_MENU else ""}>'
+        out.append(f'<a class="cat-link c-{k}{"" if n else " zero"}" href="#feed" data-kind="{k}"{" data-stale" if k in ZAWSZE_W_MENU else ""}>'
                    f'<span class="cat-name">{e(label)}</span> <span class="cat-count">{n}</span></a>')
-    return '<nav class="cat-nav" aria-label="Kategorie">' + "".join(out) + "</nav>"
+    return '<nav class="cat-nav" aria-label="Filtr kategorii">' + "".join(out) + "</nav>"
 
 
 def kolejnosc(kind, items, today):
@@ -209,23 +221,17 @@ def kolejnosc(kind, items, today):
     return nadchodzace + reszta
 
 
-def sekcje(po_rodzajach, wyrozniane, today):
-    out = []
-    for k, (label, bg) in KIND_UI.items():
-        lista = po_rodzajach.get(k, [])
-        if not lista:
-            continue                  # pusta kategoria: bez sekcji
-        reszta = [i for i in lista if not any(i is w for w in wyrozniane)]
-        karty = "".join(karta(i, today) for i in reszta)
-        out.append(
-            f'<section class="kat c-{k}" id="kat-{k}" data-kind="{k}" data-start="{NA_START}">'
-            f'<div class="kat-head">{ikona(k)}<h2>{e(label)}</h2><span class="kat-count">{len(lista)}</span></div>'
-            f'<div class="kat-grid">{karty}</div>'
-            f'<p class="kat-empty"{" hidden" if reszta else ""}>'
-            f'{"Pozostałe wpisy tej kategorii są wyróżnione wyżej." if lista else "Brak aktualnych wpisów w tej kategorii."}</p>'
-            f'<button type="button" class="more" hidden></button>'
-            f'</section>')
-    return "".join(out)
+def strumien(pokazane, wyrozniane, today):
+    """Jeden strumień aktualności: ważność i świeżość decydują o kolejności, kategoria to tylko znacznik na karcie."""
+    if not pokazane:
+        return ""
+    uporzadkowane = sorted(pokazane, key=lambda i: (-_punkty(i, today), -date.fromisoformat(data_wpisu(i)).toordinal()))
+    reszta = [i for i in uporzadkowane if not any(i is w for w in wyrozniane)]
+    karty = "".join(karta(i, today, kopia=True) for i in wyrozniane) + "".join(karta(i, today) for i in reszta)
+    return (f'<section class="kat c-feed" id="feed" data-start="{NA_START}">'
+            f'<div class="kat-head"><h2>Aktualności</h2><span class="kat-count">{len(pokazane)}</span></div>'
+            f'<div class="kat-grid feed-grid">{karty}</div>'
+            f'<button type="button" class="more" hidden></button></section>')
 
 
 def build(items, template_path, out_path, today=None):
@@ -241,7 +247,7 @@ def build(items, template_path, out_path, today=None):
     page = page.replace("<!-- FILTERS_PLACEHOLDER -->", filtry(pool))
     page = page.replace("<!-- TICKER_PLACEHOLDER -->", pasek_najnowszych(pokazane, today))
     page = page.replace("<!-- FRONT_PLACEHOLDER -->", front)
-    page = page.replace("<!-- DYNAMIC_CARDS_PLACEHOLDER -->", sekcje(po_rodzajach, wyrozniane, today))
+    page = page.replace("<!-- DYNAMIC_CARDS_PLACEHOLDER -->", strumien(pokazane, wyrozniane, today))
     page = page.replace("<!-- UPDATED_PLACEHOLDER -->", f"Ostatnia aktualizacja: {today.strftime('%d.%m.%Y')}")
     Path(out_path).write_text(page, encoding="utf-8")
     return pokazane
