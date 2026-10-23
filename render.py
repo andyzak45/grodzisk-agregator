@@ -1,6 +1,6 @@
 """Buduje index.html z zapisanych wpisów: jeden strumień od najważniejszych i najświeższych (bez losowania). Archiwum dzieli wpisy na kategorie."""
 import html
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 from klasyfikacja import klucz_miejsca, miejsce_wpisu, w_gminie
@@ -36,6 +36,8 @@ NAJNOWSZE = 5            # tyle pozycji w pasku "Najnowsze"
 NA_START = 12             # tyle wpisów widać od razu w strumieniu aktualności (reszta po kliknięciu "Pokaż więcej")
 MAX_W_KATEGORII = 12      # tyle najwyżej z jednej kategorii na stronie (reszta w archiwum), żeby jedna nie zalała reszty
 SHOW_DAYS = 14
+TERMINY_DNI = 14         # blok "Najbliższe terminy" obejmuje tyle dni do przodu
+TERMINY_MAX = 8
 ZAWSZE_W_MENU = {"ost", "zdr"}   # te kategorie zostają w menu nawet puste (przyciemnione, z zerem); sekcji bez wpisów i tak nie ma
 DNI_OSTRZEZEN = 3        # ostrzeżenia (pogoda, komunikaty kryzysowe) są aktualne krótko: potem idą do archiwum
 BEZ_TERMINU_DNI = 3      # zapowiedź bez terminu pokazujemy tylko tuż po pojawieniu się
@@ -113,6 +115,11 @@ def wybierz_jedynke(items, today):
     return max(items, key=lambda i: _punkty(i, today)) if items else None
 
 
+def tytul(it):
+    """Tytuł na stronie: napisany przez AI (inny niż u wydawcy), a gdy go nie ma, oryginalny."""
+    return it.get("tytul") or it["title"]
+
+
 def e(s):
     return html.escape(str(s), quote=True)
 
@@ -147,20 +154,20 @@ def karta(it, today, kopia=False):
     bg, meta, opis_html, when, link = _czesci(it, today)
     klasa, ukryta = ("portal-card copy", " hidden") if kopia else ("portal-card", "")
     return (f'<article class="{klasa}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}"{ukryta}>'
-            f'<div class="card-body">{meta}<h3>{e(it["title"])}</h3>{opis_html}{when}{link}</div></article>')
+            f'<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}{when}{link}</div></article>')
 
 
 def karta_glowna(it, today):
     """Główny temat strony: duży kolorowy blok (zamiast zdjęcia)."""
     bg, meta, opis_html, when, link = _czesci(it, today)
     return (f'<article class="portal-card hero {bg}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
-            f'{ikona(it["kind"])}<div class="hero-body">{meta}<h2>{e(it["title"])}</h2>{opis_html}{when}{link}</div></article>')
+            f'{ikona(it["kind"])}<div class="hero-body">{meta}<h2>{e(tytul(it))}</h2>{opis_html}{when}{link}</div></article>')
 
 
 def karta_boczna(it, today):
     bg, meta, opis_html, when, link = _czesci(it, today)
     return (f'<article class="portal-card side" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
-            f'<div class="card-body">{meta}<h3>{e(it["title"])}</h3>{opis_html}{when}{link}</div></article>')
+            f'<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}{when}{link}</div></article>')
 
 
 def pasek_najnowszych(pool, today):
@@ -169,8 +176,8 @@ def pasek_najnowszych(pool, today):
     if not najnowsze:
         return ""
     poz = "".join(
-        f'<a class="tick" href="{e(i["url"])}" target="_blank" rel="noopener" data-place="{e(i["place"])}">'
-        f'<time datetime="{e(data_wpisu(i))}">{e(data_ui(data_wpisu(i), today))}</time> {e(i["title"])}</a>'
+        f'<a class="tick" href="{e(i["url"])}" target="_blank" rel="noopener" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
+        f'<time datetime="{e(data_wpisu(i))}">{e(data_ui(data_wpisu(i), today))}</time> {e(tytul(i))}</a>'
         for i in najnowsze)
     return f'<div class="ticker"><span class="ticker-label">Najnowsze</span><div class="ticker-list">{poz}</div></div>'
 
@@ -186,6 +193,23 @@ def pierwsza_strona(pool, today):
     html_ = (f'<div class="front">{karta_glowna(glowny, today)}'
              f'<div class="front-side">{boczne}</div></div>')
     return html_, [glowny] + reszta
+
+
+def terminy(pool, today):
+    """Najbliższe terminy: wydarzenia, nabory, zapisy, utrudnienia. Jedna lista posortowana datą, osobno od strumienia."""
+    od, do = today.isoformat(), (today + timedelta(days=TERMINY_DNI)).isoformat()
+    kand = [i for i in pool if i["kind"] != "zdr" and i.get("event_iso") and od <= i["event_iso"] <= do]
+    kand.sort(key=lambda i: (i["event_iso"], godzina(i.get("when")) or "99:99", tytul(i)))
+    wiersze = ""
+    for i in kand[:TERMINY_MAX]:
+        miejsce = miejsce_ui(i["place"])
+        znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
+        wiersze += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
+                    f'<time datetime="{e(i["event_iso"])}" data-t="{e(godzina(i.get("when")) or "")}">{e(termin_ui(i, today))}</time>'
+                    f'<a href="{e(i["url"])}" target="_blank" rel="noopener">{e(tytul(i))}</a>{znaczek}</li>')
+    if not wiersze:
+        return ""
+    return f'<section class="terminy" id="terminy"><h2>Najbliższe terminy</h2><ul>{wiersze}</ul></section>'
 
 
 def filtry(items):
@@ -234,7 +258,8 @@ def strumien(pokazane, wyrozniane, today):
             f'<button type="button" class="more" hidden></button></section>')
 
 
-def build(items, template_path, out_path, today=None):
+def build(items, template_path, out_path, today=None, aktualizacja=None):
+    """aktualizacja: czas ostatniego pobrania danych (z godziną); bez niego pod tytułem jest sama data."""
     today = today or date.today()
     pool = widoczne(items, today)
     po_rodzajach = {k: kolejnosc(k, [i for i in pool if i["kind"] == k], today)[:MAX_W_KATEGORII] for k in KIND_UI}
@@ -247,8 +272,9 @@ def build(items, template_path, out_path, today=None):
     page = page.replace("<!-- FILTERS_PLACEHOLDER -->", filtry(pool))
     page = page.replace("<!-- TICKER_PLACEHOLDER -->", pasek_najnowszych(pokazane, today))
     page = page.replace("<!-- FRONT_PLACEHOLDER -->", front)
+    page = page.replace("<!-- TERMS_PLACEHOLDER -->", terminy(pool, today))
     page = page.replace("<!-- DYNAMIC_CARDS_PLACEHOLDER -->", strumien(pokazane, wyrozniane, today))
-    page = page.replace("<!-- UPDATED_PLACEHOLDER -->", f"Ostatnia aktualizacja: {today.strftime('%d.%m.%Y')}")
+    page = page.replace("<!-- UPDATED_PLACEHOLDER -->", f"Ostatnia aktualizacja: {(aktualizacja.strftime('%d.%m.%Y, godz. %H:%M') if aktualizacja else today.strftime('%d.%m.%Y'))}")
     Path(out_path).write_text(page, encoding="utf-8")
     return pokazane
 
@@ -310,12 +336,12 @@ def wiersz_archiwum(it, today):
     d = date.fromisoformat(data_wpisu(it))
     tekst = opis(it, today)
     auto = ""
-    haystack = " ".join([it["title"], tekst, it["source"], miejsce, label]).lower()
+    haystack = " ".join([tytul(it), tekst, it["source"], miejsce, label]).lower()
     zauw = ""
     meta = (f'<span>{d.day}.{d.month:02d}.{d.year}{zauw}</span><span>{e(label)}</span>'
             + (f'<span>{e(miejsce)}</span>' if miejsce else "") + f'<span>{e(it["source"])}</span>')
     return (f'<li data-kind="{e(it["kind"])}" data-s="{e(haystack)}">'
-            f'<a class="t" href="{e(it["url"])}" target="_blank" rel="noopener">{e(it["title"])}</a>'
+            f'<a class="t" href="{e(it["url"])}" target="_blank" rel="noopener">{e(tytul(it))}</a>'
             f'<div class="arch-meta">{meta}</div>'
             + (f'<p>{e(tekst)}{auto}</p>' if tekst else "") + '</li>')
 

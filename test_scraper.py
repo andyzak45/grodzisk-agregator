@@ -1,7 +1,8 @@
 import sys
 import tempfile
 import unittest
-from datetime import date, timedelta
+from unittest import mock
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -1062,3 +1063,225 @@ class TylkoGminaGrodzisk(unittest.TestCase):
                                                        "Podkowa Leśna", "okolica"]}
         wynik = {i["id"] for i in render.z_notka(list(ids.values()))}
         self.assertEqual(wynik, {"Grodzisk Mazowiecki", "cała gmina"})
+
+
+class TytulyAI(unittest.TestCase):
+    ARTYKUL = Notki.ARTYKUL
+    ZR = Notki.ZR
+    NOTKA = "Od 27 października przebudowa wodociągu zamknie ulicę Kościuszki, objazd pójdzie Szkolną i Piękną."
+    TYTUL = "Ulica Kościuszki zamknięta na czas prac przy wodociągu"
+
+    def _store(self, **kw):
+        it = {"id": "a", "title": "Zamknięcie ulicy Kościuszki", "url": "https://grodzisk.pl/a", "source": "Urząd Miejski",
+              "source_id": "um", "first_seen": "2026-10-19", "published": "2026-10-19", "kind": "inw",
+              "place": "Grodzisk Mazowiecki", "when": None, "event_iso": None}
+        it.update(kw)
+        return {"a": it}
+
+    def test_rozbija_odpowiedz_w_dwoch_formatach(self):
+        self.assertEqual(streszczenia.rozbij_odpowiedz(f"TYTUŁ: {self.TYTUL}\nNOTKA: {self.NOTKA}"), (self.TYTUL, self.NOTKA))
+        self.assertEqual(streszczenia.rozbij_odpowiedz(f"**TYTUŁ:** {self.TYTUL}\n\n**NOTKA:** {self.NOTKA}"), (self.TYTUL, self.NOTKA))
+        self.assertEqual(streszczenia.rozbij_odpowiedz(self.NOTKA), (None, self.NOTKA))      # stary format: sama notka
+        self.assertEqual(streszczenia.rozbij_odpowiedz("POZA_OKOLICA"), (None, "POZA_OKOLICA"))
+
+    def test_tytul_ai_przechodzi_kontrole(self):
+        self.assertEqual(streszczenia.sprawdz_tytul(self.TYTUL + ".", "Zamknięcie ulicy Kościuszki", self.ARTYKUL), self.TYTUL)
+
+    def test_odrzuca_zly_tytul(self):
+        z = "Zamknięcie ulicy Kościuszki"
+        zle = {"identyczny": z,
+               "prawie ten sam": "Zamknięcie ulicy Kościuszki z powodu prac",
+               "wykrzyknik": "Uwaga, ulica Kościuszki zamknięta na miesiąc!",
+               "pytanie": "Czy ulica Kościuszki będzie zamknięta na miesiąc?",
+               "urwany": "Ulica Kościuszki zostanie zamknięta z powodu prac w",
+               "wymyślona liczba": "Ulica Kościuszki zamknięta na 45 dni z powodu wodociągu",
+               "dane osoby": "Ranny 35-latek trafił do szpitala po wypadku na ulicy Kościuszki",
+               "przepisany z artykułu": "Objazd wyznaczono ulicami Szkolną i Piękną, a prace potrwają",
+               "za krótki": "Zamknięta ulica", "pusty": ""}
+        for powod, t in zle.items():
+            self.assertIsNone(streszczenia.sprawdz_tytul(t, z, self.ARTYKUL), powod)
+
+    def test_notka_i_tytul_z_jednego_zapytania(self):
+        store = self._store()
+        zapytan = []
+        def llm(t):
+            zapytan.append(t)
+            return f"TYTUŁ: {self.TYTUL}\nNOTKA: {self.NOTKA}"
+        n = streszczenia.dopisz(store, self.ZR, Notki.F(f"<article>{self.ARTYKUL}</article>"), TODAY, 5, llm)
+        self.assertEqual(n, 1)
+        self.assertEqual(store["a"]["tytul"], self.TYTUL)
+        self.assertEqual(store["a"]["title"], "Zamknięcie ulicy Kościuszki")      # oryginał zostaje do rozpoznawania powtórek
+        self.assertEqual(len(zapytan), 1)
+
+    def test_zly_tytul_nie_psuje_notki(self):
+        store = self._store()
+        llm = lambda t: f"TYTUŁ: Zamknięcie ulicy Kościuszki\nNOTKA: {self.NOTKA}"
+        streszczenia.dopisz(store, self.ZR, Notki.F(f"<article>{self.ARTYKUL}</article>"), TODAY, 5, llm)
+        self.assertIn("przebudowa wodociągu", store["a"]["text"])
+        self.assertNotIn("tytul", store["a"])
+
+    def test_zalegle_tytuly_dopisywane_z_notki(self):
+        store = self._store(text=self.NOTKA, opis_auto=True)
+        zapytan = []
+        llm = lambda t: zapytan.append(t) or f"TYTUŁ: {self.TYTUL}\nNOTKA: {self.NOTKA}"
+        self.assertEqual(streszczenia.dopisz_tytuly(store, TODAY, 5, llm), 1)
+        self.assertEqual(store["a"]["tytul"], self.TYTUL)
+        self.assertIn("Zamknięcie ulicy Kościuszki", zapytan[0])
+        self.assertEqual(streszczenia.dopisz_tytuly(store, TODAY, 5, llm), 0)      # drugi raz nie pyta o ten sam wpis
+        self.assertEqual(len(zapytan), 1)
+
+    def test_zalegle_tytuly_pomijaja_zdarzenia_stare_i_juz_probowane(self):
+        llm = lambda t: f"TYTUŁ: {self.TYTUL}\nNOTKA: {self.NOTKA}"
+        for kw in ({"kind": "zdr"}, {"neutral": True}, {"published": "2026-09-01", "first_seen": "2026-09-01"}, {"tytul_proba": True}):
+            self.assertEqual(streszczenia.dopisz_tytuly(self._store(text=self.NOTKA, **kw), TODAY, 5, llm), 0, kw)
+
+    def test_zalegle_tytuly_koncza_na_limicie_zapytan(self):
+        import urllib.error
+        store = {str(i): dict(self._store(text=self.NOTKA)["a"], id=str(i), url=f"https://grodzisk.pl/{i}") for i in range(3)}
+        wywolania = []
+        def llm(t):
+            wywolania.append(t)
+            raise urllib.error.HTTPError("u", 429, "Too Many Requests", {}, None)
+        self.assertEqual(streszczenia.dopisz_tytuly(store, TODAY, 5, llm), 0)
+        self.assertEqual(len(wywolania), 1)
+        self.assertFalse(any(i.get("tytul_proba") for i in store.values()))      # wpisy zostają do następnego przebiegu
+
+    def test_strona_pokazuje_tytul_ai_a_bez_niego_oryginal(self):
+        today = date(2026, 10, 19)
+        base = {"url": "https://x.pl/1", "source": "Źródło", "source_id": "z1", "first_seen": "2026-10-19",
+                "published": "2026-10-19", "kind": "inne", "place": "cała gmina", "when": None, "event_iso": None, "text": "Notka."}
+        items = [dict(base, id="1", title="Oryginalny tytuł jeden", tytul="Własny tytuł AI numer jeden"),
+                 dict(base, id="2", url="https://x.pl/2", title="Oryginalny tytuł dwa")]
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "index.html"
+            render.build(items, Path(__file__).resolve().parent / "template.html", out, today)
+            page = out.read_text(encoding="utf-8")
+        self.assertIn("Własny tytuł AI numer jeden", page)
+        self.assertNotIn("Oryginalny tytuł jeden", page)
+        self.assertIn("Oryginalny tytuł dwa", page)
+
+
+class GodzinaAktualizacji(unittest.TestCase):
+    def _strona(self, aktualizacja=None):
+        item = {"id": "1", "title": "Tytuł", "url": "https://x.pl/1", "source": "Źródło", "source_id": "z1",
+                "first_seen": "2026-10-22", "published": "2026-10-22", "kind": "inne", "place": "cała gmina",
+                "when": None, "event_iso": None, "text": "Notka."}
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "index.html"
+            render.build([item], Path(__file__).resolve().parent / "template.html", out, date(2026, 10, 22), aktualizacja)
+            return out.read_text(encoding="utf-8")
+
+    def test_aktualizacja_ma_date_i_godzine(self):
+        page = self._strona(datetime(2026, 10, 22, 15, 7))
+        self.assertIn("Ostatnia aktualizacja: 22.10.2026, godz. 15:07", page)
+
+    def test_bez_czasu_jest_sama_data(self):
+        page = self._strona()
+        self.assertIn("Ostatnia aktualizacja: 22.10.2026 ·", page)
+
+    def test_czas_z_utc_jest_pokazany_po_polsku(self):
+        with tempfile.TemporaryDirectory() as d:
+            status = Path(d) / "status.json"
+            status.write_text('{"run": "2026-10-22T13:07:00"}', encoding="utf-8")      # stary zapis: czas serwera, czyli UTC
+            with mock.patch.object(scraper, "STATUS", status):
+                v = scraper.czas_ostatniego_przebiegu(None)
+        self.assertEqual((v.hour, v.minute), (15, 7))                                  # w październiku Polska to UTC+2
+
+    def test_brak_status_json_daje_czas_domyslny(self):
+        with mock.patch.object(scraper, "STATUS", Path("/nie/ma/status.json")):
+            self.assertEqual(scraper.czas_ostatniego_przebiegu("domyślny"), "domyślny")
+
+
+class TerminyIDuplikaty(unittest.TestCase):
+    def _wpis(self, **kw):
+        base = {"id": "1", "title": "Tytuł", "url": "https://x.pl/1", "source": "Źródło", "source_id": "z1",
+                "first_seen": "2026-10-19", "published": "2026-10-19", "kind": "inne", "place": "cała gmina",
+                "when": None, "event_iso": None, "text": "Notka."}
+        base.update(kw)
+        return base
+
+    def test_data_bez_roku_sprzed_trzech_miesiecy_to_przeszlosc_a_nie_przyszly_rok(self):
+        today = date(2026, 10, 22)
+        self.assertEqual(wyciagnij_termin("Zapisy do 29.07", today)[1], "2026-07-29")
+        self.assertEqual(wyciagnij_termin("Bal 14 stycznia", today)[1], "2027-01-14")
+
+    def test_zbyt_odlegly_termin_jest_usuwany(self):
+        store = {"a": self._wpis(id="a", kind="wyd", event_iso="2027-07-29", when="29.07.2027")}
+        self.assertEqual(scraper.napraw_terminy(store, date(2026, 10, 22)), 1)
+        self.assertIsNone(store["a"]["event_iso"])
+
+    def test_wydarzenie_bez_terminu_dostaje_go_z_notki_i_znika_gdy_minelo(self):
+        today = date(2026, 10, 22)
+        store = {"a": self._wpis(id="a", kind="wyd", first_seen="2026-10-19", published="2026-10-19",
+                                 text="Debata odbędzie się 9 października 2026 roku o godzinie 15:00.")}
+        scraper.napraw_terminy(store, today)
+        self.assertEqual(store["a"]["event_iso"], "2026-10-09")
+        self.assertEqual(render.widoczne(list(store.values()), today), [])
+
+    def test_wydarzenie_z_przyszlym_terminem_z_notki_zostaje(self):
+        today = date(2026, 10, 22)
+        store = {"a": self._wpis(id="a", kind="wyd", text="Spotkanie odbędzie się 27 października o godzinie 18:00.")}
+        scraper.napraw_terminy(store, today)
+        self.assertEqual(store["a"]["event_iso"], "2026-10-27")
+        self.assertEqual(len(render.widoczne(list(store.values()), today)), 1)
+
+    def test_ten_sam_temat_w_roznych_zrodlach_z_innymi_slowami_jest_scalany(self):
+        a = self._wpis(id="a", source_id="um", title="Projekt planu ogólnego Gminy Grodzisk Mazowiecki")
+        b = self._wpis(id="b", source_id="tm", title="Projekt planu ogólnego jest już dostępny")
+        c = self._wpis(id="c", source_id="pr", title="Grodzisk Mazowiecki pokazał projekt planu ogólnego. Mieszkańcy będą mogli zgłaszać uwagi")
+        self.assertTrue(scraper.ten_sam_temat(a, b))
+        self.assertTrue(scraper.ten_sam_temat(a, c))
+
+    def test_ogolne_slowa_urzedowe_nie_skleja_roznych_konsultacji(self):
+        a = self._wpis(id="a", source_id="tm", title="Konsultacje programu współpracy na 2027 rok")
+        b = self._wpis(id="b", source_id="ngo", title="Konsultacje projektu rocznego programu współpracy Województwa Mazowieckiego")
+        self.assertFalse(scraper.ten_sam_temat(a, b))
+
+    def test_luzna_regula_nie_laczy_wpisow_z_jednego_zrodla(self):
+        a = self._wpis(id="a", source_id="g24", title="226 kilometrów sieci i dwa sposoby kanalizacji w gminie")
+        b = self._wpis(id="b", source_id="g24", title="38 kilometrów sieci już działa. Kanalizacja ciśnieniowa bez tajemnic")
+        self.assertFalse(scraper.ten_sam_temat(a, b))
+
+    def _strona(self, items, today):
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "index.html"
+            render.build(items, Path(__file__).resolve().parent / "template.html", out, today)
+            return out.read_text(encoding="utf-8")
+
+    def test_blok_terminow_sortuje_po_dacie_i_pomija_przeszle_dalekie_i_zdarzenia(self):
+        today = date(2026, 10, 22)
+        items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", title="Koncert w sobotę", event_iso="2026-10-24", when="24.10, godz. 18:00"),
+                 self._wpis(id="2", url="https://x.pl/2", kind="wyd", title="Spotkanie jutro", event_iso="2026-10-23", when="23.10, godz. 17:00"),
+                 self._wpis(id="3", url="https://x.pl/3", kind="inne", title="Nabór wniosków do poniedziałku", event_iso="2026-10-26", when="26.10"),
+                 self._wpis(id="4", url="https://x.pl/4", kind="wyd", title="Wydarzenie za miesiąc", event_iso="2026-11-30", when="30.11"),
+                 self._wpis(id="5", url="https://x.pl/5", kind="zdr", neutral=True, title="Interwencja", event_iso="2026-10-23", when="23.10")]
+        page = self._strona(items, today)
+        blok = page[page.index('id="terminy"'):]
+        blok = blok[:blok.index("</section>")]
+        kolejnosc = [blok.index(t) for t in ("Spotkanie jutro", "Koncert w sobotę", "Nabór wniosków")]
+        self.assertEqual(kolejnosc, sorted(kolejnosc))
+        self.assertNotIn("Wydarzenie za miesiąc", blok)
+        self.assertNotIn("Interwencja", blok)
+
+    def test_bez_nadchodzacych_terminow_nie_ma_bloku(self):
+        page = self._strona([self._wpis()], date(2026, 10, 22))
+        self.assertNotIn('class="terminy"', page)
+
+    def test_elementy_filtrowane_miejscowoscia_maja_miejsce_i_rodzaj(self):
+        """Filtr miejscowości w przeglądarce pokazuje tylko wpisy o niej (z "cała gmina" zostają ostrzeżenia), więc
+        każdy filtrowany element musi znać swoje miejsce i rodzaj."""
+        today = date(2026, 10, 22)
+        items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", place="Szczęsne", title="Piknik w Szczęsnem",
+                            event_iso="2026-10-24", when="24.10")]
+        page = self._strona(items, today)
+        self.assertRegex(page, r'class="tick"[^>]*data-place="Szczęsne"[^>]*data-kind="wyd"')
+        self.assertRegex(page, r'class="termin" data-place="Szczęsne" data-kind="wyd"')
+        self.assertIn('c.dataset.kind === "ost"', page)
+
+    def test_blok_terminow_ma_limit(self):
+        today = date(2026, 10, 22)
+        items = [self._wpis(id=str(n), url=f"https://x.pl/{n}", kind="wyd", title=f"Wydarzenie numer {n}",
+                            event_iso="2026-10-25", when="25.10") for n in range(render.TERMINY_MAX + 4)]
+        page = self._strona(items, today)
+        blok = page[page.index('id="terminy"'):]
+        self.assertEqual(blok[:blok.index("</section>")].count('class="termin"'), render.TERMINY_MAX)

@@ -19,11 +19,12 @@ import time
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from urllib.parse import urldefrag, urljoin, urlparse
 from urllib.robotparser import RobotFileParser
+from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
@@ -31,11 +32,31 @@ import render
 import reczne
 import streszczenia
 from klasyfikacja import klasyfikuj_rodzaj, norm, wyciagnij_termin, znajdz_miejsca
-from redakcja import inny_region, neutralny_tytul, podobne
+from redakcja import inny_region, neutralny_tytul, podobne, podobne_luzno
 
 ROOT = Path(__file__).parent
 STORE = ROOT / "data" / "items.json"
 STATUS = ROOT / "data" / "status.json"
+try:
+    WARSZAWA = ZoneInfo("Europe/Warsaw")      # serwer Actions chodzi w UTC, a czytelnik patrzy na zegar w Polsce
+except Exception:                              # brak bazy stref czasowych: lepszy czas serwera niż błąd
+    WARSZAWA = None
+
+
+def teraz():
+    return datetime.now(WARSZAWA) if WARSZAWA else datetime.now()
+
+
+def czas_ostatniego_przebiegu(domyslny):
+    """Godzina ostatniego pobrania danych (zapisana w status.json), żeby przebieg tylko odświeżający stronę
+    nie udawał nowej aktualizacji. Starsze zapisy bez strefy to czas serwera, czyli UTC."""
+    try:
+        v = datetime.fromisoformat(json.loads(STATUS.read_text(encoding="utf-8"))["run"])
+        if v.tzinfo is None:
+            v = v.replace(tzinfo=timezone.utc)
+        return v.astimezone(WARSZAWA) if WARSZAWA else v
+    except Exception:
+        return domyslny
 BOT_CONTACT = __import__("os").environ.get("BOT_CONTACT", "TWOJ_EMAIL")
 USER_AGENT = f"GrodziskLokalnieBot/1.0 (agregator linków; kontakt: {BOT_CONTACT})"
 MAX_BYTES = 2_000_000
@@ -43,6 +64,7 @@ MAX_AGE_DAYS = 30        # starszych wpisów (wg daty publikacji) nie bierzemy
 KEEP_DAYS = 45           # tyle trzymamy wpisy w pliku danych
 MAX_NOTEK = 60           # tyle zapytań do modelu na przebieg (limit dzienny Google i tak zatrzyma wcześniej)
 MAX_SZCZEGOLOW = 25      # tyle podstron na przebieg otwieramy, żeby znaleźć brakujące daty
+DALEKA_PRZYSZLOSC_DNI = 240   # termin dalszy niż ok. 8 miesięcy w lokalnych wiadomościach to prawie zawsze błąd odczytu
 DUPLIKAT_DNI = 7         # w tym oknie szukamy tego samego tematu w innych źródłach
 
 JUNK_WORDS = ["szukaj", "menu", "kontakt", "newsletter", "zaloguj", "cookies", "polityka",
@@ -349,6 +371,8 @@ def dodaj(store, items, src, today):
         if not event_iso and start:
             d = date.fromisoformat(start)
             when, event_iso = f"{d.day}.{d.month:02d}", start
+        if event_iso and event_iso > (today + timedelta(days=DALEKA_PRZYSZLOSC_DNI)).isoformat():
+            when = event_iso = None
         if it["published"] and (today - date.fromisoformat(it["published"])).days > MAX_AGE_DAYS \
                 and (event_iso or "") < today.isoformat():
             continue
@@ -383,13 +407,34 @@ def dodaj(store, items, src, today):
 
 def ten_sam_temat(a, b):
     """Podobne tytuły to za mało: dwa wydarzenia z różnymi datami albo kolejne dni cyklu z jednego źródła to osobne wpisy."""
-    if not podobne(a["title"], b["title"]):
+    if not (podobne(a["title"], b["title"])
+            or (a["source_id"] != b["source_id"] and podobne_luzno(a["title"], b["title"]))):
         return False
     if a.get("event_iso") and b.get("event_iso") and a["event_iso"] != b["event_iso"]:
         return False
     if a["source_id"] == b["source_id"] and "wyd" in (a["kind"], b["kind"]):
         return False
     return True
+
+
+def napraw_terminy(store, today):
+    """Porządki w terminach zapisanych wpisów:
+    1) termin dalszy niż DALEKA_PRZYSZLOSC_DNI uznajemy za błąd odczytu i usuwamy (np. rok dopisany do starej daty);
+    2) wydarzenie bez terminu dostaje go z notki, jeśli notka podaje datę (często to jedyne miejsce, gdzie data jest)
+       i dzięki temu wydarzenie z przeszłości znika ze strony zamiast wisieć jako zapowiedź.
+    Zwraca liczbę poprawionych wpisów."""
+    granica = (today + timedelta(days=DALEKA_PRZYSZLOSC_DNI)).isoformat()
+    zmian = 0
+    for it in store.values():
+        if it.get("event_iso") and it["event_iso"] > granica:
+            it["when"] = it["event_iso"] = None
+            zmian += 1
+        if it["kind"] == "wyd" and not it.get("event_iso") and it.get("text"):
+            etykieta, d = wyciagnij_termin(it["text"], date.fromisoformat(it["first_seen"]))
+            if d and d <= granica:
+                it["when"], it["event_iso"] = etykieta, d
+                zmian += 1
+    return zmian
 
 
 def scal_duplikaty(store):
@@ -427,7 +472,8 @@ def main():
     ap.add_argument("--only", help="pobierz tylko to źródło (id)")
     ap.add_argument("--render-only", action="store_true", help="tylko zbuduj stronę z zapisanych danych")
     args = ap.parse_args()
-    today = date.today()
+    czas = teraz()
+    today = czas.date()      # data w Polsce, a nie w UTC (tuż po północy to dwie różne daty)
     sources = json.loads((ROOT / "sources.json").read_text(encoding="utf-8"))
     try:  # błąd w pliku ręcznym zatrzymuje przebieg przed jakąkolwiek zmianą strony
         reczne_wpisy = reczne.wczytaj(ROOT / "data" / "manual.json", today)
@@ -461,7 +507,7 @@ def main():
                 status[src["id"]] = {"ok": False, "error": f"{type(e).__name__}: {e}"}
             print(f"{src['id']:20} {status[src['id']]}")
         STATUS.parent.mkdir(exist_ok=True)
-        STATUS.write_text(json.dumps({"run": datetime.now().isoformat(timespec="seconds"), "sources": status},
+        STATUS.write_text(json.dumps({"run": czas.isoformat(timespec="seconds"), "sources": status},
                                      ensure_ascii=False, indent=1), encoding="utf-8")
         if status and ok == 0:
             print("Żadne źródło nie odpowiedziało, nie publikuję nowej strony.")
@@ -471,12 +517,17 @@ def main():
         zrodla = {x["id"]: x for x in sources}
         n = streszczenia.dopisz(store, zrodla, fetcher, today, MAX_NOTEK)
         print(f"Dopisano {n} notek pod tytułami")
+        streszczenia.dopisz_tytuly(store, today)
     r = streszczenia.zastosuj_reczne(store, ROOT / "data" / "opisy.json")
     if r:
         print(f"Zastosowano {r} notek z data/opisy.json")
+    popr = napraw_terminy(store, today)
+    if popr:
+        print(f"Poprawiono terminy w {popr} wpisach (zbyt odległe usunięte, brakujące uzupełnione z notek)")
     items = zapisz_store(store, today)
+    aktualizacja = czas if not args.render_only else czas_ostatniego_przebiegu(czas)
     wszystkie = render.z_notka(items) + reczne_wpisy
-    pokazane = render.build(wszystkie, ROOT / "template.html", ROOT / "index.html", today)
+    pokazane = render.build(wszystkie, ROOT / "template.html", ROOT / "index.html", today, aktualizacja)
     w_archiwum = render.build_archive(wszystkie, pokazane, ROOT / "template.html", ROOT / "archiwum.html", today)
     print(f"Zapisano {len(items)} wpisów automatycznych i {len(reczne_wpisy)} ręcznych, zbudowano index.html i archiwum.html ({w_archiwum} wpisów w archiwum)")
 
