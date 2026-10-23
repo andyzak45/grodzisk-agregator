@@ -1,0 +1,35 @@
+name: Zbieranie zdjęć z Wikimedia Commons
+
+on:
+  workflow_dispatch:       # tylko ręcznie: przycisk "Run workflow"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scraper           # ta sama grupa co bot wiadomości, żeby oba nie zapisywały naraz
+  cancel-in-progress: false
+
+jobs:
+  zdjecia:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Zbieranie kandydatów
+        env:
+          PYTHONUNBUFFERED: "1"
+          BOT_CONTACT: ${{ vars.BOT_CONTACT }}
+        run: python zdjecia_commons.py
+
+      - name: Zapis wyników
+        run: |
+          git config user.name "Grodzisk lokalnie bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/zdjecia_kandydaci.json data/zdjecia_kandydaci.html
+          git diff --cached --quiet || git commit -m "Kandydaci na zdjęcia z Commons ($(date -u +%F))"
+          git push
