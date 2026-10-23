@@ -1,21 +1,5 @@
 [
  {
-  "id": "0b689879c493",
-  "title": "Zaginął 45-letni mężczyzna. Pruszkowska policja prosi o pomoc",
-  "url": "https://www.przegladregionalny.pl/artykul/11395,zaginal-45-letni-mezczyzna-pruszkowska-policja-prosi-o-pomoc",
-  "source": "Przegląd Regionalny",
-  "source_id": "przeglad-regionalny",
-  "first_seen": "2026-10-22",
-  "published": "2026-10-21",
-  "kind": "inne",
-  "place": "Pruszków",
-  "when": "10.09",
-  "event_iso": "2026-09-10",
-  "tkey": "7da337dac54a",
-  "opis_proba": "v3",
-  "poza_okolica": true
- },
- {
   "id": "fb4049ba6ea8",
   "title": "Spektakl Teatru Kamienica „Zacznijmy jeszcze raz”",
   "url": "https://www.centrumkultury.eu/wydarzenie/spektakl-teatru-kamienica-zacznijmy-jeszcze-raz/",
@@ -104,8 +88,8 @@
   "published": "2026-10-21",
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "20.10",
+  "event_iso": "2026-10-20",
   "tkey": "8be301406a05",
   "opis_proba": "v3",
   "text": "W Grodzisku Mazowieckim 20 października odbyła się 25. edycja Grodziskich Targów Pracy. Osoby poszukujące zatrudnienia miały okazję spotkać się z pracodawcami, przejrzeć aktualne oferty zatrudnienia i skorzystać z porad doradców zawodowych.",
@@ -346,23 +330,6 @@
   "poza_okolica": true
  },
  {
-  "id": "96a990609019",
-  "title": "Sejmik Muzyczny 2026: Mediateka i Centrum Kultury",
-  "url": "https://grodziskinfo.pl/sejmik-muzyczny-2026-mediateka-i-centrum-kultury/",
-  "source": "Grodzisk INFO",
-  "source_id": "grodziskinfo",
-  "first_seen": "2026-10-22",
-  "published": "2026-10-22",
-  "kind": "inne",
-  "place": "okolica",
-  "when": "23.10, godz. 18:00",
-  "event_iso": "2026-10-23",
-  "tkey": "a70e9cd65e6a",
-  "opis_proba": "v3",
-  "text": "W dniach 23-24 października 2026 roku w Grodzisku Mazowieckim odbędzie się Sejmik Muzyczny. Wydarzenie zaplanowano w grodziskiej Mediatece oraz w Centrum Kultury.",
-  "opis_auto": true
- },
- {
   "id": "4bb2721028c1",
   "title": "Srebrny medal Mistrzostw Polski U16 w judo. Sukces zawodnika UKS Ulisses Team",
   "url": "https://wpr24.pl/srebrny-medal-mistrzostw-polski-u16-w-judo-sukces-zawodnika-uks-ulisses-team/",
@@ -463,8 +430,8 @@
   "published": "2026-10-20",
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "26.10",
+  "event_iso": "2026-10-26",
   "tkey": "1e1999aad16c",
   "opis_proba": "v2",
   "text": "W Bibliotece Głównej w Grodzisku Mazowieckim odbędzie się bezpłatne spotkanie Młodzieżowego Klubu Książki poświęcone powieści „Igrzyska śmierci”. Wydarzenie zaplanowano na 26 października o godzinie 18:00 na drugim piętrze Mediateki przy ulicy 3 Maja.",
@@ -789,23 +756,6 @@
   "opis_auto": true
  },
  {
-  "id": "e9b9398b730c",
-  "title": "Grodzisk Mazowiecki pokazał projekt planu ogólnego. Mieszkańcy będą mogli zgłaszać uwagi",
-  "url": "https://www.przegladregionalny.pl/artykul/11377,grodzisk-mazowiecki-pokazal-projekt-planu-ogolnego-mieszkancy-beda-mogli-zglaszac-uwagi",
-  "source": "Przegląd Regionalny",
-  "source_id": "przeglad-regionalny",
-  "first_seen": "2026-10-21",
-  "published": "2026-10-21",
-  "kind": "inw",
-  "place": "okolica",
-  "when": null,
-  "event_iso": null,
-  "tkey": "eced500b57b8",
-  "opis_proba": "v2",
-  "text": "Grodzisk Mazowiecki opublikował projekt planu ogólnego gminy, określający m.in. tereny pod zabudowę i obszary zielone. Oficjalne konsultacje społeczne i możliwość zgłaszania uwag zaplanowano na pierwszą połowę 2027 roku.",
-  "opis_auto": true
- },
- {
   "id": "cd870b573543",
   "title": "III Turniej Tenisa Stołowego o Puchar Stulecia Piastowa",
   "url": "https://wpr24.pl/iii-turniej-tenisa-stolowego-o-puchar-stulecia-piastowa/",
@@ -886,23 +836,6 @@
   "opis_auto": true
  },
  {
-  "id": "7ae3bdd0a57f",
-  "title": "Oferty służby w Policji na Grodziskich Targach Pracy",
-  "url": "https://grodzisk.policja.gov.pl/pgm/aktualnosci/153697,Oferty-sluzby-w-Policji-na-Grodziskich-Targach-Pracy.html",
-  "source": "KPP Grodzisk Maz.",
-  "source_id": "policja",
-  "first_seen": "2026-10-21",
-  "published": "2026-10-21",
-  "kind": "inne",
-  "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
-  "tkey": "e3c625aebf93",
-  "opis_proba": "v2",
-  "text": "Grodziscy policjanci przedstawiali zasady rekrutacji oraz specyfikę służby podczas targów pracy, które odbyły się wczoraj w tutejszej Mediatece. Funkcjonariusze prezentowali oferty oraz udzielali informacji osobom zainteresowanym zmianą zatrudnienia.",
-  "opis_auto": true
- },
- {
   "id": "c915f95876b9",
   "title": "Dziesięcioro laureatów Nagrody Marszałka Województwa Mazowieckiego",
   "url": "https://grodzisk.twoje-miasto.pl/art-kultura-sztuka/dziesiecioro-laureatow-nagrody-marszalka-wojewodztwa-i1255938",
@@ -948,7 +881,10 @@
   "tkey": "7e87c2e95343",
   "opis_proba": "v2",
   "text": "Funkcjonariusze z Pruszkowa poszukują mężczyzny, który 10 września 2026 roku wyszedł ze szpitala przy ul. Szaserów w Warszawie i nie nawiązał kontaktu z bliskimi. Osoby posiadające informacje o jego miejscu przebywania proszone są o kontakt z policją.",
-  "opis_auto": true
+  "opis_auto": true,
+  "also": [
+   "Przegląd Regionalny"
+  ]
  },
  {
   "id": "cc63aee578b0",
@@ -1386,8 +1322,8 @@
   "published": "2026-10-17",
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "16.10",
+  "event_iso": "2026-10-16",
   "tkey": "7bc0d1a298ba",
   "opis_proba": "v2",
   "text": "16 października w Bibliotece Publicznej Gminy Grodzisk Mazowiecki odbyła się XII Ogólnopolska Noc Bibliotek. W programie znalazły się spotkania autorskie, pokazy filmowe, gra interaktywna oraz koncert.",
@@ -1588,22 +1524,6 @@
   "opis_auto": true
  },
  {
-  "id": "895a5e69282a",
-  "title": "Zakaz hulajnóg i rowerów elektrycznych w pruszkowskich parkach",
-  "url": "https://www.przegladregionalny.pl/artykul/11370,zakaz-hulajnog-i-rowerow-elektrycznych-w-pruszkowskich-parkach",
-  "source": "Przegląd Regionalny",
-  "source_id": "przeglad-regionalny",
-  "first_seen": "2026-10-20",
-  "published": "2026-10-19",
-  "kind": "inne",
-  "place": "Pruszków",
-  "when": null,
-  "event_iso": null,
-  "tkey": "f0c61eaa1cee",
-  "opis_proba": "v3",
-  "poza_okolica": true
- },
- {
   "id": "52dbac79e72b",
   "title": "Milanówek: roboty na ul. Wąskiej od 20 października",
   "url": "https://grodziskinfo.pl/milanowek-roboty-na-ul-waskiej-od-20-pazdziernika/",
@@ -1714,8 +1634,8 @@
   "published": "2026-07-28",
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": "29.07",
-  "event_iso": "2027-07-29",
+  "when": "19.08",
+  "event_iso": "2026-08-19",
   "tkey": "4f94d62f20ff",
   "opis_proba": "v2",
   "text": "Ośrodek Kultury Gminy Grodzisk Mazowiecki prowadzi do 19 sierpnia 2026 roku zapisy dla wystawców na Jarmark Dożynkowy w Makówce. Wydarzenie zaplanowano na 30 sierpnia 2026 roku przy ulicy Radziejowickiej.",
@@ -1795,7 +1715,13 @@
   "kind": "inw",
   "place": "Grodzisk Mazowiecki",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "text": "14 października 2026 roku Urząd Miejski w Grodzisku Mazowieckim udostępnił projekt planu ogólnego gminy. Dokument określa zasady zagospodarowania przestrzennego, a mieszkańcy mogą zapoznać się z propozycjami rozwoju zabudowy i ochrony zieleni.",
+  "opis_auto": true,
+  "also": [
+   "Grodzisk Twoje Miasto",
+   "Przegląd Regionalny"
+  ]
  },
  {
   "id": "53fc9034a81f",
@@ -1998,8 +1924,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "9.10",
+  "event_iso": "2026-10-09",
   "opis_proba": "v2",
   "text": "W Mediatece w Grodzisku Mazowieckim zaplanowano debatę społeczną poświęconą wnioskom z ubiegłego roku oraz spotkanie edukacyjne o bezpieczeństwie seniorów. Wydarzenie odbędzie się 9 października 2026 roku o godzinie 15:00.",
   "opis_auto": true
@@ -2256,19 +2182,6 @@
   "event_iso": null
  },
  {
-  "id": "653fb369dd8d",
-  "title": "Ponad 2,4 mln zł na oświetlenie i monitoring przy obiektach sportowych",
-  "url": "https://grodziski24.pl/20261013915981/ponad-24-mln-zl-na-oswietlenie-i-monitoring-przy-obiektach-sportowych",
-  "source": "Grodziski24",
-  "source_id": "grodziski24",
-  "first_seen": "2026-10-19",
-  "published": "2026-10-13",
-  "kind": "inw",
-  "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null
- },
- {
   "id": "412c475781bb",
   "title": "Krajowy Trening Rodzinny dla dzieci i rodziców",
   "url": "https://grodzisk.twoje-miasto.pl/art-miasto/krajowy-trening-rodzinny-dla-dzieci-i1230846",
@@ -2281,10 +2194,13 @@
   "when": null,
   "event_iso": null,
   "also": [
-   "KPP Grodzisk Maz."
+   "KPP Grodzisk Maz.",
+   "Grodzisk INFO"
   ],
   "opis_proba": "v3",
-  "poza_okolica": true
+  "poza_okolica": true,
+  "text": "17 października 2026 roku w Zespole Szkół Technicznych i Licealnych nr 2 w Grodzisku Mazowieckim odbędzie się Krajowy Trening Rodzinny. Uczestnicy zajęć zaplanowanych od 10:00 do 14:00 zdobędą wiedzę z zakresu bezpieczeństwa w sytuacjach kryzysowych.",
+  "opis_auto": true
  },
  {
   "id": "c340f49024ee",
@@ -2300,22 +2216,6 @@
   "event_iso": null,
   "opis_proba": "v3",
   "poza_okolica": true
- },
- {
-  "id": "63d8cd434eda",
-  "title": "Projekt planu ogólnego jest już dostępny",
-  "url": "https://grodzisk.twoje-miasto.pl/art-miasto/projekt-planu-ogolnego-jest-juz-i1216452",
-  "source": "Grodzisk Twoje Miasto",
-  "source_id": "twoje-miasto",
-  "first_seen": "2026-10-19",
-  "published": null,
-  "kind": "inw",
-  "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
-  "opis_proba": "v3",
-  "text": "14 października 2026 roku Urząd Miejski w Grodzisku Mazowieckim udostępnił projekt planu ogólnego gminy. Dokument określa zasady zagospodarowania przestrzennego, a mieszkańcy mogą zapoznać się z propozycjami rozwoju zabudowy i ochrony zieleni.",
-  "opis_auto": true
  },
  {
   "id": "6045cc3fb1ce",
@@ -2544,21 +2444,6 @@
   "poza_okolica": true
  },
  {
-  "id": "a3fea6832ac0",
-  "title": "Grodzisk Mazowiecki inwestuje w oświetlenie i monitoring. Umowa podpisana",
-  "url": "https://www.przegladregionalny.pl/artykul/11354,grodzisk-mazowiecki-inwestuje-w-oswietlenie-i-monitoring-umowa-podpisana",
-  "source": "Przegląd Regionalny",
-  "source_id": "przeglad-regionalny",
-  "first_seen": "2026-10-19",
-  "published": "2026-10-15",
-  "kind": "inw",
-  "place": "okolica",
-  "when": null,
-  "event_iso": null,
-  "opis_proba": "v3",
-  "poza_okolica": true
- },
- {
   "id": "f8b70a2a2d8f",
   "title": "Seniorka straciła 43 tys. zł. Za oszustwem stali nieletni",
   "url": "https://www.przegladregionalny.pl/artykul/11355,seniorka-stracila-43-tys-zl-za-oszustwem-stali-nieletni",
@@ -2665,22 +2550,6 @@
   "poza_okolica": true
  },
  {
-  "id": "a9f80e5959b9",
-  "title": "Czarownica i Smerfy znów na scenie – dołącz do urodzinowego spektaklu 25 października!",
-  "url": "https://grodziskinfo.pl/czarownica-i-smerfy-znow-na-scenie-dolacz-do-urodzinowego-spektaklu-25-pazdziernika/",
-  "source": "Grodzisk INFO",
-  "source_id": "grodziskinfo",
-  "first_seen": "2026-10-19",
-  "published": "2026-10-16",
-  "kind": "wyd",
-  "place": "okolica",
-  "when": "25.10",
-  "event_iso": "2026-10-25",
-  "opis_proba": "v2",
-  "text": "W sobotę, 25 października, w grodziskim Centrum Kultury odbędą się dwa spektakle charytatywne „Czarownica Smerfy i urodzinowy bałagan”. Bilety w cenie 25 zł można kupić w kasie kina.",
-  "opis_auto": true
- },
- {
   "id": "4648c7c2af2c",
   "title": "Milanowski Dzień Seniora – wspólna zabawa czeka 22 października!",
   "url": "https://grodziskinfo.pl/milanowski-dzien-seniora-wspolna-zabawa-czeka-22-pazdziernika/",
@@ -2724,22 +2593,6 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "We wsi Szczęsne w gminie Grodzisk Mazowiecki ruszyła rewitalizacja zbiornika wodnego przy ul. Sasankowej. W ramach inwestycji powstanie park z alejkami, oświetleniem i placem zabaw, której zakończenie zaplanowano na sierpień 2027 roku.",
-  "opis_auto": true
- },
- {
-  "id": "f6b76157cf44",
-  "title": "Zadbaj o bezpieczeństwo rodziny: weź udział w krajowym treningu!",
-  "url": "https://grodziskinfo.pl/zadbaj-o-bezpieczenstwo-rodziny-wez-udzial-w-krajowym-treningu/",
-  "source": "Grodzisk INFO",
-  "source_id": "grodziskinfo",
-  "first_seen": "2026-10-19",
-  "published": "2026-10-15",
-  "kind": "inne",
-  "place": "okolica",
-  "when": null,
-  "event_iso": null,
-  "opis_proba": "v3",
-  "text": "17 października 2026 roku w Zespole Szkół Technicznych i Licealnych nr 2 w Grodzisku Mazowieckim odbędzie się Krajowy Trening Rodzinny. Uczestnicy zajęć zaplanowanych od 10:00 do 14:00 zdobędą wiedzę z zakresu bezpieczeństwa w sytuacjach kryzysowych.",
   "opis_auto": true
  },
  {
@@ -2839,7 +2692,10 @@
   "kind": "inne",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "also": [
+   "Przegląd Regionalny"
+  ]
  },
  {
   "id": "22bd85f49034",
@@ -2867,8 +2723,11 @@
   "when": null,
   "event_iso": null,
   "also": [
-   "Centrum Kultury"
-  ]
+   "Centrum Kultury",
+   "KPP Grodzisk Maz."
+  ],
+  "text": "Grodziscy policjanci przedstawiali zasady rekrutacji oraz specyfikę służby podczas targów pracy, które odbyły się wczoraj w tutejszej Mediatece. Funkcjonariusze prezentowali oferty oraz udzielali informacji osobom zainteresowanym zmianą zatrudnienia.",
+  "opis_auto": true
  },
  {
   "id": "f4cc5da2b8c7",
@@ -2907,7 +2766,11 @@
   "kind": "inw",
   "place": "okolica",
   "when": null,
-  "event_iso": null
+  "event_iso": null,
+  "also": [
+   "Grodziski24",
+   "Przegląd Regionalny"
+  ]
  },
  {
   "id": "0d6eea238c9f",
@@ -3025,8 +2888,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "22.10",
+  "event_iso": "2026-10-22",
   "opis_proba": "v2",
   "text": "Mobilna pracownia mammograficzna zaprasza mieszkanki Grodziska Mazowieckiego na bezpłatne badania. Pojazd stanie 22 października 2026 roku przy Centrum Kultury przy ul. Spółdzielczej 9.",
   "opis_auto": true
@@ -3086,11 +2949,14 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "23.10",
+  "event_iso": "2026-10-23",
   "opis_proba": "v2",
   "text": "23 października 2026 roku w Mediatece odbędzie się Grodziski Sejmik Muzyczny obejmujący wystawę i koncert. Wydarzenie otrzymało 38 587 zł dofinansowania z budżetu gminy.",
-  "opis_auto": true
+  "opis_auto": true,
+  "also": [
+   "Grodzisk INFO"
+  ]
  },
  {
   "id": "25ed0fbdb3d4",
@@ -3102,8 +2968,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "24.10",
+  "event_iso": "2026-10-24",
   "opis_proba": "v2",
   "text": "W Mediatece w Grodzisku Mazowieckim odbędzie się 24 października 2026 roku bezpłatny pokaz opery „Traviata” z audiodeskrypcją dla osób z dysfunkcją wzroku. Spotkanie rozpocznie się o godzinie 10:45.",
   "opis_auto": true
@@ -3118,8 +2984,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "24.10",
+  "event_iso": "2026-10-24",
   "opis_proba": "v3",
   "text": "24 października 2026 roku w Grodzisku Mazowieckim odbędą się meteorologiczne warsztaty dla dzieci poświęcone zjawiskom zachodzącym na niebie. Spotkanie Klubu Małego Odkrywcy w przestrzeni Poczekalni PKP potrwa od godziny 11:00 do 12:00, a wstęp wymaga wcześniejszej rezerwacji miejsc.",
   "opis_auto": true
@@ -3134,8 +3000,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "24.10",
+  "event_iso": "2026-10-24",
   "opis_proba": "v3",
   "poza_okolica": true,
   "text": "W sobotę 24 października 2026 roku o godzinie 14:00 odbędzie się spacer historyczny po starym cmentarzu w Grodzisku Mazowieckim. Uczestnicy wędrujący od bramy przy ulicy Radońskiej poznają zabytkowe nagrobki oraz historię zasłużonych postaci.",
@@ -3151,8 +3017,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "24.10",
+  "event_iso": "2026-10-24",
   "opis_proba": "v2",
   "text": "24 października 2026 roku w Centrum Kultury odbędzie się drugi dzień Grodziskiego Sejmiku Muzycznego. Na przedsięwzięcie z budżetu gminy przeznaczono 38 587 zł.",
   "opis_auto": true
@@ -3167,11 +3033,14 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "25.10",
+  "event_iso": "2026-10-25",
   "opis_proba": "v2",
   "text": "25 października 2026 roku w sali widowiskowej Centrum Kultury w Grodzisku Mazowieckim odbędzie się spektakl „Czarownica Smerfy i urodzinowy bałagan”. Bilety kosztują 25 zł, a część dochodu wesprze potrzebujące dziecko.",
-  "opis_auto": true
+  "opis_auto": true,
+  "also": [
+   "Grodzisk INFO"
+  ]
  },
  {
   "id": "52b752e9ff55",
@@ -3300,8 +3169,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "17.10",
+  "event_iso": "2026-10-17",
   "opis_proba": "v2",
   "text": "17 października 2026 roku w Pawilonie Kultury przy ul. Westfala w Grodzisku Mazowieckim odbędzie się wydarzenie profilaktyczne poświęcone zdrowiu kobiet. Uczestniczki będą mogły skorzystać z pakietów badań oraz stoisk edukacyjnych.",
   "opis_auto": true
@@ -3316,8 +3185,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "16.10",
+  "event_iso": "2026-10-16",
   "opis_proba": "v2",
   "text": "W piątek, 16 października 2026 roku, Biblioteka Główna przy ul. 3 Maja w Grodzisku Mazowieckim będzie gospodarzem ogólnopolskiej inauguracji Nocy Bibliotek. W programie przewidziano m.in. seanse filmowe, spotkania literackie i koncert.",
   "opis_auto": true
@@ -3332,8 +3201,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "24.10",
+  "event_iso": "2026-10-24",
   "opis_proba": "v2",
   "text": "24 października w świetlicy w Mościskach odbędą się charytatywne warsztaty szycia poduszek i woreczków dla pacjentów onkologicznych. Wymagane są wcześniejsze zapisy.",
   "opis_auto": true
@@ -3348,8 +3217,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "21.10, godz. 18:00",
+  "event_iso": "2026-10-21",
   "opis_proba": "v2",
   "text": "21 października o godz. 18:00 w Mediatece w Grodzisku Mazowieckim odbędzie się bezpłatne spotkanie autorskie z pisarką. Wydarzenie w tamtejszej bibliotece będzie tłumaczone na polski język migowy.",
   "opis_auto": true
@@ -3364,8 +3233,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Kady",
-  "when": null,
-  "event_iso": null,
+  "when": "17.10",
+  "event_iso": "2026-10-17",
   "opis_proba": "v2",
   "text": "17 października o godzinie 12:00 w Filii nr 1 w Kadach odbędą się bezpłatne warsztaty plastyczne dla dzieci od szóstego roku życia z ilustratorem książek. Spotkanie zorganizowano w ramach gminnego programu bibliotecznego.",
   "opis_auto": true
@@ -3380,8 +3249,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "25.10",
+  "event_iso": "2026-10-25",
   "opis_proba": "v2",
   "text": "W dniach 5–25 października w Pawilonie Kultury przy ul. Westfala w Grodzisku Mazowieckim można bezpłatnie oglądać wystawę poświęconą doświadczeniu migracji i utraty domu. Ekspozycja przygotowana przez gminną bibliotekę i partnerów składa się z jedenastu plansz.",
   "opis_auto": true
@@ -3428,8 +3297,8 @@
   "published": null,
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
+  "when": "3.05",
+  "event_iso": "2026-05-03",
   "opis_proba": "v3",
   "text": "Biblioteka Publiczna Gminy Grodzisk Mazowiecki organizuje bezpłatne korepetycje z języka angielskiego dla młodzieży od 14. roku życia. Spotkania z native speakerem odbywają się w poniedziałki o godzinie 15:30 w Mediatece przy ulicy 3 Maja.",
   "opis_auto": true
