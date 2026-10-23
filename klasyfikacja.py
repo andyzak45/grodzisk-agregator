@@ -174,7 +174,7 @@ def wyciagnij_termin(text, today=None):
         d = date(y, month, day)
     except ValueError:
         return None, None
-    if not year and (today - d).days > 60:
+    if not year and (today - d).days > 200:      # data bez roku, która minęła dawno temu, to termin z początku przyszłego roku
         d = date(y + 1, month, day)
     label = f"{day}.{month:02d}" + (f".{d.year}" if d.year != today.year else "")
     tm = _TIME.search(t)

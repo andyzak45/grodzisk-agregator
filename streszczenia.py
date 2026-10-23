@@ -32,6 +32,9 @@ PRZERWA = 4             # sekundy między wywołaniami darmowego modelu (limity 
 MAX_TEKST = 4000        # tyle znaków artykułu wysyłamy do modelu
 MIN_TEKST = 250         # krótszy tekst to zwykle menu lub zapowiedź bez treści
 MAX_NOTKA = 300
+MAX_TYTUL = 110
+MAX_TYTULOW = 15        # tyle tytułów dopisujemy zaległym wpisom (z notką, ale bez tytułu AI) w jednym przebiegu
+MAX_WIEK_TYTULOW = 14   # starszym wpisom tytułu nie dopisujemy
 MAX_WIEK_DNI = 7        # starszych wpisów nie uzupełniamy
 N_PRZEPISANE = 9        # tyle kolejnych słów z artykułu w notce uznajemy za przepisanie
 
@@ -49,7 +52,11 @@ Zasady:
   odpowiedz dokładnie jednym słowem: POZA_OKOLICA,
 - jeśli tekst nie zawiera konkretnej informacji (jest pusty, to menu strony albo komunikat o błędzie),
   odpowiedz dokładnie jednym słowem: BRAK.
-Odpowiedz samą notką, bez wstępu."""
+Odpowiedz w dokładnie dwóch liniach, bez wstępu:
+TYTUŁ: <nowy tytuł po polsku, 6 do 12 słów, rzeczowy, oddający sedno wiadomości. Napisz go własnymi słowami: nie kopiuj
+tytułu oryginału ani zdań z tekstu. Bez wykrzykników, pytań i zachęt. Zachowaj nazwy miejscowości i liczby z tekstu,
+niczego nie dodawaj>
+NOTKA: <notka według zasad powyżej>"""
 
 
 class ModelBlad(Exception):
@@ -131,8 +138,42 @@ def sprawdz(notka, zrodlo):
     return notka
 
 
+_ODP_DWIE_LINIE = re.compile(r"^\W*TYTU[ŁL]\W*:\s*(.+?)\s*\n+\W*NOTKA\W*:\s*(.+)$", re.I | re.S)
+
+
+def rozbij_odpowiedz(surowa):
+    """Odpowiedź modelu w formacie "TYTUŁ: ... / NOTKA: ..." -> (tytuł, notka). Sama notka (stary format, brak, błąd) -> (None, notka)."""
+    m = _ODP_DWIE_LINIE.match((surowa or "").strip())
+    if not m:
+        return None, surowa
+    return m.group(1).strip(" *_"), m.group(2).strip(" *_")
+
+
+_KONCOWKI_URWANE = {"w", "i", "z", "na", "do", "o", "u", "a", "od", "po", "za", "dla", "przy", "oraz", "że", "się"}
+
+
+def sprawdz_tytul(tytul, tytul_zrodla, tekst):
+    """Zwraca oczyszczony tytuł AI albo None. Tytuł ma być inny niż oryginał, nie przepisany z artykułu, całkowity
+    (nie urwany), bez wykrzykników i pytań, bez danych osób i bez liczb, których nie ma w źródle."""
+    t = re.sub(r"\s+", " ", (tytul or "")).strip().strip('"„”').strip().rstrip(".")
+    if not (20 <= len(t) <= MAX_TYTUL) or len(t.split()) < 3 or t.upper().startswith(("BRAK", "POZA")):
+        return None
+    if any(z in t for z in "*#`!?") or t.endswith((":", ",", ";", "…", "-", "–")) or wrazliwe(t):
+        return None
+    if not re.match(r"[A-ZĄĆĘŁŃÓŚŹŻ0-9„\"\[]", t) or t.split()[-1].lower() in _KONCOWKI_URWANE:
+        return None
+    nowe, stare = set(_slowa(t)), set(_slowa(tytul_zrodla))
+    if not nowe or stare <= nowe or len(nowe & stare) / len(nowe | stare) > 0.7:
+        return None                 # ten sam tytuł, oryginał z dopiskiem albo prawie ten sam
+    if przepisane(t, tytul_zrodla, 5) or przepisane(t, tekst, 6):
+        return None                 # fragment przepisany z oryginału albo z artykułu
+    if not set(re.findall(r"\d+", t)) <= set(re.findall(r"\d+", f"{tytul_zrodla} {tekst}")):
+        return None                 # liczba, której nie ma w źródle, to wymysł modelu
+    return t
+
+
 def wywolaj_model(tresc, klucz, model=MODEL, timeout=40):
-    body = json.dumps({"model": model, "max_tokens": 300, "system": SYSTEM,
+    body = json.dumps({"model": model, "max_tokens": 450, "system": SYSTEM,
                        "messages": [{"role": "user", "content": tresc}]}).encode()
     req = urllib.request.Request(API_URL, data=body, headers={
         "x-api-key": klucz, "anthropic-version": "2023-06-01", "content-type": "application/json"})
@@ -152,7 +193,7 @@ _dzialajacy = []
 
 
 def _wywolaj_wariant(w, tresc, token, model, timeout):
-    body = json.dumps({"model": w["model"] or model, "max_tokens": 300, "temperature": 0.2, "messages": [
+    body = json.dumps({"model": w["model"] or model, "max_tokens": 450, "temperature": 0.2, "messages": [
         {"role": "system", "content": SYSTEM}, {"role": "user", "content": tresc}]}).encode()
     req = urllib.request.Request(w["url"], data=body, headers={
         "Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": w["accept"],
@@ -356,15 +397,75 @@ def dopisz(store, zrodla, fetcher, today, limit, llm=None):
             it["poza_okolica"] = True       # ogólnopolskie albo z innego regionu: nie pokazujemy
             licz("poza regionem (model)", it)
             continue
-        notka = sprawdz(surowa, tekst)
+        tytul_ai, surowa_notka = rozbij_odpowiedz(surowa)
+        notka = sprawdz(surowa_notka, tekst)
         if notka:
             it["text"], it["opis_auto"] = notka, True
+            tytul = sprawdz_tytul(tytul_ai, it["title"], tekst)
+            if tytul:
+                it["tytul"] = tytul
+            it["tytul_proba"] = True        # jedna próba przy notce; zaległe tytuły uzupełnia dopisz_tytuly
             dodane += 1
-            licz("dodano notkę", it)
+            licz("dodano notkę" + ("" if tytul else " (bez tytułu AI)"), it)
         else:
             licz("notka odrzucona", it, f"model {(_gemini_ok or ['?'])[0]}: " + (surowa or "pusta odpowiedź")[:300].replace("\n", " "))
     if wynik:
         print("  Notki, podsumowanie: " + ", ".join(f"{k}: {v}" for k, v in wynik.items()) + f"; zapytań do modelu: {proby}")
+    return dodane
+
+
+def kandydaci_tytulow(store, today):
+    """Wpisy z notką, ale bez tytułu AI, od najświeższych. Zdarzenia policji mają własne, neutralne tytuły."""
+    out = []
+    for it in store.values():
+        if not it.get("text") or it.get("tytul") or it.get("tytul_proba") or it.get("neutral") or it["kind"] == "zdr":
+            continue
+        dzien = date.fromisoformat(it.get("published") or it["first_seen"])
+        if (today - dzien).days > MAX_WIEK_TYTULOW and (it.get("event_iso") or "") < today.isoformat():
+            continue
+        out.append(it)
+    return sorted(out, key=lambda i: i.get("published") or i["first_seen"], reverse=True)
+
+
+def dopisz_tytuly(store, today, limit=MAX_TYTULOW, llm=None):
+    """Dopisuje tytuły AI wpisom, które mają już notkę (np. powstałą, zanim tytuły AI weszły w życie). Tytuł powstaje z
+    oryginalnego tytułu i notki, bez ponownego pobierania artykułu. Zwraca liczbę dodanych tytułów."""
+    przerwa = 0
+    if llm is None:
+        llm, przerwa = wybierz_model()
+        if llm is None:
+            return 0
+    dodane = bledy = 0
+    for it in kandydaci_tytulow(store, today)[:limit]:
+        try:
+            surowa = llm(f"Tytuł: {it['title']}\n\nTekst:\n{it['text']}")
+        except urllib.error.HTTPError as e:
+            if e.code == 429:
+                print("  limit zapytań modelu, kończę tytuły na dziś")
+                break
+            bledy += 1
+            print(f"  tytuł: model nie odpowiedział (HTTP {e.code})")
+        except Exception as e:
+            bledy += 1
+            print(f"  tytuł: model nie odpowiedział ({type(e).__name__}: {e})")
+        else:
+            bledy = 0
+            it["tytul_proba"] = True
+            tytul_ai, _ = rozbij_odpowiedz(surowa)
+            tytul = sprawdz_tytul(tytul_ai, it["title"], it["text"])
+            if tytul:
+                it["tytul"] = tytul
+                dodane += 1
+                print(f"  [dodano tytuł] {it['source']}: {it['title'][:50]} -> {tytul[:60]}")
+            else:
+                print(f"  [tytuł odrzucony] {it['source']}: {it['title'][:60]} ({(tytul_ai or 'brak')[:80]})")
+            if przerwa:
+                time.sleep(przerwa)
+        if bledy >= MAX_BLEDOW_Z_RZEDU:
+            print("  model nie działa, kończę tytuły na dziś")
+            break
+    if dodane:
+        print(f"  Tytuły AI dopisane: {dodane}")
     return dodane
 
 

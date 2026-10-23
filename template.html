@@ -26,12 +26,22 @@
         main { max-width: 1300px; margin: 1.25rem auto 2rem; padding: 0 1.5rem; }
         .filters { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin: 0 0 1rem; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
         select { font: inherit; font-size: 0.85rem; padding: 0.3rem 0.8rem; border-radius: 99px; border: 1px solid #cbd5e1; background: #fff; color: var(--text-main); cursor: pointer; }
+        .terminy { border-top: 3px solid var(--text-main); background: #f8fafc; padding: 0.8rem 1rem 0.9rem; margin-bottom: 1.75rem; }
+        .terminy h2 { font-family: var(--cond); text-transform: uppercase; letter-spacing: 0.04em; font-size: 1.05rem; margin: 0 0 0.55rem; }
+        .terminy ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem 2rem; }
+        .termin { display: flex; gap: 0.6rem; align-items: baseline; font-size: 0.95rem; line-height: 1.3; }
+        .termin time { flex: 0 0 8.5rem; font-family: var(--cond); font-weight: 700; color: #e11d48; }
+        .termin a { color: var(--text-main); font-weight: 600; text-decoration: none; }
+        .termin a:hover { text-decoration: underline; }
+        @media (max-width: 800px) { .terminy ul { grid-template-columns: 1fr; } .termin time { flex-basis: 7.5rem; } }
         .ticker { display: flex; align-items: stretch; gap: 1rem; background: #f3f4f6; margin-bottom: 1.25rem; overflow: hidden; }
         .ticker-label { background: #bbf7a0; color: #111; font-family: var(--cond); font-weight: 800; text-transform: uppercase; padding: 0.7rem 1rem; display: flex; align-items: center; flex-shrink: 0; letter-spacing: 0.04em; }
-        .ticker-list { display: flex; gap: 1.6rem; flex: 1; min-width: 0; overflow-x: auto; padding: 0.55rem 1.5rem 0.55rem 0; scrollbar-width: none; scroll-snap-type: x proximity; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.8rem), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 1.8rem), transparent); }
-        .tick { font-family: var(--cond); font-weight: 600; font-size: 0.98rem; line-height: 1.25; color: var(--text-main); text-decoration: none; flex: 0 0 230px; scroll-snap-align: start; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .ticker-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 1.4rem; flex: 1; min-width: 0; padding: 0.6rem 1.25rem 0.6rem 0; }
+        .tick { font-family: var(--cond); font-weight: 600; font-size: 0.98rem; line-height: 1.25; color: var(--text-main); text-decoration: none; min-width: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .tick time { color: #e11d48; font-weight: 700; }
         .tick:hover { text-decoration: underline; }
+        @media (max-width: 900px) { .ticker { flex-direction: column; gap: 0; } .ticker-label { padding: 0.45rem 1rem; } .ticker-list { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0.6rem 1rem; } .tick { -webkit-line-clamp: 2; } }
+        @media (max-width: 560px) { .ticker-list { grid-template-columns: 1fr; gap: 0.7rem; } }
         .front { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
         .hero { position: relative; min-height: 360px; display: flex; flex-direction: column; justify-content: flex-end; padding: 1.6rem; color: #fff; overflow: hidden; }
         .hero > .ico { position: absolute; top: 1.2rem; right: 1.2rem; width: 96px; height: 96px; opacity: 0.25; }
@@ -94,6 +104,7 @@
         <!-- FILTERS_PLACEHOLDER -->
         <!-- TICKER_PLACEHOLDER -->
         <!-- FRONT_PLACEHOLDER -->
+        <!-- TERMS_PLACEHOLDER -->
         <!-- DYNAMIC_CARDS_PLACEHOLDER -->
         <p class="empty" id="brak" hidden>Brak aktualnych wpisów.</p>
     </main>
@@ -105,8 +116,10 @@
         var place = "", kind = "", rozwiniete = false;
         var feed = document.querySelector(".feed-grid"), sekcja = document.getElementById("feed");
         function match(c) {
+            // wybrana miejscowość: tylko wpisy o niej; z wpisów "cała gmina" zostają tylko ostrzeżenia (dotyczą wszystkich)
+            if (!place) return true;
             var places = (c.dataset.place || "").split("|");
-            return !place || places.indexOf(place) > -1 || c.dataset.place === "cała gmina";
+            return places.indexOf(place) > -1 || (c.dataset.place === "cała gmina" && c.dataset.kind === "ost");
         }
         function apply() {
             var licznik = {}, razem = 0;
@@ -118,6 +131,11 @@
             if (front) front.hidden = kind !== "" || !front.querySelector(".portal-card:not([hidden])");
             var tick = document.querySelector(".ticker");
             if (tick) tick.hidden = !tick.querySelector(".tick:not([hidden])");
+            var term = document.querySelector(".terminy");
+            if (term) {
+                term.querySelectorAll(".termin").forEach(function (c) { c.hidden = !match(c); });
+                term.hidden = kind !== "" || !term.querySelector(".termin:not([hidden])");
+            }
             var n = 0, start = sekcja ? +sekcja.dataset.start : 0;
             if (feed) feed.querySelectorAll(".portal-card").forEach(function (c) {
                 var ok = match(c) && (!kind || c.dataset.kind === kind) && (!c.classList.contains("copy") || kind !== "");
@@ -143,7 +161,7 @@
         var brak = document.getElementById("brak");
         function pustaStrona() {
             if (!brak) return;
-            brak.hidden = !!document.querySelector(".feed-grid .portal-card:not([hidden]), .front:not([hidden])");
+            brak.hidden = !!document.querySelector(".feed-grid .portal-card:not([hidden]), .front:not([hidden]), .terminy:not([hidden])");
             brak.textContent = place ? "Brak wpisów dla wybranej miejscowości." : (kind ? "Brak aktualnych wpisów w tej kategorii." : "Brak aktualnych wpisów.");
         }
         document.querySelectorAll(".more").forEach(function (b) {
