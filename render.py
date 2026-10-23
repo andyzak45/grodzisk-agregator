@@ -159,11 +159,11 @@ def karta(it, today, kopia=False):
 
 
 def karta_glowna(it, today):
-    """Główny temat strony: duży kolorowy blok (zamiast zdjęcia)."""
+    """Główny temat strony: duży blok ze zdjęciem poglądowym (jeśli jest) albo z grafiką."""
     bg, meta, opis_html, when, link = _czesci(it, today)
-    return (f'<article class="portal-card hero {bg}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
-            f'<svg class="hero-ilu" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ilu-{grafiki.temat(it)}"/></svg>'
-            f'<div class="hero-body">{meta}<h2>{e(tytul(it))}</h2>{opis_html}{when}{link}</div></article>')
+    tlo, klasa = grafiki.tlo_czolowki(it)
+    return (f'<article class="portal-card hero {bg}{klasa}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
+            f'{tlo}<div class="hero-body">{meta}<h2>{e(tytul(it))}</h2>{opis_html}{when}{link}</div></article>')
 
 
 def karta_boczna(it, today):
@@ -264,6 +264,8 @@ def build(items, template_path, out_path, today=None, aktualizacja=None):
     """aktualizacja: czas ostatniego pobrania danych (z godziną); bez niego pod tytułem jest sama data."""
     today = today or date.today()
     pool = widoczne(items, today)
+    korzen = Path(out_path).parent       # zdjęcia i data/zdjecia.json leżą obok index.html
+    grafiki.ustaw_zdjecia(grafiki.wczytaj_zdjecia(korzen / "data" / "zdjecia.json", korzen))
     po_rodzajach = {k: kolejnosc(k, [i for i in pool if i["kind"] == k], today)[:MAX_W_KATEGORII] for k in KIND_UI}
     pokazane = [i for k in KIND_UI for i in po_rodzajach[k]]
     front, wyrozniane = pierwsza_strona(pokazane, today)

@@ -4,7 +4,12 @@ Temat grafiki dobieramy ze słów w tytule i notce, a gdy nic nie pasuje, z rodz
 w jednym "sprite" na początku strony, a karty tylko się do nich odwołują, więc strona rośnie o ok. 6 KB, a nie o ok. 6 KB na kartę.
 Kolory pochodzą z klasy rodzaju (.k-inw itd.): ciemny to currentColor, a "wycięcia" mają kolor tła (var(--t)).
 """
+import html
+import json
 import re
+import zlib
+from collections import Counter
+from pathlib import Path
 
 from klasyfikacja import norm
 
@@ -79,6 +84,58 @@ _SYMBOLE = {
 }
 
 
+# ---------- zdjęcia z Wikimedia Commons (data/zdjecia.json, pliki w zdjecia/) ----------
+MIASTO = "Grodzisk Mazowiecki"
+TEMATY_ZDJEC_MIASTA = {"pociag", "urzad"}    # dla wpisu o mieście lub całej gminie zdjęcie dobieramy tylko do tych tematów
+ZDJECIA = []
+_UZYCIA = Counter()
+_WYBOR = {}
+
+
+def wczytaj_zdjecia(sciezka, korzen):
+    """Lista zdjęć z data/zdjecia.json, z pominięciem tych, których pliku nie ma na dysku."""
+    try:
+        dane = json.loads(Path(sciezka).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    return [z for z in dane if isinstance(z, dict) and z.get("plik") and (Path(korzen) / z["plik"]).exists()]
+
+
+def ustaw_zdjecia(lista):
+    ZDJECIA[:] = lista
+    _UZYCIA.clear()
+    _WYBOR.clear()
+
+
+def wybierz_zdjecie(it):
+    """Zdjęcie dla wpisu albo None. Wpis o wsi dostaje zdjęcie tej wsi, wpis o mieście lub gminie tylko zdjęcie pasujące
+    do tematu (kolej, urząd). Wybór jest stały dla wpisu, a zdjęcia rotują, żeby to samo nie wisiało przy każdym wpisie."""
+    klucz = it.get("id") or it["url"]
+    if klucz in _WYBOR:
+        return _WYBOR[klucz]
+    miejsce = it["place"].split("|")[0]
+    if miejsce in ("cała gmina", "okolica", MIASTO):
+        t = temat(it)
+        kand = [z for z in ZDJECIA if z["miejsce"] == MIASTO and z["temat"] == t] if t in TEMATY_ZDJEC_MIASTA else []
+    else:
+        kand = [z for z in ZDJECIA if z["miejsce"] == miejsce]
+    wybrane = min(kand, key=lambda z: (_UZYCIA[z["plik"]], zlib.crc32(f'{klucz}{z["plik"]}'.encode()))) if kand else None
+    if wybrane:
+        _UZYCIA[wybrane["plik"]] += 1
+    _WYBOR[klucz] = wybrane
+    return wybrane
+
+
+def podpis(z):
+    """Podpis wymagany przez licencję: autor, licencja (z linkiem) i strona źródłowa. Zdjęcie jest tylko poglądowe."""
+    autor = html.escape(z["autor"][:60] + ("…" if len(z["autor"]) > 60 else ""))
+    lic = html.escape(z["licencja"])
+    if z.get("licencja_url"):
+        lic = f'<a href="{html.escape(z["licencja_url"])}" target="_blank" rel="noopener">{lic}</a>'
+    return (f'Zdjęcie poglądowe · Fot.: {autor} · {lic} · '
+            f'<a href="{html.escape(z["strona"])}" target="_blank" rel="noopener">Wikimedia Commons</a>')
+
+
 def sprite():
     """Ukryty blok <symbol> ze wszystkimi grafikami; wstawiany raz na początku strony."""
     sym = "".join(f'<symbol id="ilu-{k}" viewBox="0 0 320 140">{v}</symbol>' for k, v in _SYMBOLE.items())
@@ -100,6 +157,20 @@ def ilustracja(it, klasa="ilu"):
         autor = it.get("obraz_autor") or it["source"]
         return (f'<figure class="{klasa} foto k-{it["kind"]}"><img src="{obraz}" alt="" loading="lazy" referrerpolicy="no-referrer">'
                 f'<figcaption>Fot.: {autor}</figcaption></figure>')
+    z = wybierz_zdjecie(it)
+    if z:
+        return (f'<figure class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(z["plik"])}" alt="" loading="lazy" decoding="async">'
+                f'<figcaption>{podpis(z)}</figcaption></figure>')
     t = temat(it)
     return (f'<div class="{klasa} k-{it["kind"]}" role="img" aria-label="Grafika poglądowa: {OPISY[t]}">'
             f'<svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ilu-{t}"/></svg></div>')
+
+
+def tlo_czolowki(it):
+    """Tło dużej karty: zdjęcie z podpisem albo grafika. Zwraca (znacznik, dodatkowa klasa)."""
+    z = wybierz_zdjecie(it) if not it.get("obraz") else None
+    if z:
+        return (f'<img class="hero-foto" src="{html.escape(z["plik"])}" alt="" decoding="async">'
+                f'<span class="hero-fot">{podpis(z)}</span>'), " z-foto"
+    return (f'<svg class="hero-ilu" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
+            f'<use href="#ilu-{temat(it)}"/></svg>'), ""
