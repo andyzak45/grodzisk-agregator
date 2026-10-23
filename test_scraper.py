@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import json
 import urllib.error
 import grafiki
+import zdjecia_commons as zc
 import render
 import reczne
 import redakcja
@@ -1260,6 +1261,83 @@ class Grafiki(unittest.TestCase):
         self.assertIn('class="hero-ilu"', page)
         self.assertIn('<div class="ilu k-inw"', page)
         self.assertIn("poglądowe", page)
+
+
+class ZdjeciaCommons(unittest.TestCase):
+    def _strona(self, tytul, mime="image/jpeg", szer=2000, licencja="CC BY-SA 4.0", **meta):
+        m = {"LicenseShortName": {"value": licencja}, "Artist": {"value": '<a href="//x">Jan <b>Kowalski</b></a>'},
+             "ImageDescription": {"value": "Stacja &amp; peron"}}
+        m.update(meta)
+        return {"title": tytul, "imageinfo": [{"mime": mime, "width": szer, "height": 1200, "url": "https://upload.wikimedia.org/a.jpg",
+                                               "thumburl": "https://upload.wikimedia.org/t.jpg", "extmetadata": m}]}
+
+    def test_licencje_wolne_tak_a_ograniczone_nie(self):
+        for ok in ("CC BY-SA 4.0", "CC BY 3.0", "CC0", "Public domain", "CC-BY-SA-4.0", "PD-old"):
+            self.assertTrue(zc.licencja_ok(ok), ok)
+        for zle in ("CC BY-NC 4.0", "CC BY-ND 2.0", "CC BY-NC-SA 3.0", "", "Fair use", "All rights reserved", "GFDL"):
+            self.assertFalse(zc.licencja_ok(zle), zle)
+
+    def test_rekord_czysci_html_i_trzyma_autora_i_licencje(self):
+        r = zc.rekord(self._strona("File:Stacja.jpg"))
+        self.assertEqual(r["autor"], "Jan Kowalski")
+        self.assertEqual(r["opis"], "Stacja & peron")
+        self.assertEqual(r["licencja"], "CC BY-SA 4.0")
+        self.assertTrue(r["strona"].startswith("https://commons.wikimedia.org/wiki/File%3AStacja.jpg") or "File:Stacja.jpg" in r["strona"])
+
+    def test_rekord_odrzuca_zly_format_maly_rozmiar_i_licencje(self):
+        self.assertIsNone(zc.rekord(self._strona("File:a.svg", mime="image/svg+xml")))
+        self.assertIsNone(zc.rekord(self._strona("File:a.jpg", szer=640)))
+        self.assertIsNone(zc.rekord(self._strona("File:a.jpg", licencja="CC BY-NC 4.0")))
+        self.assertIsNone(zc.rekord({"title": "File:a.jpg"}))
+
+    def test_uwagi_ostrzegaja_o_ludziach_i_ograniczeniach(self):
+        r = zc.rekord(self._strona("File:a.jpg", ImageDescription={"value": "Portret burmistrza"}, Restrictions={"value": "trademarked"}))
+        self.assertTrue(any("ludzie" in u for u in r["uwagi"]))
+        self.assertTrue(any("trademarked" in u for u in r["uwagi"]))
+
+    def _fetch(self, zapytania):
+        def fetch(par):
+            zapytania.append(par)
+            if par.get("list") == "search":
+                tytuly = {"Grodzisk Mazowiecki": ["Category:Grodzisk Mazowiecki", "Category:Grodzisk Wielkopolski"],
+                          "Milanówek": ["Category:Milanówek"]}.get(par["srsearch"], [])
+                return {"query": {"search": [{"title": t} for t in tytuly]}}
+            if par.get("list") == "categorymembers":
+                dane = {"Category:Grodzisk Mazowiecki": [{"title": "File:Stacja.jpg"}, {"title": "Category:Parki Grodziska Mazowieckiego"}],
+                        "Category:Parki Grodziska Mazowieckiego": [{"title": "File:Park.jpg"}, {"title": "File:Stacja.jpg"}],
+                        "Category:Milanówek": [{"title": "File:Maly.jpg"}]}
+                return {"query": {"categorymembers": dane.get(par["cmtitle"], [])}}
+            strony = {"File:Stacja.jpg": self._strona("File:Stacja.jpg"), "File:Park.jpg": self._strona("File:Park.jpg", licencja="CC0"),
+                      "File:Maly.jpg": self._strona("File:Maly.jpg", szer=400)}
+            return {"query": {"pages": [strony[t] for t in par["titles"].split("|")]}}
+        return fetch
+
+    def test_kategorie_tylko_pasujace_do_miejscowosci(self):
+        kat = zc.znajdz_kategorie(self._fetch([]))
+        self.assertEqual(kat, ["Category:Grodzisk Mazowiecki", "Category:Milanówek"])      # bez Grodziska Wielkopolskiego
+
+    def test_zbieranie_schodzi_do_podkategorii_bez_powtorek(self):
+        pliki = zc.zbierz_pliki(self._fetch([]), ["Category:Grodzisk Mazowiecki"])
+        self.assertEqual(pliki, ["File:Stacja.jpg", "File:Park.jpg"])
+
+    def test_calosc_zapisuje_json_i_arkusz(self):
+        zapytania = []
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(zc.main(self._fetch(zapytania), Path(d)), 0)
+            kand = json.loads((Path(d) / "zdjecia_kandydaci.json").read_text(encoding="utf-8"))
+            arkusz = (Path(d) / "zdjecia_kandydaci.html").read_text(encoding="utf-8")
+        self.assertEqual({k["tytul"] for k in kand}, {"File:Stacja.jpg", "File:Park.jpg"})      # mały plik odpadł
+        self.assertIn("Kopiuj listę zaznaczonych", arkusz)
+        self.assertIn("File:Park.jpg", arkusz)
+
+    def test_brak_kategorii_to_blad_a_nie_pusty_plik(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(zc.main(lambda par: {}, Path(d)), 1)
+            self.assertFalse((Path(d) / "zdjecia_kandydaci.json").exists())
+
+    def test_arkusz_ucieka_html(self):
+        k = zc.rekord(self._strona('File:"><script>x</script>.jpg'))
+        self.assertNotIn("<script>x</script>", zc.arkusz([k]))
 
 
 class TerminyIDuplikaty(unittest.TestCase):
