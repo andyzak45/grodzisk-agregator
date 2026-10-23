@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import json
 import urllib.error
+import grafiki
 import render
 import reczne
 import redakcja
@@ -505,10 +506,10 @@ class StronaRedakcyjna(unittest.TestCase):
         self.assertEqual(self._karty(page), render.BEZ_TERMINU_MAX)
         self.assertNotIn("Stara zapowiedź", page)
 
-    def test_wpis_reczny_pokazuje_wlasny_opis_i_ikone(self):
+    def test_wpis_reczny_pokazuje_wlasny_opis_i_grafike(self):
         page = self._strona([self._it(kind="inw", text="Zamknięta ulica Kościuszki do piątku.", manual=True)])
         self.assertIn("Zamknięta ulica Kościuszki do piątku.", page)
-        self.assertIn('<svg class="ico"', page)
+        self.assertIn('class="hero-ilu"', page)
 
 
 class Notki(unittest.TestCase):
@@ -1190,6 +1191,75 @@ class GodzinaAktualizacji(unittest.TestCase):
     def test_brak_status_json_daje_czas_domyslny(self):
         with mock.patch.object(scraper, "STATUS", Path("/nie/ma/status.json")):
             self.assertEqual(scraper.czas_ostatniego_przebiegu("domyślny"), "domyślny")
+
+
+class Grafiki(unittest.TestCase):
+    def _wpis(self, **kw):
+        base = {"id": "1", "title": "Tytuł", "url": "https://x.pl/1", "source": "Źródło", "source_id": "z1",
+                "first_seen": "2026-10-22", "published": "2026-10-22", "kind": "inne", "place": "cała gmina",
+                "when": None, "event_iso": None, "text": "Notka."}
+        base.update(kw)
+        return base
+
+    def test_kazdy_temat_ma_grafike_w_sprite(self):
+        s = grafiki.sprite()
+        for nazwa in grafiki.OPISY:
+            self.assertIn(f'id="ilu-{nazwa}"', s)
+        for nazwa, _ in grafiki.TEMATY:
+            self.assertIn(nazwa, grafiki.OPISY)
+        for nazwa in grafiki.PO_RODZAJU.values():
+            self.assertIn(nazwa, grafiki.OPISY)
+
+    def test_sprite_jest_poprawnym_xml(self):
+        import xml.etree.ElementTree as ET
+        korzen = ET.fromstring(grafiki.sprite())
+        symbole = [el for el in korzen.iter() if el.tag.endswith("symbol")]
+        self.assertEqual(len(symbole), len(grafiki.OPISY))
+        self.assertLess(len(grafiki.sprite()), 12000)
+
+    def test_temat_z_tytulu_i_notki(self):
+        przyklady = {
+            "Zmiany w ruchu przy cmentarzu": "droga", "Przerwa w dostawie wody na ulicy Karliczka": "woda",
+            "WKD zmienia rozkład jazdy": "pociag", "Policja szuka zaginionego mężczyzny": "bezpieczenstwo",
+            "Bezpłatne badania mammograficzne": "zdrowie", "Zapisy do przedszkola": "szkola",
+            "Mecz Bogorii z Grudziądzem": "sport", "Koncert w Mediatece": "kultura",
+            "Zbiórka odzieży w gminie": "srodowisko", "Gmina ogłosiła przetarg na projekt parku": "inwestycje",
+            "Sesja Rady Miejskiej": "urzad"}
+        for tytul, oczekiwany in przyklady.items():
+            self.assertEqual(grafiki.temat(self._wpis(title=tytul, text=None)), oczekiwany, tytul)
+
+    def test_bez_slow_kluczowych_temat_zalezy_od_rodzaju(self):
+        self.assertEqual(grafiki.temat(self._wpis(title="Coś ogólnego", text=None, kind="wyd")), "kultura")
+        self.assertEqual(grafiki.temat(self._wpis(title="Coś ogólnego", text=None, kind="inne")), "ogolne")
+
+    def test_parking_to_droga_a_nie_park(self):
+        self.assertEqual(grafiki.temat(self._wpis(title="Nowy parking przy dworcu", text=None, kind="inne")), "pociag")
+        self.assertEqual(grafiki.temat(self._wpis(title="Nowy parking przy szkole podstawowej", text=None)), "szkola")
+        self.assertEqual(grafiki.temat(self._wpis(title="Nowy parking na osiedlu", text=None)), "droga")
+
+    def test_karta_ma_grafike_a_zdjecie_zastepuje_ja_z_podpisem(self):
+        bez = grafiki.ilustracja(self._wpis(kind="inw", title="Remont drogi"))
+        self.assertIn('class="ilu k-inw"', bez)
+        self.assertIn('<use href="#ilu-droga"/>', bez)
+        z = grafiki.ilustracja(self._wpis(kind="inw", obraz="https://grodzisk.pl/foto.jpg", obraz_autor="Urząd Miejski"))
+        self.assertIn('src="https://grodzisk.pl/foto.jpg"', z)
+        self.assertIn('referrerpolicy="no-referrer"', z)
+        self.assertIn("Fot.: Urząd Miejski", z)
+        self.assertNotIn("<use", z)
+
+    def test_obraz_tylko_z_https(self):
+        self.assertIn("<use", grafiki.ilustracja(self._wpis(obraz="http://x.pl/a.jpg")))
+        self.assertIn("<use", grafiki.ilustracja(self._wpis(obraz="javascript:alert(1)")))
+
+    def test_strona_ma_sprite_i_grafiki_na_kartach_i_czolowce(self):
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "index.html"
+            render.build([self._wpis(kind="inw", title="Remont drogi")], Path(__file__).resolve().parent / "template.html", out, date(2026, 10, 22))
+            page = out.read_text(encoding="utf-8")
+        self.assertEqual(page.count('<symbol id="ilu-'), len(grafiki.OPISY))
+        self.assertIn('class="hero-ilu"', page)
+        self.assertIn('<div class="ilu k-inw"', page)
+        self.assertIn("poglądowe", page)
 
 
 class TerminyIDuplikaty(unittest.TestCase):

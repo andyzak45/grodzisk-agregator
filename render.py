@@ -3,6 +3,7 @@ import html
 from datetime import date, timedelta
 from pathlib import Path
 
+import grafiki
 from klasyfikacja import klucz_miejsca, miejsce_wpisu, w_gminie
 from redakcja import data_ui, dzien, godzina, inny_region, miejsce_ui, opis, termin_ui
 
@@ -154,14 +155,15 @@ def karta(it, today, kopia=False):
     bg, meta, opis_html, when, link = _czesci(it, today)
     klasa, ukryta = ("portal-card copy", " hidden") if kopia else ("portal-card", "")
     return (f'<article class="{klasa}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}"{ukryta}>'
-            f'<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}{when}{link}</div></article>')
+            f'{grafiki.ilustracja(it)}<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}{when}{link}</div></article>')
 
 
 def karta_glowna(it, today):
     """Główny temat strony: duży kolorowy blok (zamiast zdjęcia)."""
     bg, meta, opis_html, when, link = _czesci(it, today)
     return (f'<article class="portal-card hero {bg}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
-            f'{ikona(it["kind"])}<div class="hero-body">{meta}<h2>{e(tytul(it))}</h2>{opis_html}{when}{link}</div></article>')
+            f'<svg class="hero-ilu" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ilu-{grafiki.temat(it)}"/></svg>'
+            f'<div class="hero-body">{meta}<h2>{e(tytul(it))}</h2>{opis_html}{when}{link}</div></article>')
 
 
 def karta_boczna(it, today):
@@ -267,6 +269,7 @@ def build(items, template_path, out_path, today=None, aktualizacja=None):
     front, wyrozniane = pierwsza_strona(pokazane, today)
     miesiac = MIESIACE_DOP[today.month - 1]
     page = Path(template_path).read_text(encoding="utf-8")
+    page = page.replace("<!-- ILU_SPRITE_PLACEHOLDER -->", grafiki.sprite())
     page = page.replace("<!-- DATE_PLACEHOLDER -->", f"{DNI[today.weekday()]}, {today.day} {miesiac}")
     page = page.replace("<!-- NAV_PLACEHOLDER -->", nawigacja(po_rodzajach))
     page = page.replace("<!-- FILTERS_PLACEHOLDER -->", filtry(pool))
