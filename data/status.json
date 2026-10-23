@@ -1,5 +1,5 @@
 {
- "run": "2026-10-22T21:22:29",
+ "run": "2026-10-23T06:47:16+02:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
@@ -19,17 +19,17 @@
   "grodziski24": {
    "ok": true,
    "found": 15,
-   "new": 2
+   "new": 0
   },
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "przeglad-regionalny": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "grodziskinfo": {
    "ok": true,
@@ -39,12 +39,12 @@
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "centrum-kultury": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 2
   },
   "mediateka": {
    "ok": true,

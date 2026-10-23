@@ -1,5 +1,40 @@
 [
  {
+  "id": "3e7ecda8ba3d",
+  "title": "Obcy / GRODZISKI KLUB FILMOWY",
+  "url": "https://www.centrumkultury.eu/wydarzenie/obcy-grodziski-klub-filmowy/",
+  "source": "Centrum Kultury",
+  "source_id": "centrum-kultury",
+  "first_seen": "2026-10-23",
+  "published": "2026-10-19",
+  "kind": "wyd",
+  "place": "Grodzisk Mazowiecki",
+  "when": "29.10",
+  "event_iso": "2026-10-29",
+  "tkey": "09c586a579d7",
+  "opis_proba": "v3",
+  "text": "W ramach Grodziskiego Klubu Filmowego 29 października 2026 roku w Centrum Kultury odbędzie się projekcja filmu „Obcy”. Wydarzenie zaplanowano na godzinę 20:15.",
+  "opis_auto": true,
+  "tytul": "Październikowy seans filmu Obcy w grodziskim Centrum Kultury",
+  "tytul_proba": true
+ },
+ {
+  "id": "b519d19802ce",
+  "title": "Pieśni lasu / PREMIERA OGÓLNOPOLSKA",
+  "url": "https://www.centrumkultury.eu/kino-wolnosc/repertuar/",
+  "source": "Centrum Kultury",
+  "source_id": "centrum-kultury",
+  "first_seen": "2026-10-23",
+  "published": null,
+  "kind": "wyd",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "ed39b089faab",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
   "id": "fb4049ba6ea8",
   "title": "Spektakl Teatru Kamienica „Zacznijmy jeszcze raz”",
   "url": "https://www.centrumkultury.eu/wydarzenie/spektakl-teatru-kamienica-zacznijmy-jeszcze-raz/",
@@ -93,7 +128,9 @@
   "tkey": "8be301406a05",
   "opis_proba": "v3",
   "text": "W Grodzisku Mazowieckim 20 października odbyła się 25. edycja Grodziskich Targów Pracy. Osoby poszukujące zatrudnienia miały okazję spotkać się z pracodawcami, przejrzeć aktualne oferty zatrudnienia i skorzystać z porad doradców zawodowych.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Jubileuszowe Grodziskie Targi Pracy ułatwiły poszukiwanie zatrudnienia dwudziestego października"
  },
  {
   "id": "fe9c5c4dd5f1",
@@ -296,7 +333,8 @@
   "tkey": "276826ecf44f",
   "opis_proba": "v3",
   "text": "Od 24 października do końca listopada 2026 roku w Chrzanowie Dużym całkowicie zamknięto skrzyżowanie ulic Transportowej i Traugutta z powodu budowy ronda. Wprowadzono objazdy oraz zmieniono trasy pięciu linii autobusowych Grodziskich Przewozów Autobusowych.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "4f0636d185bb",
@@ -685,7 +723,8 @@
   "tkey": "0fe796c0d9fd",
   "opis_proba": "v2",
   "text": "Polski oddział ZTE wprowadził do oferty stacjonarny router G5 Ultra+ 5G z procesorem Qualcomm Snapdragon X75. Urządzenie obsługuje standard Wi-Fi 7, sieć 5G-Advanced z pobieraniem do 4,29 Gb/s oraz pozwala na jednoczesną pracę do 384 urządzeń.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "062eee4593b9",
@@ -702,7 +741,8 @@
   "tkey": "3d433ccad8df",
   "opis_proba": "v2",
   "text": "Fundacja Nowe Znaki organizuje 24 października o godz. 10.00 akcję porządkowania mogił osób zasłużonych na cmentarzu w Milanówku. Uczestnicy spotkania przy ulicy Wojska Polskiego są proszeni o zabranie ze sobą własnych sprzętów do sprzątania.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "59126fd6d26c",
@@ -736,7 +776,8 @@
   "tkey": "259a93a4f736",
   "opis_proba": "v2",
   "text": "Rządowe Centrum Bezpieczeństwa analizuje kwestię dostosowania systemów ostrzegania do potrzeb osób z niepełnosprawnościami. Zdaniem ekspertów obecne komunikaty zawierają zbyt specjalistyczne słownictwo i nie wskazują odbiorcom konkretnych działań.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "f7f6c67c8e65",
@@ -753,7 +794,8 @@
   "tkey": "960fee6e5d7f",
   "opis_proba": "v2",
   "text": "Zabytkowy pałac w Młochowie przejdzie kompleksową renowację i modernizację za ponad 16 milionów złotych. Po zakończeniu prac odnowiony obiekt wraz z parkiem będzie służył celom kulturalnym, gospodarczym i integracji mieszkańców.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "cd870b573543",
@@ -833,7 +875,8 @@
   "tkey": "db8494ce2877",
   "opis_proba": "v2",
   "text": "Sąd Rejonowy w Piasecznie ukarał grzywną 10 tysięcy złotych oraz dwuletnim zakazem prowadzenia pojazdów kierowcę, który 17 maja 2026 roku stwarzał zagrożenie w Konstancinie-Jeziornie. Wina została ustalona dzięki nagraniu z internetu.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "c915f95876b9",
@@ -850,7 +893,8 @@
   "tkey": "e1b1f0494fb6",
   "opis_proba": "v2",
   "text": "21 października Urząd Marszałkowski Województwa Mazowieckiego ogłosił dziesięcioro laureatów XXVII edycji regionalnych wyróżnień. Nagrody przyznano osobom i instytucjom zasłużonym m.in. dla kultury, edukacji i ochrony dziedzictwa w regionie.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "3bd2d775ae1c",
@@ -884,7 +928,8 @@
   "opis_auto": true,
   "also": [
    "Przegląd Regionalny"
-  ]
+  ],
+  "tytul_proba": true
  },
  {
   "id": "cc63aee578b0",
@@ -917,7 +962,8 @@
   "tkey": "435f661e452c",
   "opis_proba": "v2",
   "text": "Reprezentant Klubu Bokserskiego Nowy Dwór Mazowiecki zajął piąte miejsce na Mistrzostwach Europy Młodzików w boksie. W starciu o strefę medalową przegrał z bardziej doświadczonym zawodnikiem z Azerbejdżanu.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "f6acc3258a4f",
@@ -934,7 +980,8 @@
   "tkey": "88e91940ac1a",
   "opis_proba": "v2",
   "text": "Policjanci z Pruszkowa poszukują pacjenta, który 10 września 2026 roku wyszedł ze szpitala przy ul. Szaserów w Warszawie i nie nawiązał kontaktu z bliskimi. Funkcjonariusze apelują do wszystkich osób o przekazywanie informacji mogących pomóc w ustaleniu jego miejsca pobytu.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "8cf004208364",
@@ -951,7 +998,8 @@
   "tkey": "7f50a1c53ec5",
   "opis_proba": "v2",
   "text": "W Krakowianach w gminie Nadarzyn trwa budowa nowego terenu rekreacyjnego z alejkami i altaną. Inwestycja o wartości blisko 650 tysięcy złotych ma zakończyć się w grudniu 2026 roku.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "4ce4da4cac63",
@@ -999,7 +1047,8 @@
   "tkey": "846e5e4ee827",
   "opis_proba": "v2",
   "text": "Od 22 do 24 października 2026 roku potrwa remont nawierzchni alei Krakowskiej w Raszynie. Kierowcy poruszający się w stronę Janek muszą liczyć się z utrudnieniami i ruchem kierowanym przez pracowników budowy.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "a2098498e0ad",
@@ -1016,7 +1065,8 @@
   "tkey": "c7387ac479ad",
   "opis_proba": "v2",
   "text": "Ośrodek Sportu i Rekreacji w Grodzisku Mazowieckim prowadzi nabór na pełny etat kasjera. Dokumenty aplikacyjne można składać do 26 października 2026 roku.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "8839b92cf379",
@@ -1049,7 +1099,9 @@
   "tkey": "07456ae72876",
   "opis_proba": "v2",
   "text": "W Kinie Centrum Kultury wyświetlany jest film „Upadek wieloryba” w reżyserii Briana Duffielda. Produkcja ukazuje historię nurka, który po zagłębieniu się w wody u wybrzeży Kalifornii zostaje uwięziony wewnątrz kaszalota.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Seans filmu Upadek wieloryba w grodziskim Centrum Kultury"
  },
  {
   "id": "315f006cb686",
