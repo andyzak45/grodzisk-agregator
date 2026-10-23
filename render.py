@@ -202,7 +202,7 @@ def terminy(pool, today):
     kand.sort(key=lambda i: (i["event_iso"], godzina(i.get("when")) or "99:99", tytul(i)))
     wiersze = ""
     for i in kand[:TERMINY_MAX]:
-        miejsce = miejsce_ui(i["place"])
+        miejsce = "" if i["place"] == "Grodzisk Mazowiecki" else miejsce_ui(i["place"])   # samo miasto to domyślne miejsce
         znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
         wiersze += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
                     f'<time datetime="{e(i["event_iso"])}" data-t="{e(godzina(i.get("when")) or "")}">{e(termin_ui(i, today))}</time>'

@@ -1278,6 +1278,19 @@ class TerminyIDuplikaty(unittest.TestCase):
         self.assertRegex(page, r'class="termin" data-place="Szczęsne" data-kind="wyd"')
         self.assertIn('c.dataset.kind === "ost"', page)
 
+    def test_plakietka_miejsca_w_terminach_tylko_dla_innych_miejscowosci_niz_miasto(self):
+        today = date(2026, 10, 22)
+        items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", place="Grodzisk Mazowiecki", title="Koncert w mieście",
+                            event_iso="2026-10-24", when="24.10"),
+                 self._wpis(id="2", url="https://x.pl/2", kind="wyd", place="Szczęsne", title="Piknik na wsi",
+                            event_iso="2026-10-25", when="25.10")]
+        page = self._strona(items, today)
+        blok = page[page.index('id="terminy"'):]
+        blok = blok[:blok.index("</section>")]
+        wiersze = blok.split('<li class="termin"')[1:]
+        self.assertNotIn('class="badge"', wiersze[0])      # miasto: bez plakietki
+        self.assertIn('<span class="badge">Szczęsne</span>', wiersze[1])
+
     def test_blok_terminow_ma_limit(self):
         today = date(2026, 10, 22)
         items = [self._wpis(id=str(n), url=f"https://x.pl/{n}", kind="wyd", title=f"Wydarzenie numer {n}",
