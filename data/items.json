@@ -35,6 +35,20 @@
   "poza_okolica": true
  },
  {
+  "id": "5bd75c2cf4a3",
+  "title": "Śpimy o godzinę dłużej! W ten weekend przechodzimy na czas zimowy",
+  "url": "https://wpr24.pl/spimy-o-godzine-dluzej-w-ten-weekend-przechodzimy-na-czas-zimowy/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-10-23",
+  "published": "2026-10-23",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "26630437295f"
+ },
+ {
   "id": "fb4049ba6ea8",
   "title": "Spektakl Teatru Kamienica „Zacznijmy jeszcze raz”",
   "url": "https://www.centrumkultury.eu/wydarzenie/spektakl-teatru-kamienica-zacznijmy-jeszcze-raz/",
@@ -473,7 +487,9 @@
   "tkey": "1e1999aad16c",
   "opis_proba": "v2",
   "text": "W Bibliotece Głównej w Grodzisku Mazowieckim odbędzie się bezpłatne spotkanie Młodzieżowego Klubu Książki poświęcone powieści „Igrzyska śmierci”. Wydarzenie zaplanowano na 26 października o godzinie 18:00 na drugim piętrze Mediateki przy ulicy 3 Maja.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Młodzieżowy Klub Książki omówi powieść Igrzyska śmierci w Grodzisku Mazowieckim"
  },
  {
   "id": "e266ae73f264",
@@ -568,7 +584,8 @@
   "opis_proba": "v2",
   "text": "Policja przeprowadziła w całym kraju blisko 258 tysięcy kontroli placówek oświatowych w związku z niedawnymi aktami przemocy. W ramach trwających od października działań funkcjonariusze zatrzymali 195 osób.",
   "opis_auto": true,
-  "also": []
+  "also": [],
+  "tytul_proba": true
  },
  {
   "id": "06dad8cacd2d",
@@ -613,7 +630,8 @@
   "tkey": "225fa4d13767",
   "opis_proba": "v2",
   "text": "Do 23 października trwają zapisy na XXXIV Bieg Niepodległości w Skierniewicach. Finałowe wydarzenie Skierniewickiej Triady Biegowej odbędzie się 11 listopada w Parku Miejskim.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "576bc2e2af5b",
@@ -678,7 +696,8 @@
   "tkey": "3f2e72f173e6",
   "opis_proba": "v2",
   "text": "W Parku Potulickim w Pruszkowie przebywa dorosły łabędź przepędzany przez inną rodzinę ptaków na brzeg i jezdnię. Mieszkańcy apelują o zaprzestanie dokarmiania osobnika, co ma skłonić go do poszukiwania bezpieczniejszego miejsca.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "5f0ef372439a",
@@ -759,7 +778,8 @@
   "tkey": "366321bfb5d2",
   "opis_proba": "v2",
   "text": "W dniach 3–4 października 2026 r. odbyła się 13. edycja akcji „Weekend Seniora z Kulturą”. W wydarzeniach przygotowanych przez 829 placówek w całym kraju wzięło udział około 76 tysięcy osób starszych.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true
  },
  {
   "id": "83dd9fca8045",
@@ -1118,7 +1138,9 @@
   "tkey": "27408fcb01a2",
   "opis_proba": "v2",
   "text": "W czwartek 22 października 2026 roku w Grodzisku Mazowieckim drużyna Orlen Bogoria podejmie zespół Olimpia Grudziądz. To pierwsze starcie obu ekip od ubiegłorocznego finału mistrzostw Polski.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Drużyna Orlen Bogoria zagra w czwartek z zespołem Olimpia Grudziądz"
  },
  {
   "id": "6f7e1c3739f4",
@@ -1195,7 +1217,9 @@
   "tkey": "48848e797f73",
   "opis_proba": "v2",
   "text": "W piątek, 30 października, o godz. 18:00 w filii biblioteki w Kadach przy ul. Środkowej 72 odbędzie się spotkanie Dyskusyjnego Klubu Książki. Tematem bezpłatnej, otwartej rozmowy będzie powieść „Grobowa cisza, żałobny zgiełk”.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Spotkanie wokół nowej powieści w bibliotece w gminie Grodzisk Mazowiecki"
  },
  {
   "id": "028c62bfc8dc",
@@ -1212,7 +1236,9 @@
   "tkey": "712c27aa16e0",
   "opis_proba": "v2",
   "text": "Biblioteka Publiczna w Grodzisku Mazowieckim organizuje bezpłatne warsztaty z robotyki, programowania klocków LEGO, druku 3D i gogli VR dla dzieci od 6. roku życia. Zajęcia ruszają 29 października w Pawilonie Kultury przy ul. Westfala 3B, a o udziale decyduje kolejność zgłoszeń.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Grodziska biblioteka organizuje bezpłatne warsztaty technologiczne dla dzieci"
  },
  {
   "id": "a1da40e0a7b8",
@@ -1229,7 +1255,9 @@
   "tkey": "75df9570c89e",
   "opis_proba": "v2",
   "text": "27 października o godzinie 18:00 w Bibliotece Głównej w Grodzisku Mazowieckim odbędzie się spotkanie Dyskusyjnego Klubu Książki. Uczestnicy omówią powieść „Yellowface”. Wstęp na wydarzenie jest bezpłatny.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Spotkanie Dyskusyjnego Klubu Książki w grodziskiej bibliotece pod koniec października"
  },
  {
   "id": "85548f3104a2",
@@ -1345,7 +1373,9 @@
   "tkey": "99d9b22422e0",
   "opis_proba": "v2",
   "text": "Zakład Wodociągów i Kanalizacji w Grodzisku Mazowieckim prowadzi kampanię informacyjną na temat dwóch technologii: grawitacyjnej i ciśnieniowej. Obecnie sieć kanalizacyjna w gminie liczy 226 kilometrów, z czego 38 km stanowią odcinki ciśnieniowe.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Grodziska spółka wodociągowa przypomina o dwóch rodzajach sieci kanalizacyjnej"
  },
  {
   "id": "e2445c453196",
@@ -1362,7 +1392,9 @@
   "tkey": "898160f2cc6f",
   "opis_proba": "v2",
   "text": "W gminie Grodzisk Mazowiecki działa już 38 kilometrów sieci kanalizacji ciśnieniowej, a Zakład Wodociągów i Kanalizacji eksploatuje 675 przydomowych przepompowni. W planach jest budowa kolejnych 40 kilometrów tej infrastruktury.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Rozbudowa sieci kanalizacji ciśnieniowej na terenie gminy Grodzisk Mazowiecki"
  },
  {
   "id": "b34be64fbe5e",
@@ -1573,7 +1605,9 @@
   "tkey": "9440e1e1fd95",
   "opis_proba": "v2",
   "text": "W niedzielę, 4 października, w Hali Widowiskowo-Sportowej CAIIS w Grodzisku Mazowieckim odbył się IV Festiwal Integracyjny „TAK JAK TY!”. W programie imprezy znalazły się m.in. występy lokalnej orkiestry, pokazy iluzji oraz koncerty zaproszonych artystów.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Czwarta edycja festiwalu integracyjnego w hali widowiskowo-sportowej w Grodzisku Mazowieckim"
  },
  {
   "id": "52dbac79e72b",
@@ -1919,7 +1953,9 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "Funkcjonariusze z grodziskiej komendy wzięli udział w kampanii „Dzieciństwo bez przemocy”, trwającej od 5 października do 19 listopada 2026 roku. W jej ramach prowadzą spotkania profilaktyczne skupione na przeciwdziałaniu krzywdzeniu najmłodszych.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Grodziscy funkcjonariusze prowadzą działania w ramach kampanii przeciw przemocy wobec dzieci"
  },
  {
   "id": "22f24fd6439e",
@@ -1980,7 +2016,9 @@
   "event_iso": "2026-10-09",
   "opis_proba": "v2",
   "text": "W Mediatece w Grodzisku Mazowieckim zaplanowano debatę społeczną poświęconą wnioskom z ubiegłego roku oraz spotkanie edukacyjne o bezpieczeństwie seniorów. Wydarzenie odbędzie się 9 października 2026 roku o godzinie 15:00.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Debata społeczna i spotkanie edukacyjne dla seniorów w grodziskiej Mediatece"
  },
  {
   "id": "aff796453e54",
@@ -1996,7 +2034,9 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "Policjant z grodziskiej komendy przeprowadził w październiku 2026 roku cykl zajęć z bezpieczeństwa ruchu drogowego dla uczniów Szkoły Podstawowej Nr 1 w Grodzisku Mazowieckim. Dzieci przypomniały sobie zasady przechodzenia przez jezdnię, jazdy rowerem oraz używania elementów odblaskowych.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Spotkania o bezpieczeństwie drogowym dla uczniów z Grodziska Mazowieckiego"
  },
  {
   "id": "efb04ad02b9f",
