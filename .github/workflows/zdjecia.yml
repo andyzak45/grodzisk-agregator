@@ -1,7 +1,15 @@
-name: Zbieranie zdjęć z Wikimedia Commons
+name: Zdjęcia z Wikimedia Commons
 
 on:
   workflow_dispatch:       # tylko ręcznie: przycisk "Run workflow"
+    inputs:
+      tryb:
+        description: 'pobierz = pobranie zdjęć z data/zdjecia_wybor.txt i przebudowa strony; kandydaci = nowy arkusz do wyboru'
+        type: choice
+        options:
+          - pobierz
+          - kandydaci
+        default: pobierz
 
 permissions:
   contents: write
@@ -19,17 +27,32 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
 
-      - name: Zbieranie kandydatów
+      - run: pip install -r requirements.txt
+
+      - name: Kandydaci na zdjęcia (arkusz do wyboru)
+        if: ${{ inputs.tryb == 'kandydaci' }}
         env:
           PYTHONUNBUFFERED: "1"
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
         run: python zdjecia_commons.py
 
+      - name: Pobranie wybranych zdjęć i przebudowa strony
+        if: ${{ inputs.tryb == 'pobierz' }}
+        env:
+          PYTHONUNBUFFERED: "1"
+          BOT_CONTACT: ${{ vars.BOT_CONTACT }}
+        run: |
+          python zdjecia_pobierz.py
+          python scraper.py --render-only
+
       - name: Zapis wyników
         run: |
           git config user.name "Grodzisk lokalnie bot"
           git config user.email "bot@users.noreply.github.com"
-          git add data/zdjecia_kandydaci.json data/zdjecia_kandydaci.html
-          git diff --cached --quiet || git commit -m "Kandydaci na zdjęcia z Commons ($(date -u +%F))"
+          git add data
+          if [ -d zdjecia ]; then git add zdjecia; fi
+          git add index.html archiwum.html 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Zdjęcia z Commons ($(date -u +%F))"
           git push
