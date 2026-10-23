@@ -112,6 +112,18 @@ def podobne(a, b, prog=0.55):
     return len(wspolne) >= 3 and len(wspolne) / len(ra | rb) >= prog
 
 
+_OGOLNE_RDZENIE = {"kons", "prog", "wspo", "spot", "zapr", "mies", "gmin", "powi", "info", "ogło", "ogl"}   # słowa z każdego komunikatu urzędu
+
+
+def podobne_luzno(a, b, prog=0.75):
+    """Dwa tytuły o tym samym temacie, gdy jeden jest dłuższy: wspólne rdzenie to większość krótszego tytułu.
+    Stosujemy tylko między różnymi źródłami. Ogólne słowa urzędowe (konsultacje, program, współpraca) nie liczą się
+    jako wspólne, bo skleiłyby różne konsultacje."""
+    ra, rb = _rdzenie(a), _rdzenie(b)
+    wspolne = (ra & rb) - _OGOLNE_RDZENIE
+    return len(wspolne) >= 3 and len(wspolne) / min(len(ra), len(rb)) >= prog
+
+
 # ---------- tematy spoza okolicy ----------
 
 _INNY_REGION = re.compile(r"\bwoj\.\s+(?!mazowiec)|\bwojew[oó]dzt\w*\s+(?!mazowiec)", re.I)
