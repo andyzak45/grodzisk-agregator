@@ -12,6 +12,11 @@ on:
           - szukaj
           - kandydaci
         default: pobierz
+      fraza:
+        description: 'tylko dla trybu szukaj: własne frazy oddzielone średnikiem, np. Książenice; Książenice szkoła (puste = domyślny zestaw o Grodzisku)'
+        type: string
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -38,6 +43,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
+          FRAZA: ${{ inputs.fraza }}
         run: python zdjecia_commons.py ${{ inputs.tryb == 'tematy' && '--tematy' || inputs.tryb == 'szukaj' && '--szukaj' || '' }}
 
       - name: Pobranie wybranych zdjęć i przebudowa strony
