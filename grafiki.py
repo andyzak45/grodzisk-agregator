@@ -21,7 +21,7 @@ OPISY = {
 
 # kolejność ma znaczenie: pierwszy pasujący temat wygrywa; wzorce dopasowujemy od początku słowa (po norm)
 TEMATY = [
-    ("pociag", r"\b(pociag|wkd|kolej|dworc|rozklad|autobus|peron)"),
+    ("pociag", r"\b(pociag|wkd|kolej(?:i|ow\w*)?\b|dworc|rozklad jazdy|autobus|peron)"),   # "kolejność" i "kolejka" to nie kolej
     ("woda", r"\b(woda|wody|wodoc|kanaliz|scie[kg]|deszczow|wodn)"),
     ("bezpieczenstwo", r"\b(policj|strazy?\b|pozar|wypad|kradziez|oszust|zagin|ostrze|alarm|bezpiecz|interwenc)"),
     ("zdrowie", r"\b(zdrow|szpital|badani|mammograf|lekarz|profilakt|szczepi|przychodni|onkolog)"),
@@ -86,7 +86,12 @@ _SYMBOLE = {
 
 # ---------- zdjęcia z Wikimedia Commons (data/zdjecia.json, pliki w zdjecia/) ----------
 MIASTO = "Grodzisk Mazowiecki"
-TEMATY_ZDJEC_MIASTA = {"pociag", "urzad"}    # dla wpisu o mieście lub całej gminie zdjęcie dobieramy tylko do tych tematów
+# Dla wpisu o mieście lub całej gminie zdjęcie dobieramy tylko, gdy TYTUŁ wyraźnie mówi o kolei lub urzędzie. Wzorce są ostre
+# celowo: lepiej grafika niż zdjęcie WKD przy wiadomości o bibliotece, w której jest "kolejność zgłoszeń".
+TEMATY_ZDJEC_MIASTA = [
+    ("pociag", r"\b(wkd|pociag\w*|peron\w*|koleje mazowieckie|linia kolejowa|kolej(?:i|ow\w*)?\b|stacj\w* (?:kolej|wkd))"),
+    ("urzad", r"\b(urzad\w* (?:miejsk|miasta|gminy)|burmistrz\w*|rad\w* miejsk\w*|sesj\w* rady|starostw\w*|starost\w*)"),
+]
 ZDJECIA = []
 _UZYCIA = Counter()
 _WYBOR = {}
@@ -107,6 +112,12 @@ def ustaw_zdjecia(lista):
     _WYBOR.clear()
 
 
+def temat_zdjecia(it):
+    """Temat zdjęcia dla wpisu o mieście lub gminie: tylko z tytułu i tylko ostre wzorce, inaczej None (zostaje grafika)."""
+    t = norm(f'{it.get("title", "")} {it.get("tytul") or ""}')
+    return next((nazwa for nazwa, wzorzec in TEMATY_ZDJEC_MIASTA if re.search(wzorzec, t)), None)
+
+
 def wybierz_zdjecie(it):
     """Zdjęcie dla wpisu albo None. Wpis o wsi dostaje zdjęcie tej wsi, wpis o mieście lub gminie tylko zdjęcie pasujące
     do tematu (kolej, urząd). Wybór jest stały dla wpisu, a zdjęcia rotują, żeby to samo nie wisiało przy każdym wpisie."""
@@ -115,10 +126,13 @@ def wybierz_zdjecie(it):
         return _WYBOR[klucz]
     miejsce = it["place"].split("|")[0]
     if miejsce in ("cała gmina", "okolica", MIASTO):
-        t = temat(it)
-        kand = [z for z in ZDJECIA if z["miejsce"] == MIASTO and z["temat"] == t] if t in TEMATY_ZDJEC_MIASTA else []
+        t = temat_zdjecia(it)
+        kand = [z for z in ZDJECIA if z["miejsce"] == MIASTO and z["temat"] == t] if t else []
     else:
         kand = [z for z in ZDJECIA if z["miejsce"] == miejsce]
+    if not kand and it["kind"] != "zdr":      # zapas: zdjęcie ogólne do tematu (nie przy zdarzeniach policji, by nie sugerować miejsca)
+        t = temat(it)
+        kand = [z for z in ZDJECIA if not z["miejsce"] and z["temat"] == t] or [z for z in ZDJECIA if not z["miejsce"] and z["temat"] == "ogolne"]
     wybrane = min(kand, key=lambda z: (_UZYCIA[z["plik"]], zlib.crc32(f'{klucz}{z["plik"]}'.encode()))) if kand else None
     if wybrane:
         _UZYCIA[wybrane["plik"]] += 1
@@ -127,12 +141,12 @@ def wybierz_zdjecie(it):
 
 
 def podpis(z):
-    """Podpis wymagany przez licencję: autor, licencja (z linkiem) i strona źródłowa. Zdjęcie jest tylko poglądowe."""
+    """Podpis wymagany przez licencję: autor, licencja (z linkiem) i strona źródłowa. Zdjęcie jest tylko poglądowe (miejsca) albo ilustracyjne (ogólne)."""
     autor = html.escape(z["autor"][:60] + ("…" if len(z["autor"]) > 60 else ""))
     lic = html.escape(z["licencja"])
     if z.get("licencja_url"):
         lic = f'<a href="{html.escape(z["licencja_url"])}" target="_blank" rel="noopener">{lic}</a>'
-    return (f'Zdjęcie poglądowe · Fot.: {autor} · {lic} · '
+    return (f'{"Zdjęcie ilustracyjne" if not z["miejsce"] else "Zdjęcie poglądowe"} · Fot.: {autor} · {lic} · '
             f'<a href="{html.escape(z["strona"])}" target="_blank" rel="noopener">Wikimedia Commons</a>')
 
 

@@ -32,6 +32,24 @@ MIEJSCA = [
     ("Żabia Wola", r"[żz]abia wola"),
     ("Baranów Grodzisk County", r"baran[óo]w.*(grodzisk|masovian|mazowieck)"),
 ]
+# Zdjęcia ogólne (nie z naszej gminy) do wpisów, dla których nie ma zdjęcia miejsca: kategorie Commons wyszukiwane po frazie.
+# Nazwa kategorii musi wskazywać Polskę, żeby nie wpadły zdjęcia z całego świata.
+TEMATY_OGOLNE = {
+    "droga": ["Roadworks in Poland", "Road construction in Poland"],
+    "woda": ["Water supply in Poland", "Sewage in Poland"],
+    "pociag": ["Koleje Mazowieckie", "Warszawska Kolej Dojazdowa"],
+    "bezpieczenstwo": ["Police vehicles in Poland", "Fire engines in Poland"],
+    "zdrowie": ["Hospitals in Poland", "Ambulances in Poland"],
+    "szkola": ["Schools in Poland", "Primary schools in Poland"],
+    "sport": ["Sports facilities in Poland", "Football in Poland"],
+    "kultura": ["Libraries in Poland", "Concerts in Poland", "Cultural centres in Poland"],
+    "srodowisko": ["Parks in Poland", "Waste containers in Poland"],
+    "inwestycje": ["Construction sites in Poland", "Cranes in Poland"],
+    "urzad": ["Town halls in Poland", "Municipal offices in Poland"],
+    "ogolne": ["Landscapes of Masovian Voivodeship", "Villages in Masovian Voivodeship"],
+}
+WZORZEC_POLSKI = r"poland|polsk|polish|mazovi|mazowie|warsza|koleje mazowieckie"
+MAX_NA_TEMAT = 60        # tyle plików na temat bierzemy do przejrzenia
 GLEBOKOSC = 2            # tyle poziomów podkategorii schodzimy w dół
 MAX_KATEGORII = 80
 MAX_PLIKOW = 800
@@ -119,10 +137,25 @@ def znajdz_kategorie(fetch):
     return wynik
 
 
-def zbierz_pliki(fetch, kategorie):
+def znajdz_kategorie_tematow(fetch):
+    """temat -> kategorie Commons o Polsce pasujące do fraz z TEMATY_OGOLNE."""
+    wynik = {}
+    for temat, frazy in TEMATY_OGOLNE.items():
+        kat = []
+        for fraza in frazy:
+            d = fetch({"action": "query", "list": "search", "srsearch": fraza, "srnamespace": "14", "srlimit": "6"})
+            for w in (d.get("query") or {}).get("search", []):
+                if re.search(WZORZEC_POLSKI, w["title"].lower()) and w["title"] not in kat:
+                    kat.append(w["title"])
+        wynik[temat] = kat[:4]
+    return wynik
+
+
+def zbierz_pliki(fetch, kategorie, limit=None, max_kategorii=None):
     """Tytuły plików z kategorii i ich podkategorii (do GLEBOKOSC poziomów, z limitami)."""
+    limit, max_kategorii = limit or MAX_PLIKOW, max_kategorii or MAX_KATEGORII
     pliki, odwiedzone, kolejka = [], set(), [(k, 0) for k in kategorie]
-    while kolejka and len(odwiedzone) < MAX_KATEGORII and len(pliki) < MAX_PLIKOW:
+    while kolejka and len(odwiedzone) < max_kategorii and len(pliki) < limit:
         kat, poziom = kolejka.pop(0)
         if kat in odwiedzone:
             continue
@@ -139,10 +172,10 @@ def zbierz_pliki(fetch, kategorie):
                 elif m["title"].startswith("Category:") and poziom < GLEBOKOSC:
                     kolejka.append((m["title"], poziom + 1))
             cont = (d.get("continue") or {}).get("cmcontinue")
-            if not cont or len(pliki) >= MAX_PLIKOW:
+            if not cont or len(pliki) >= limit:
                 break
     print(f"  kategorii przejrzanych: {len(odwiedzone)}, plików znalezionych: {len(pliki)}")
-    return pliki[:MAX_PLIKOW]
+    return pliki[:limit]
 
 
 def szczegoly(fetch, tytuly):
@@ -161,29 +194,42 @@ def szczegoly(fetch, tytuly):
     return kandydaci
 
 
+def _karta(k):
+    ostrz = "".join(f'<p class="u">{html.escape(u)}</p>' for u in k["uwagi"])
+    wartosc = k["tytul"] + (f' | {k["temat_szukany"]}' if k.get("temat_szukany") else "")
+    return (
+        f'<label class="k"><input type="checkbox" value="{html.escape(wartosc)}">'
+        f'<img src="{html.escape(k["miniatura"])}" loading="lazy" alt="" referrerpolicy="no-referrer">'
+        f'<b>{html.escape(k["tytul"].removeprefix("File:"))}</b>'
+        f'<span>{html.escape(k["autor"][:80])} · {html.escape(k["licencja"])} · {k["szerokosc"]}×{k["wysokosc"]}</span>'
+        f'<span>{html.escape(k["opis"][:140])}</span>{ostrz}'
+        f'<a href="{html.escape(k["strona"])}" target="_blank" rel="noopener">strona na Commons</a></label>')
+
+
 def arkusz(kandydaci):
-    """Strona HTML do przeglądu: miniatury, autor, licencja, pole wyboru i przycisk kopiujący listę wybranych."""
-    karty = []
+    """Strona HTML do przeglądu: najpierw zdjęcia miejsc, potem ogólne zdjęcia tematyczne (każdy temat osobno).
+    Pole wyboru niesie tytuł pliku, a przy zdjęciach tematycznych także temat ("File:X.jpg | droga")."""
+    grupy = {"miejsca": []}
+    for t in TEMATY_OGOLNE:
+        grupy[t] = []
     for k in kandydaci:
-        ostrz = "".join(f'<p class="u">{html.escape(u)}</p>' for u in k["uwagi"])
-        karty.append(
-            f'<label class="k"><input type="checkbox" value="{html.escape(k["tytul"])}">'
-            f'<img src="{html.escape(k["miniatura"])}" loading="lazy" alt="" referrerpolicy="no-referrer">'
-            f'<b>{html.escape(k["tytul"].removeprefix("File:"))}</b>'
-            f'<span>{html.escape(k["autor"][:80])} · {html.escape(k["licencja"])} · {k["szerokosc"]}×{k["wysokosc"]}</span>'
-            f'<span>{html.escape(k["opis"][:140])}</span>{ostrz}'
-            f'<a href="{html.escape(k["strona"])}" target="_blank" rel="noopener">strona na Commons</a></label>')
+        grupy.setdefault(k.get("temat_szukany") or "miejsca", []).append(k)
+    sekcje = []
+    for nazwa, lista in grupy.items():
+        if lista:
+            tytul = "Zdjęcia miejsc w gminie i okolicy" if nazwa == "miejsca" else f"Zdjęcia ogólne, temat: {nazwa}"
+            sekcje.append(f'<h2>{html.escape(tytul)} ({len(lista)})</h2><div class="siatka">{"".join(_karta(k) for k in lista)}</div>')
     return (
         '<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="robots" content="noindex">'
         '<title>Kandydaci na zdjęcia</title><style>'
         'body{font-family:system-ui,sans-serif;margin:1rem;max-width:1400px}.siatka{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}'
-        '.k{display:flex;flex-direction:column;gap:.3rem;border:1px solid #ccc;padding:.6rem;font-size:.85rem}'
+        'h2{margin:1.5rem 0 .5rem}.k{display:flex;flex-direction:column;gap:.3rem;border:1px solid #ccc;padding:.6rem;font-size:.85rem}'
         '.k:has(input:checked){outline:3px solid #2563eb}.k img{width:100%;aspect-ratio:16/10;object-fit:cover;background:#eee}'
         '.k span{color:#555}.u{color:#b45309;margin:0}#panel{position:sticky;top:0;background:#fff;padding:.6rem 0;border-bottom:1px solid #ccc;margin-bottom:1rem}'
         '</style></head><body><div id="panel"><b id="n">0</b> zaznaczonych z ' + str(len(kandydaci)) +
         ' <button id="kop">Kopiuj listę zaznaczonych</button> '
-        '<span>Zaznacz zdjęcia, których chcesz użyć, kliknij przycisk i wklej listę do rozmowy.</span></div>'
-        '<div class="siatka">' + "".join(karty) + '</div><script>'
+        '<span>Zaznacz zdjęcia, których chcesz użyć (kilka na temat), kliknij przycisk i wklej listę do rozmowy.</span></div>'
+        + "".join(sekcje) + '<script>'
         'var c=document.querySelectorAll("input"),n=document.getElementById("n");'
         'function z(){var l=[];c.forEach(function(i){if(i.checked)l.push(i.value)});n.textContent=l.length;return l}'
         'c.forEach(function(i){i.addEventListener("change",z)});'
@@ -195,11 +241,21 @@ def arkusz(kandydaci):
 def main(fetch=pobierz, katalog=ROOT / "data"):
     print("Szukam kategorii Commons dla gminy i powiatu...")
     kategorie = znajdz_kategorie(fetch)
-    print(f"  kategorie: {len(kategorie)}: {', '.join(k.removeprefix('Category:') for k in kategorie)}")
-    if not kategorie:
+    print(f"  kategorie miejsc: {len(kategorie)}: {', '.join(k.removeprefix('Category:') for k in kategorie)}")
+    tematy = znajdz_kategorie_tematow(fetch)
+    print("  kategorie tematyczne: " + "; ".join(f"{t}: {len(k)}" for t, k in tematy.items()))
+    if not kategorie and not any(tematy.values()):
         print("Nie znaleziono żadnej kategorii. Sprawdź połączenie z Commons.")
         return 1
-    kandydaci = szczegoly(fetch, zbierz_pliki(fetch, kategorie))
+    kandydaci = szczegoly(fetch, zbierz_pliki(fetch, kategorie)) if kategorie else []
+    widziane = {k["tytul"] for k in kandydaci}
+    for temat, kat in tematy.items():
+        if not kat:
+            continue
+        for k in szczegoly(fetch, zbierz_pliki(fetch, kat, MAX_NA_TEMAT, 12)):
+            if k["tytul"] not in widziane:
+                widziane.add(k["tytul"])
+                kandydaci.append({**k, "temat_szukany": temat})
     kandydaci.sort(key=lambda k: (-(k["szerokosc"] or 0)))
     katalog.mkdir(exist_ok=True)
     (katalog / "zdjecia_kandydaci.json").write_text(json.dumps(kandydaci, ensure_ascii=False, indent=1), encoding="utf-8")

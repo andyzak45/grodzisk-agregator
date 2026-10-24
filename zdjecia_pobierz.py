@@ -15,10 +15,12 @@ import zlib
 from pathlib import Path
 
 import zdjecia_commons as zc
+from grafiki import OPISY
 from klasyfikacja import CALA_GMINA, norm, znajdz_miejsca
 
 ROOT = Path(__file__).resolve().parent
 SZEROKOSC = 1000
+SZEROKOSC_ZAPASOWA = 700   # gdy miniatura 1000 px jest za ciężka (np. zdjęcie z dużą ilością detali), próbujemy mniejszej
 MAX_BAJTOW = 800_000
 TOWN = "Grodzisk Mazowiecki"
 # kolejność ma znaczenie: pierwszy pasujący temat wygrywa (nazwy tematów jak w grafiki.py)
@@ -54,19 +56,32 @@ def pobierz_plik(url):
         return r.read(MAX_BAJTOW + 1)
 
 
+def mniejsza_miniatura(fetch, tytul):
+    d = fetch({"action": "query", "prop": "imageinfo", "titles": tytul, "iiprop": "url", "iiurlwidth": str(SZEROKOSC_ZAPASOWA)})
+    for s in (d.get("query") or {}).get("pages", []):
+        info = (s.get("imageinfo") or [None])[0]
+        if info:
+            return info.get("thumburl")
+    return None
+
+
 def wczytaj_wybor(sciezka):
+    """Lista (tytuł, temat lub None). Linia "File:X.jpg | droga" to zdjęcie ogólne do tematu, bez miejscowości."""
     if not sciezka.exists():
         return []
-    out = []
+    out, widziane = [], set()
     for linia in sciezka.read_text(encoding="utf-8").splitlines():
-        t = linia.strip()
-        if t.startswith("File:") and t not in out:
-            out.append(t)
+        tytul, _, t = (x.strip() for x in linia.partition("|"))
+        if tytul.startswith("File:") and tytul not in widziane:
+            widziane.add(tytul)
+            out.append((tytul, t if t in OPISY else None))
     return out
 
 
 def main(fetch=zc.pobierz, pobierz=pobierz_plik, katalog=ROOT):
-    tytuly = wczytaj_wybor(katalog / "data" / "zdjecia_wybor.txt")
+    wybor = wczytaj_wybor(katalog / "data" / "zdjecia_wybor.txt")
+    tematy_wyboru = dict(wybor)
+    tytuly = [t for t, _ in wybor]
     if not tytuly:
         print("Brak tytułów w data/zdjecia_wybor.txt.")
         return 1
@@ -93,13 +108,21 @@ def main(fetch=zc.pobierz, pobierz=pobierz_plik, katalog=ROOT):
                     odpadly.append(t)
                     continue
                 if len(dane) > MAX_BAJTOW:
+                    mala = mniejsza_miniatura(fetch, t)
+                    if mala and mala != r["miniatura"]:
+                        try:
+                            dane = pobierz(mala)
+                        except (urllib.error.URLError, TimeoutError):
+                            pass
+                if len(dane) > MAX_BAJTOW:
                     print(f"  pominięto {t}: plik większy niż {MAX_BAJTOW // 1000} KB")
                     odpadly.append(t)
                     continue
                 sciezka.write_bytes(dane)
             wynik.append({"plik": f"zdjecia/{lokalny}", "tytul": r["tytul"], "strona": r["strona"], "autor": r["autor"],
                           "licencja": r["licencja"], "licencja_url": r["licencja_url"],
-                          "miejsce": miejsce(r["tytul"]), "temat": temat(r["tytul"])})
+                          "miejsce": "" if tematy_wyboru.get(t) else miejsce(r["tytul"]),
+                          "temat": tematy_wyboru.get(t) or temat(r["tytul"])})
     (katalog / "data" / "zdjecia.json").write_text(json.dumps(wynik, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"Zdjęć gotowych: {len(wynik)}; odrzuconych lub nieznalezionych: {len(odpadly)}")
     for t in odpadly[:15]:

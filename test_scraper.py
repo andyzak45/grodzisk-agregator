@@ -1331,6 +1331,23 @@ class ZdjeciaCommons(unittest.TestCase):
         self.assertIn("Kopiuj listę zaznaczonych", arkusz)
         self.assertIn("File:Park.jpg", arkusz)
 
+    def test_kandydaci_tematyczni_trafiaja_do_arkusza_z_tematem(self):
+        def fetch(par):
+            if par.get("list") == "search":
+                tytuly = {"Roadworks in Poland": ["Category:Roadworks in Poland", "Category:Roadworks in Germany"]}.get(par["srsearch"], [])
+                return {"query": {"search": [{"title": t} for t in tytuly]}}
+            if par.get("list") == "categorymembers":
+                return {"query": {"categorymembers": [{"title": "File:Roboty.jpg"}]}} if par["cmtitle"] == "Category:Roadworks in Poland" else {}
+            return {"query": {"pages": [self._strona("File:Roboty.jpg")]}}
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(zc.main(fetch, Path(d)), 0)
+            kand = json.loads((Path(d) / "zdjecia_kandydaci.json").read_text(encoding="utf-8"))
+            arkusz = (Path(d) / "zdjecia_kandydaci.html").read_text(encoding="utf-8")
+        self.assertEqual([(k["tytul"], k["temat_szukany"]) for k in kand], [("File:Roboty.jpg", "droga")])
+        self.assertIn('value="File:Roboty.jpg | droga"', arkusz)
+        self.assertIn("Zdjęcia ogólne, temat: droga", arkusz)
+        self.assertNotIn("Germany", arkusz)
+
     def test_brak_kategorii_to_blad_a_nie_pusty_plik(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(zc.main(lambda par: {}, Path(d)), 1)
@@ -1370,6 +1387,46 @@ class ZdjeciaNaStronie(unittest.TestCase):
         park = self._wpis(id="4", place="Grodzisk Mazowiecki", title="Sprzątanie parku nad stawami")
         self.assertIsNone(grafiki.wybierz_zdjecie(park))      # zdjęcie stawu nie ilustruje wiadomości o sprzątaniu
         self.assertIsNone(grafiki.wybierz_zdjecie(self._wpis(id="5", place="cała gmina", title="Mecz Bogorii")))
+
+    def test_slowo_kolejnosc_nie_robi_z_biblioteki_pociagu(self):
+        biblioteka = self._wpis(id="10", place="Grodzisk Mazowiecki", title="Biblioteka organizuje bezpłatne warsztaty dla dzieci",
+                                text="Zapisy, o udziale decyduje kolejność zgłoszeń.", kind="wyd")
+        self.assertIsNone(grafiki.wybierz_zdjecie(biblioteka))
+        self.assertNotEqual(grafiki.temat(biblioteka), "pociag")
+        self.assertIn("#ilu-kultura", grafiki.ilustracja(biblioteka))
+
+    def test_zdjecie_miasta_tylko_gdy_tytul_mowi_o_kolei_lub_urzedzie(self):
+        grafiki.ustaw_zdjecia([self._foto("zdjecia/wkd-1.jpg", "Grodzisk Mazowiecki", "pociag"),
+                               self._foto("zdjecia/urzad-1.jpg", "Grodzisk Mazowiecki", "urzad")])
+        for tytul, oczekiwane in {"WKD: utrudnienia na linii": "zdjecia/wkd-1.jpg", "Koleje Mazowieckie zmieniają rozkład": "zdjecia/wkd-1.jpg",
+                                  "Burmistrz podpisał umowę": "zdjecia/urzad-1.jpg", "Sesja rady miejskiej w czwartek": "zdjecia/urzad-1.jpg",
+                                  "Stacja diagnostyczna bada światła": None, "Kolejka do lekarza krótsza": None,
+                                  "Nabór wniosków o stypendium": None}.items():
+            w = self._wpis(id=tytul, place="Grodzisk Mazowiecki", title=tytul, text=None)
+            z = grafiki.wybierz_zdjecie(w)
+            self.assertEqual(z["plik"] if z else None, oczekiwane, tytul)
+
+    def test_zdjecie_ogolne_jest_zapasem_gdy_nie_ma_zdjecia_miejsca(self):
+        grafiki.ustaw_zdjecia([self._foto("zdjecia/droga-1.jpg", "", "droga"), self._foto("zdjecia/ogolne-1.jpg", "", "ogolne")])
+        remont = self._wpis(id="20", place="Kozery", title="Remont ulicy w Kozerach", kind="inw")
+        self.assertEqual(grafiki.wybierz_zdjecie(remont)["plik"], "zdjecia/droga-1.jpg")
+        inne = self._wpis(id="21", place="Kozery", title="Wieści z gminy", kind="inne")
+        self.assertEqual(grafiki.wybierz_zdjecie(inne)["plik"], "zdjecia/ogolne-1.jpg")      # brak zdjęcia do tematu: ogólne
+        self.assertIn("Zdjęcie ilustracyjne", grafiki.ilustracja(remont))
+        self.assertNotIn("poglądowe", grafiki.ilustracja(remont))
+
+    def test_zdarzenia_policji_nie_dostaja_zdjecia_ogolnego(self):
+        grafiki.ustaw_zdjecia([self._foto("zdjecia/bez-1.jpg", "", "bezpieczenstwo")])
+        zdarzenie = self._wpis(id="22", place="Kozery", title="Policja zatrzymała sprawcę", kind="zdr", neutral=True)
+        self.assertIsNone(grafiki.wybierz_zdjecie(zdarzenie))
+        ostrzezenie = self._wpis(id="23", place="Kozery", title="Policja ostrzega przed oszustami", kind="ost")
+        self.assertIsNotNone(grafiki.wybierz_zdjecie(ostrzezenie))
+
+    def test_zdjecie_miejsca_ma_pierwszenstwo_przed_ogolnym(self):
+        grafiki.ustaw_zdjecia([self._foto("zdjecia/droga-1.jpg", "", "droga"), self._foto("zdjecia/kady-1.jpg", "Kady", "droga")])
+        w = self._wpis(id="24", place="Kady", title="Remont drogi", kind="inw")
+        self.assertEqual(grafiki.wybierz_zdjecie(w)["plik"], "zdjecia/kady-1.jpg")
+        self.assertIn("Zdjęcie poglądowe", grafiki.ilustracja(w))
 
     def test_wybor_jest_staly_dla_wpisu(self):
         grafiki.ustaw_zdjecia([self._foto(f"zdjecia/kady-{i}.jpg", "Kady") for i in range(3)])
@@ -1440,8 +1497,26 @@ class PobieranieZdjec(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             sc = Path(d) / "w.txt"
             sc.write_text("File:A.jpg\n\nkomentarz\nFile:A.jpg\n  File:B.jpg  \n", encoding="utf-8")
-            self.assertEqual(zp.wczytaj_wybor(sc), ["File:A.jpg", "File:B.jpg"])
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", None), ("File:B.jpg", None)])
             self.assertEqual(zp.wczytaj_wybor(Path(d) / "brak.txt"), [])
+
+    def test_linia_z_tematem_to_zdjecie_ogolne(self):
+        with tempfile.TemporaryDirectory() as d:
+            sc = Path(d) / "w.txt"
+            sc.write_text("File:A.jpg | droga\nFile:B.jpg|nieznany\nFile:C.jpg\n", encoding="utf-8")
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", "droga"), ("File:B.jpg", None), ("File:C.jpg", None)])
+
+    def test_zdjecie_ogolne_zapisuje_sie_bez_miejscowosci(self):
+        strony = {"File:Roboty.jpg": self._strona("File:Roboty.jpg"), "File:Stawy Goliana 2022.jpg": self._strona("File:Stawy Goliana 2022.jpg")}
+        with tempfile.TemporaryDirectory() as d:
+            korzen = Path(d)
+            (korzen / "data").mkdir()
+            (korzen / "data" / "zdjecia_wybor.txt").write_text("File:Roboty.jpg | droga\nFile:Stawy Goliana 2022.jpg\n", encoding="utf-8")
+            zp.main(lambda par: {"query": {"pages": [strony[t] for t in par["titles"].split("|")]}}, lambda url: b"x", korzen)
+            zapis = {z["tytul"]: z for z in json.loads((korzen / "data" / "zdjecia.json").read_text(encoding="utf-8"))}
+        self.assertEqual((zapis["File:Roboty.jpg"]["miejsce"], zapis["File:Roboty.jpg"]["temat"]), ("", "droga"))
+        self.assertEqual((zapis["File:Stawy Goliana 2022.jpg"]["miejsce"], zapis["File:Stawy Goliana 2022.jpg"]["temat"]),
+                         ("Grodzisk Mazowiecki", "srodowisko"))
 
     def test_miejsce_i_temat_z_nazwy_pliku(self):
         self.assertEqual(zp.miejsce("File:KOZERY NOWE 01.jpg"), "Kozery Nowe")
@@ -1468,6 +1543,25 @@ class PobieranieZdjec(unittest.TestCase):
         self.assertEqual(zapis[0]["autor"], "Anna")
         self.assertEqual(len(pliki), 1)
         self.assertEqual(len(pobrane), 1)
+
+    def test_za_ciezka_miniatura_jest_zastapiona_mniejsza(self):
+        pelna, mala = "https://upload.wikimedia.org/1000px.jpg", "https://upload.wikimedia.org/700px.jpg"
+        def fetch(par):
+            s = self._strona("File:Ciezkie.jpg")
+            s["imageinfo"][0]["thumburl"] = mala if par.get("iiurlwidth") == str(zp.SZEROKOSC_ZAPASOWA) else pelna
+            return {"query": {"pages": [s]}}
+        pobierane = []
+        def pobierz(url):
+            pobierane.append(url)
+            return b"x" * (zp.MAX_BAJTOW + 1) if url == pelna else b"maly"
+        with tempfile.TemporaryDirectory() as d:
+            korzen = Path(d)
+            (korzen / "data").mkdir()
+            (korzen / "data" / "zdjecia_wybor.txt").write_text("File:Ciezkie.jpg", encoding="utf-8")
+            self.assertEqual(zp.main(fetch, pobierz, korzen), 0)
+            zapisane = [p.read_bytes() for p in (korzen / "zdjecia").iterdir()]
+        self.assertEqual(pobierane, [pelna, mala])
+        self.assertEqual(zapisane, [b"maly"])
 
     def test_za_duzy_plik_jest_pomijany_a_istniejacy_nie_jest_pobierany_ponownie(self):
         strony = {"File:Duze.jpg": self._strona("File:Duze.jpg")}
