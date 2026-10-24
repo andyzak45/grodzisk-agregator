@@ -1365,6 +1365,27 @@ class ZdjeciaCommons(unittest.TestCase):
         self.assertEqual([(k["tytul"], k["temat_szukany"]) for k in kand], [("File:Radiowoz.jpg", "bezpieczenstwo")])      # plik 3 poziomy w głąb
         self.assertFalse(any(z.get("srsearch") == "Grodzisk Mazowiecki" for z in zapytania))
 
+    def test_tryb_szukaj_pomija_wybrane_i_grupuje_po_frazie(self):
+        def fetch(par):
+            if par.get("list") == "search":
+                assert par["srnamespace"] == "6" and "filetype:bitmap" in par["srsearch"]
+                return {"query": {"search": [{"title": "File:Nowe.jpg"}, {"title": "File:Wybrane.jpg"}]}} if par["srsearch"].startswith("Grodzisk Mazowiecki filetype") else {}
+            return {"query": {"pages": [self._strona(t) for t in par["titles"].split("|")]}}
+        with tempfile.TemporaryDirectory() as d:
+            katalog = Path(d)
+            (katalog / "zdjecia_wybor.txt").write_text("File:Wybrane.jpg | kultura\n", encoding="utf-8")
+            self.assertEqual(zc.main_szukaj(fetch, katalog), 0)
+            kand = json.loads((katalog / "zdjecia_kandydaci.json").read_text(encoding="utf-8"))
+            arkusz = (katalog / "zdjecia_kandydaci.html").read_text(encoding="utf-8")
+        self.assertEqual([(k["tytul"], k["grupa"]) for k in kand], [("File:Nowe.jpg", "Grodzisk Mazowiecki")])
+        self.assertIn("Wyniki wyszukiwania: Grodzisk Mazowiecki", arkusz)
+        self.assertIn('value="File:Nowe.jpg"', arkusz)
+        self.assertNotIn("Wybrane.jpg", arkusz)
+
+    def test_tryb_szukaj_bez_wynikow_to_blad(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(zc.main_szukaj(lambda par: {}, Path(d)), 1)
+
     def test_brak_kategorii_to_blad_a_nie_pusty_plik(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(zc.main(lambda par: {}, Path(d)), 1)
@@ -1402,7 +1423,9 @@ class ZdjeciaNaStronie(unittest.TestCase):
         wkd = self._wpis(id="3", place="Grodzisk Mazowiecki", title="WKD zmienia rozkład jazdy")
         self.assertEqual(grafiki.wybierz_zdjecie(wkd)["plik"], "zdjecia/wkd-1.jpg")
         park = self._wpis(id="4", place="Grodzisk Mazowiecki", title="Sprzątanie parku nad stawami")
-        self.assertIsNone(grafiki.wybierz_zdjecie(park))      # zdjęcie stawu nie ilustruje wiadomości o sprzątaniu
+        self.assertEqual(grafiki.wybierz_zdjecie(park)["plik"], "zdjecia/staw-1.jpg")      # brak zdjęcia ogólnego: zdjęcie z tego tematu
+        grafiki.ustaw_zdjecia(list(grafiki.ZDJECIA) + [self._foto("zdjecia/park-ogolny.jpg", "", "srodowisko")])
+        self.assertEqual(grafiki.wybierz_zdjecie(dict(park, id="41"))["plik"], "zdjecia/park-ogolny.jpg")      # zdjęcie ogólne ma pierwszeństwo
         self.assertIsNone(grafiki.wybierz_zdjecie(self._wpis(id="5", place="cała gmina", title="Mecz Bogorii")))
 
     def test_slowo_kolejnosc_nie_robi_z_biblioteki_pociagu(self):
@@ -1431,6 +1454,56 @@ class ZdjeciaNaStronie(unittest.TestCase):
         self.assertEqual(grafiki.wybierz_zdjecie(inne)["plik"], "zdjecia/ogolne-1.jpg")      # brak zdjęcia do tematu: ogólne
         self.assertIn("Zdjęcie ilustracyjne", grafiki.ilustracja(remont))
         self.assertNotIn("poglądowe", grafiki.ilustracja(remont))
+
+    def test_temat_bez_zdjecia_ogolnego_bierze_zdjecie_z_tego_tematu_jako_ilustracyjne(self):
+        grafiki.ustaw_zdjecia([self._foto("zdjecia/ratusz.jpg", "Grodzisk Mazowiecki", "urzad")])
+        wies = self._wpis(id="30", place="Kozery", title="Nabór wniosków o dotację", kind="inne")
+        self.assertEqual(grafiki.wybierz_zdjecie(wies)["plik"], "zdjecia/ratusz.jpg")
+        self.assertIn("Zdjęcie ilustracyjne", grafiki.ilustracja(wies))
+        miasto = self._wpis(id="31", place="Grodzisk Mazowiecki", title="Burmistrz ogłosił nabór", kind="inne")
+        self.assertIn("Zdjęcie poglądowe", grafiki.ilustracja(miasto))      # to samo miejsce, więc poglądowe
+
+    def test_zdjecie_wsi_nie_jest_zapasem_dla_wpisu_bez_tematu(self):
+        grafiki.ustaw_zdjecia([self._foto("zdjecia/kady-1.jpg", "Kady", "ogolne")])
+        self.assertIsNone(grafiki.wybierz_zdjecie(self._wpis(id="32", place="Kozery", title="Wieści z gminy")))
+
+    def test_zdjecie_nazwanego_miejsca_ma_pierwszenstwo_przed_ogolnym(self):
+        mediateka = dict(self._foto("zdjecia/mediateka.jpg", "Grodzisk Mazowiecki", "kultura", autor="Anna", licencja="zdjęcie własne"),
+                         slowa=["mediate"], strona="")
+        grafiki.ustaw_zdjecia([mediateka, self._foto("zdjecia/kultura-ogolne.jpg", "", "kultura")])
+        wpis = self._wpis(id="50", place="Grodzisk Mazowiecki", title="Darmowy seans opery w grodziskiej Mediatece", kind="wyd")
+        self.assertEqual(grafiki.wybierz_zdjecie(wpis)["plik"], "zdjecia/mediateka.jpg")
+        h = grafiki.ilustracja(wpis)
+        self.assertIn("Zdjęcie poglądowe", h)
+        self.assertIn("Fot.: Anna", h)
+        self.assertNotIn("Wikimedia Commons", h)
+        inny = self._wpis(id="51", place="Grodzisk Mazowiecki", title="Koncert w parku", kind="wyd")
+        self.assertEqual(grafiki.wybierz_zdjecie(inny)["plik"], "zdjecia/kultura-ogolne.jpg")      # zdjęcie Mediateki nie trafia do innych wpisów
+
+    def test_zdjecie_nazwanego_miejsca_tylko_dla_wpisow_z_tego_miejsca(self):
+        dworzec = dict(self._foto("zdjecia/dworzec.jpg", "Grodzisk Mazowiecki", "pociag"), slowa=["dworc"])
+        grafiki.ustaw_zdjecia([dworzec])
+        self.assertIsNotNone(grafiki.wybierz_zdjecie(self._wpis(id="60", place="Grodzisk Mazowiecki", title="Remont dworca w Grodzisku")))
+        self.assertIsNone(grafiki.wybierz_zdjecie(self._wpis(id="61", place="Milanówek", title="Remont dworca w Milanówku")))
+
+    def test_zdjecie_z_nazwa_nie_jest_zapasem_dla_innych_wpisow(self):
+        grafiki.ustaw_zdjecia([dict(self._foto("zdjecia/mediateka.jpg", "Grodzisk Mazowiecki", "kultura"), slowa=["mediate"])])
+        self.assertIsNone(grafiki.wybierz_zdjecie(self._wpis(id="52", place="Kozery", title="Koncert w świetlicy", kind="wyd")))
+
+    def test_strona_laduje_zdjecia_wlasne(self):
+        today = date(2026, 10, 22)
+        with tempfile.TemporaryDirectory() as d:
+            korzen = Path(d)
+            (korzen / "zdjecia").mkdir(); (korzen / "data").mkdir()
+            (korzen / "zdjecia" / "mediateka.jpg").write_bytes(b"x")
+            (korzen / "data" / "zdjecia_wlasne.json").write_text(json.dumps(
+                [{"plik": "zdjecia/mediateka.jpg", "autor": "Anna", "licencja": "zdjęcie własne", "miejsce": "Grodzisk Mazowiecki",
+                  "temat": "kultura", "slowa": ["mediate"]}]), encoding="utf-8")
+            out = korzen / "index.html"
+            render.build([self._wpis(kind="wyd", place="Grodzisk Mazowiecki", title="Seans w Mediatece")],
+                         Path(__file__).resolve().parent / "template.html", out, today)
+            page = out.read_text(encoding="utf-8")
+        self.assertIn('src="zdjecia/mediateka.jpg"', page)
 
     def test_zdarzenia_policji_nie_dostaja_zdjecia_ogolnego(self):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/bez-1.jpg", "", "bezpieczenstwo")])
@@ -1514,14 +1587,14 @@ class PobieranieZdjec(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             sc = Path(d) / "w.txt"
             sc.write_text("File:A.jpg\n\nkomentarz\nFile:A.jpg\n  File:B.jpg  \n", encoding="utf-8")
-            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", None), ("File:B.jpg", None)])
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", None, []), ("File:B.jpg", None, [])])
             self.assertEqual(zp.wczytaj_wybor(Path(d) / "brak.txt"), [])
 
     def test_linia_z_tematem_to_zdjecie_ogolne(self):
         with tempfile.TemporaryDirectory() as d:
             sc = Path(d) / "w.txt"
             sc.write_text("File:A.jpg | droga\nFile:B.jpg|nieznany\nFile:C.jpg\n", encoding="utf-8")
-            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", "droga"), ("File:B.jpg", None), ("File:C.jpg", None)])
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", "droga", []), ("File:B.jpg", None, []), ("File:C.jpg", None, [])])
 
     def test_zdjecie_ogolne_zapisuje_sie_bez_miejscowosci(self):
         strony = {"File:Roboty.jpg": self._strona("File:Roboty.jpg"), "File:Stawy Goliana 2022.jpg": self._strona("File:Stawy Goliana 2022.jpg")}
@@ -1534,6 +1607,22 @@ class PobieranieZdjec(unittest.TestCase):
         self.assertEqual((zapis["File:Roboty.jpg"]["miejsce"], zapis["File:Roboty.jpg"]["temat"]), ("", "droga"))
         self.assertEqual((zapis["File:Stawy Goliana 2022.jpg"]["miejsce"], zapis["File:Stawy Goliana 2022.jpg"]["temat"]),
                          ("Grodzisk Mazowiecki", "srodowisko"))
+
+    def test_linia_ze_slowami_kluczowymi_i_adres_z_podkreslnikami(self):
+        with tempfile.TemporaryDirectory() as d:
+            sc = Path(d) / "w.txt"
+            sc.write_text("File:Mediateka_Grodzisk_Mazowiecki_1.jpg | kultura | Mediate, centrum kultur\n", encoding="utf-8")
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:Mediateka Grodzisk Mazowiecki 1.jpg", "kultura", ["mediate", "centrum kultur"])])
+
+    def test_zdjecie_ze_slowami_zapisuje_sie_z_miejscem_i_slowami(self):
+        strony = {"File:Mediateka Grodzisk Mazowiecki 1.jpg": self._strona("File:Mediateka Grodzisk Mazowiecki 1.jpg")}
+        with tempfile.TemporaryDirectory() as d:
+            korzen = Path(d)
+            (korzen / "data").mkdir()
+            (korzen / "data" / "zdjecia_wybor.txt").write_text("File:Mediateka_Grodzisk_Mazowiecki_1.jpg | kultura | mediate\n", encoding="utf-8")
+            zp.main(lambda par: {"query": {"pages": [strony[t] for t in par["titles"].split("|")]}}, lambda url: b"x", korzen)
+            z = json.loads((korzen / "data" / "zdjecia.json").read_text(encoding="utf-8"))[0]
+        self.assertEqual((z["miejsce"], z["temat"], z["slowa"]), ("Grodzisk Mazowiecki", "kultura", ["mediate"]))
 
     def test_miejsce_i_temat_z_nazwy_pliku(self):
         self.assertEqual(zp.miejsce("File:KOZERY NOWE 01.jpg"), "Kozery Nowe")
@@ -1560,6 +1649,22 @@ class PobieranieZdjec(unittest.TestCase):
         self.assertEqual(zapis[0]["autor"], "Anna")
         self.assertEqual(len(pliki), 1)
         self.assertEqual(len(pobrane), 1)
+
+    def test_nieuzywane_pliki_znikaja_a_zdjecia_wlasne_zostaja(self):
+        strony = {"File:Dobre.jpg": self._strona("File:Dobre.jpg")}
+        fetch = lambda par: {"query": {"pages": [strony[t] for t in par["titles"].split("|")]}}
+        with tempfile.TemporaryDirectory() as d:
+            korzen = Path(d)
+            (korzen / "data").mkdir(); (korzen / "zdjecia").mkdir()
+            (korzen / "data" / "zdjecia_wybor.txt").write_text("File:Dobre.jpg", encoding="utf-8")
+            (korzen / "data" / "zdjecia_wlasne.json").write_text(json.dumps([{"plik": "zdjecia/moje.jpg"}]), encoding="utf-8")
+            (korzen / "zdjecia" / "stare.jpg").write_bytes(b"x")
+            (korzen / "zdjecia" / "moje.jpg").write_bytes(b"x")
+            self.assertEqual(zp.main(fetch, lambda url: b"ok", korzen), 0)
+            pliki = sorted(p.name for p in (korzen / "zdjecia").iterdir())
+        self.assertIn("moje.jpg", pliki)
+        self.assertNotIn("stare.jpg", pliki)
+        self.assertEqual(len(pliki), 2)
 
     def test_za_ciezka_miniatura_jest_zastapiona_mniejsza(self):
         pelna, mala = "https://upload.wikimedia.org/1000px.jpg", "https://upload.wikimedia.org/700px.jpg"

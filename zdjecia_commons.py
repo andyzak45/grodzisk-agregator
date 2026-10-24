@@ -5,7 +5,8 @@ Uruchamiany ręcznie (workflow "Zbieranie zdjęć z Wikimedia Commons"). Niczego
   data/zdjecia_kandydaci.html  (arkusz przeglądowy z miniaturami; zaznaczasz zdjęcia, które nam pasują)
 Zdjęcia wybiera człowiek: skrypt tylko odsiewa to, czego na pewno nie wolno użyć (licencje z NC, ND, brak licencji,
 zbyt małe pliki, formaty inne niż JPEG i PNG) i oznacza ostrzeżenia (znaki towarowe, prawa osobiste).
-Użycie: python zdjecia_commons.py [--tematy]    (--tematy: tylko zdjęcia ogólne do tematów)
+Użycie: python zdjecia_commons.py [--tematy | --szukaj]
+  --tematy: tylko zdjęcia ogólne do tematów;  --szukaj: pliki znalezione wyszukiwarką Commons po frazach o Grodzisku
 """
 import html
 import json
@@ -51,6 +52,12 @@ TEMATY_OGOLNE = {
 WZORZEC_POLSKI = r"poland|polsk|polish|mazovi|mazowie|warsza|koleje mazowieckie|orlik"
 MAX_NA_TEMAT = 60        # tyle plików na temat bierzemy do przejrzenia
 GLEBOKOSC_TEMATOW = 4    # kategorie tematyczne bywają głębsze (np. "... by voivodeship"), więc schodzimy niżej niż przy miejscach
+# Wyszukiwanie plików po frazach (jak "szukaj" na Commons), także tych, które nie leżą w kategoriach miejsc.
+FRAZY_SZUKANIA = ["Grodzisk Mazowiecki", "Grodzisk Mazowiecki park", "Grodzisk Mazowiecki rynek", "Grodzisk Mazowiecki ulica",
+                  "Grodzisk Mazowiecki szkoła", "Grodzisk Mazowiecki stadion", "Grodzisk Mazowiecki kościół",
+                  "Grodzisk Mazowiecki urząd", "Grodzisk Mazowiecki biblioteka", "Grodzisk Mazowiecki basen"]
+MAX_WYNIKOW_FRAZY = 100
+MAX_SZUKANYCH = 600
 GLEBOKOSC = 2            # tyle poziomów podkategorii schodzimy w dół
 MAX_KATEGORII = 80
 MAX_PLIKOW = 800
@@ -152,6 +159,20 @@ def znajdz_kategorie_tematow(fetch):
     return wynik
 
 
+def szukaj_plikow(fetch, wykluczone=()):
+    """Tytuły plików znalezione wyszukiwarką Commons dla FRAZY_SZUKANIA: [(tytuł, fraza)], bez wykluczonych i powtórzeń."""
+    wynik, widziane = [], set(wykluczone)
+    for fraza in FRAZY_SZUKANIA:
+        d = fetch({"action": "query", "list": "search", "srsearch": f"{fraza} filetype:bitmap", "srnamespace": "6",
+                   "srlimit": str(MAX_WYNIKOW_FRAZY)})
+        for w in (d.get("query") or {}).get("search", []):
+            if w["title"] not in widziane and len(wynik) < MAX_SZUKANYCH:
+                widziane.add(w["title"])
+                wynik.append((w["title"], fraza))
+    print(f"  plików znalezionych wyszukiwarką (bez już wybranych): {len(wynik)}")
+    return wynik
+
+
 def zbierz_pliki(fetch, kategorie, limit=None, max_kategorii=None, glebokosc=GLEBOKOSC):
     """Tytuły plików z kategorii i ich podkategorii (do GLEBOKOSC poziomów, z limitami)."""
     limit, max_kategorii = limit or MAX_PLIKOW, max_kategorii or MAX_KATEGORII
@@ -214,11 +235,12 @@ def arkusz(kandydaci):
     for t in TEMATY_OGOLNE:
         grupy[t] = []
     for k in kandydaci:
-        grupy.setdefault(k.get("temat_szukany") or "miejsca", []).append(k)
+        grupy.setdefault(k.get("temat_szukany") or ("szukaj: " + k["grupa"] if k.get("grupa") else "miejsca"), []).append(k)
     sekcje = []
     for nazwa, lista in grupy.items():
         if lista:
-            tytul = "Zdjęcia miejsc w gminie i okolicy" if nazwa == "miejsca" else f"Zdjęcia ogólne, temat: {nazwa}"
+            tytul = ("Zdjęcia miejsc w gminie i okolicy" if nazwa == "miejsca" else
+                     f"Wyniki wyszukiwania: {nazwa.removeprefix("szukaj: ")}" if nazwa.startswith("szukaj: ") else f"Zdjęcia ogólne, temat: {nazwa}")
             sekcje.append(f'<h2>{html.escape(tytul)} ({len(lista)})</h2><div class="siatka">{"".join(_karta(k) for k in lista)}</div>')
     return (
         '<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="robots" content="noindex">'
@@ -237,6 +259,30 @@ def arkusz(kandydaci):
         'document.getElementById("kop").addEventListener("click",function(){var t=z().join("\\n");'
         'navigator.clipboard.writeText(t).then(function(){alert("Skopiowano "+z().length+" tytułów")},function(){prompt("Skopiuj:",t)})});'
         '</script></body></html>')
+
+
+def _wybrane_tytuly(katalog):
+    sciezka = katalog / "zdjecia_wybor.txt"
+    if not sciezka.exists():
+        return set()
+    return {l.split("|")[0].strip().replace("_", " ") for l in sciezka.read_text(encoding="utf-8").splitlines() if l.strip().startswith("File:")}
+
+
+def main_szukaj(fetch=pobierz, katalog=ROOT / "data"):
+    """Kandydaci z wyszukiwarki Commons po frazach o Grodzisku. Pomija pliki już wybrane w data/zdjecia_wybor.txt."""
+    print("Szukam plików na Commons po frazach...")
+    znalezione = szukaj_plikow(fetch, _wybrane_tytuly(katalog))
+    if not znalezione:
+        print("Wyszukiwarka nic nie zwróciła. Sprawdź połączenie z Commons.")
+        return 1
+    fraza_pliku = dict(znalezione)
+    kandydaci = [{**k, "grupa": fraza_pliku[k["tytul"]]} for k in szczegoly(fetch, [t for t, _ in znalezione])]
+    kandydaci.sort(key=lambda k: (-(k["szerokosc"] or 0)))
+    katalog.mkdir(exist_ok=True)
+    (katalog / "zdjecia_kandydaci.json").write_text(json.dumps(kandydaci, ensure_ascii=False, indent=1), encoding="utf-8")
+    (katalog / "zdjecia_kandydaci.html").write_text(arkusz(kandydaci), encoding="utf-8")
+    print(f"Zapisano {len(kandydaci)} kandydatów: data/zdjecia_kandydaci.html (arkusz) i .json")
+    return 0
 
 
 def main(fetch=pobierz, katalog=ROOT / "data", miejsca=True):
@@ -267,4 +313,6 @@ def main(fetch=pobierz, katalog=ROOT / "data", miejsca=True):
 
 
 if __name__ == "__main__":
+    if "--szukaj" in sys.argv:
+        sys.exit(main_szukaj())
     sys.exit(main(miejsca="--tematy" not in sys.argv))
