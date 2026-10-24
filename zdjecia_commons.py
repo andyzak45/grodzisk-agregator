@@ -41,14 +41,14 @@ TEMATY_OGOLNE = {
     "bezpieczenstwo": ["Police vehicles in Poland", "Fire engines in Poland", "Fire brigades in Poland", "Police in Poland"],
     "zdrowie": ["Hospitals in Poland", "Ambulances in Poland"],
     "szkola": ["Schools in Poland", "Primary schools in Poland"],
-    "sport": ["Sports facilities in Poland", "Football in Poland"],
+    "sport": ["Football pitches in Poland", "Sports halls in Poland", "Swimming pools in Poland", "Stadiums in Poland", "Orlik"],
     "kultura": ["Libraries in Poland", "Concerts in Poland", "Cultural centres in Poland"],
     "srodowisko": ["Parks in Poland", "Waste containers in Poland"],
     "inwestycje": ["Construction sites in Poland", "Cranes in Poland"],
     "urzad": ["Town halls in Poland", "Municipal offices in Poland"],
     "ogolne": ["Landscapes of Masovian Voivodeship", "Villages in Masovian Voivodeship"],
 }
-WZORZEC_POLSKI = r"poland|polsk|polish|mazovi|mazowie|warsza|koleje mazowieckie"
+WZORZEC_POLSKI = r"poland|polsk|polish|mazovi|mazowie|warsza|koleje mazowieckie|orlik"
 MAX_NA_TEMAT = 60        # tyle plików na temat bierzemy do przejrzenia
 GLEBOKOSC_TEMATOW = 4    # kategorie tematyczne bywają głębsze (np. "... by voivodeship"), więc schodzimy niżej niż przy miejscach
 GLEBOKOSC = 2            # tyle poziomów podkategorii schodzimy w dół
