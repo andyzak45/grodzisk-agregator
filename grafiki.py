@@ -28,7 +28,7 @@ TEMATY = [
     ("szkola", r"\b(szkol|przedszkol|uczn|nauczyc|edukac|stypend|lekcj)"),
     ("sport", r"\b(mecz|sport|pilk|siatk|turniej|bieg\b|basen|trening|liga|stadion|szach)"),
     ("droga", r"\b(drog|ulic|remont|objazd|chodnik|rondo|zamkni|parking|przejsc|jezdni)|w ruchu|ruch(u)? (drogow|jednokier)"),
-    ("kultura", r"\b(koncert|kultur|bibliotek|wystaw|spektakl|kino|film|muzy|teatr|festiwal|mediatek|warsztat|jarmark)"),
+    ("kultura", r"\b(koncert|kultur|bibliote[kc]|wystaw|spektakl|kino|film|muzy|teatr|festiwal|mediate|warsztat|jarmark|przedstawieni|seans|opery|opera|operze|pokaz\b|swietlic)"),
     ("inwestycje", r"\b(inwestyc|budow|przetarg|dofinansow|modernizac|rewitalizac|pozwolen)"),
     ("srodowisko", r"\b(odpad|smiec|park|drzew|zieleni|las|ekolog|recykl|lisci|klimat|zbiork|tekstyli)"),
     ("urzad", r"\b(urzad|rad[aniy]\b|sesj|uchwal|burmistrz|konsultac|wybor|budzet|bip\b|wniosk|nabor)"),

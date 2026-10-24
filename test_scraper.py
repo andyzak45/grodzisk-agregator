@@ -1230,6 +1230,11 @@ class Grafiki(unittest.TestCase):
         for tytul, oczekiwany in przyklady.items():
             self.assertEqual(grafiki.temat(self._wpis(title=tytul, text=None)), oczekiwany, tytul)
 
+    def test_odmiana_nie_psuje_tematu(self):
+        for tytul in ("Wystawa w Mediatece", "Spotkanie w bibliotece", "Seans opery w Mediatekę", "Charytatywne przedstawienie dla dzieci",
+                      "Zajęcia w świetlicy"):
+            self.assertEqual(grafiki.temat(self._wpis(title=tytul, text=None, kind="inne")), "kultura", tytul)
+
     def test_bez_slow_kluczowych_temat_zalezy_od_rodzaju(self):
         self.assertEqual(grafiki.temat(self._wpis(title="Coś ogólnego", text=None, kind="wyd")), "kultura")
         self.assertEqual(grafiki.temat(self._wpis(title="Coś ogólnego", text=None, kind="inne")), "ogolne")
