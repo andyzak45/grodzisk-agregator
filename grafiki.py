@@ -146,19 +146,13 @@ def wybierz_zdjecie(it):
 
 
 def podpis(z, it=None):
-    """Podpis: autor i licencja (z linkiem, jeśli jest), a dla zdjęć z Commons także strona źródłowa. Zdjęcie jest tylko
-    poglądowe (to samo miejsce co wpis) albo ilustracyjne (inne miejsce lub ogólne)."""
-    autor = html.escape(z["autor"][:60] + ("…" if len(z["autor"]) > 60 else ""))
+    """Podpis pod zdjęciem: tylko rodzaj ("poglądowe" gdy to samo miejsce co wpis, inaczej "ilustracyjne"). Dla zdjęć z Commons to link
+    do strony pliku, gdzie są autor i licencja, co przy licencjach CC wystarcza jako uznanie autorstwa (hiperłącze do źródła)."""
     ilustracyjne = it is None or z["miejsce"] != it["place"].split("|")[0]      # zdjęcie innego miejsca niż wpis, więc tylko ilustruje temat
-    czesci = [f'{"Zdjęcie ilustracyjne" if ilustracyjne else "Zdjęcie poglądowe"}', f"Fot.: {autor}"]
-    if z.get("licencja"):
-        lic = html.escape(z["licencja"])
-        if z.get("licencja_url"):
-            lic = f'<a href="{html.escape(z["licencja_url"])}" target="_blank" rel="noopener">{lic}</a>'
-        czesci.append(lic)
+    rodzaj = "Zdjęcie ilustracyjne" if ilustracyjne else "Zdjęcie poglądowe"
     if z.get("strona"):
-        czesci.append(f'<a href="{html.escape(z["strona"])}" target="_blank" rel="noopener">Wikimedia Commons</a>')
-    return " · ".join(czesci)
+        return f'<a href="{html.escape(z["strona"])}" target="_blank" rel="noopener">{rodzaj}</a>'
+    return rodzaj
 
 
 def sprite():
@@ -168,10 +162,12 @@ def sprite():
 
 
 def temat(it):
-    t = norm(f'{it.get("title", "")} {it.get("text") or ""}')
-    for nazwa, wzorzec in TEMATY:
-        if re.search(wzorzec, t):
-            return nazwa
+    """Temat grafiki lub zdjęcia: najpierw z samego tytułu (jest najpewniejszy), dopiero potem z tytułu i notki razem."""
+    tytul = f'{it.get("title", "")} {it.get("tytul") or ""}'
+    for tekst in (norm(tytul), norm(f'{tytul} {it.get("text") or ""}')):
+        for nazwa, wzorzec in TEMATY:
+            if re.search(wzorzec, tekst):
+                return nazwa
     return PO_RODZAJU.get(it["kind"], "ogolne")
 
 
@@ -179,13 +175,13 @@ def ilustracja(it, klasa="ilu"):
     """Karta ze zdjęciem (pole "obraz", np. od źródła, które wyraziło zgodę) albo z naszą grafiką poglądową."""
     obraz = it.get("obraz")
     if obraz and obraz.startswith("https://"):
-        autor = it.get("obraz_autor") or it["source"]
-        return (f'<figure class="{klasa} foto k-{it["kind"]}"><img src="{obraz}" alt="" loading="lazy" referrerpolicy="no-referrer">'
-                f'<figcaption>Fot.: {autor}</figcaption></figure>')
+        autor = html.escape(it.get("obraz_autor") or it["source"])
+        return (f'<div class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(obraz)}" alt="" loading="lazy" referrerpolicy="no-referrer"></div>'
+                f'<p class="podpis">Fot.: {autor}</p>')
     z = wybierz_zdjecie(it)
-    if z:
-        return (f'<figure class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(z["plik"])}" alt="" loading="lazy" decoding="async">'
-                f'<figcaption>{podpis(z, it)}</figcaption></figure>')
+    if z:      # zdjęcie w ramce o stałej proporcji, a podpis jako osobny akapit pod nią: nic się nie nakłada na pasek kategorii
+        return (f'<div class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(z["plik"])}" alt="" loading="lazy" decoding="async"></div>'
+                f'<p class="podpis">{podpis(z, it)}</p>')
     t = temat(it)
     return (f'<div class="{klasa} k-{it["kind"]}" role="img" aria-label="Grafika poglądowa: {OPISY[t]}">'
             f'<svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ilu-{t}"/></svg></div>')

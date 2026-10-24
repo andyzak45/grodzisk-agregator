@@ -26,15 +26,12 @@
         main { max-width: 1300px; margin: 1.25rem auto 2rem; padding: 0 1.5rem; }
         .filters { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin: 0 0 1rem; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
         select { font: inherit; font-size: 0.85rem; padding: 0.3rem 0.8rem; border-radius: 99px; border: 1px solid #cbd5e1; background: #fff; color: var(--text-main); cursor: pointer; }
-        .ilu { aspect-ratio: 16 / 6; margin: 0 0 0.7rem; overflow: hidden; background: var(--t); color: var(--c); }
+        .ilu { flex: 0 0 auto; aspect-ratio: 16 / 6; margin: 0 0 0.7rem; overflow: hidden; background: var(--t); color: var(--c); }
         .ilu svg, .ilu img { display: block; width: 100%; height: 100%; object-fit: cover; }
-        .ilu.foto { position: relative; } .ilu figcaption { position: absolute; right: 0; bottom: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 0.65rem; padding: 0.1rem 0.4rem; }
+        .ilu.foto { position: relative; margin-bottom: 0.3rem; } .ilu.foto img { position: absolute; inset: 0; }
+        .podpis { flex: 0 0 auto; margin: 0 0 0.7rem; font-size: 0.62rem; line-height: 1.3; color: var(--text-muted); } .podpis a { color: inherit; }
         .k-inne { --t: #e2e8f0; --c: #475569; } .k-ost, .k-zdr { --t: #fee2e2; --c: #b91c1c; } .k-wyd { --t: #fef3c7; --c: #b45309; }
         .k-inw { --t: #dbeafe; --c: #1d4ed8; } .k-spo { --t: #e0e7ff; --c: #4338ca; }
-        .ilu.foto { aspect-ratio: auto; overflow: visible; background: none; }
-        .ilu.foto img { aspect-ratio: 16 / 7; background: var(--t); }
-        .ilu.foto figcaption { position: static; background: none; color: var(--text-muted); font-size: 0.65rem; line-height: 1.3; padding: 0.2rem 0 0; }
-        .ilu.foto figcaption a { color: inherit; }
         .hero.z-foto::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(0,0,0,0.82) 20%, rgba(0,0,0,0.15) 100%); }
         .hero > .hero-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
         .hero > .hero-body { position: relative; z-index: 2; }
@@ -125,7 +122,7 @@
         <p class="empty" id="brak" hidden>Brak aktualnych wpisów.</p>
     </main>
     <footer>
-        <p>Informacje zbierane z publicznych stron lokalnych instytucji i mediów oraz opracowywane przez redakcję. Pokazujemy fakty i link do oryginału, pełne treści czytaj u wydawców. Grafiki i zdjęcia przy wpisach są poglądowe i nie przedstawiają opisywanych wydarzeń ani osób. Zdjęcia pochodzą z Wikimedia Commons na wolnych licencjach, autor i licencja są pod każdym z nich. Przy zdarzeniach nie podajemy danych osób. Zauważyłeś błąd? Napisz do redakcji.</p>
+        <p>Informacje zbierane z publicznych stron lokalnych instytucji i mediów oraz opracowywane przez redakcję. Pokazujemy fakty i link do oryginału, pełne treści czytaj u wydawców. Grafiki i zdjęcia przy wpisach są poglądowe i nie przedstawiają opisywanych wydarzeń ani osób. Zdjęcia pochodzą z Wikimedia Commons na wolnych licencjach: link pod zdjęciem prowadzi do strony pliku z autorem i licencją. Przy zdarzeniach nie podajemy danych osób. Zauważyłeś błąd? Napisz do redakcji.</p>
     </footer>
     <script>
     (function () {

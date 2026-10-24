@@ -1529,8 +1529,8 @@ class ZdjeciaNaStronie(unittest.TestCase):
         self.assertEqual(grafiki.wybierz_zdjecie(wpis)["plik"], "zdjecia/mediateka.jpg")
         h = grafiki.ilustracja(wpis)
         self.assertIn("Zdjęcie poglądowe", h)
-        self.assertIn("Fot.: Anna", h)
-        self.assertNotIn("Wikimedia Commons", h)
+        self.assertIn('<p class="podpis">Zdjęcie poglądowe</p>', h)      # własne zdjęcie: bez linku i bez autora
+        self.assertNotIn("Anna", h)
         inny = self._wpis(id="51", place="Grodzisk Mazowiecki", title="Koncert w parku", kind="wyd")
         self.assertEqual(grafiki.wybierz_zdjecie(inny)["plik"], "zdjecia/kultura-ogolne.jpg")      # zdjęcie Mediateki nie trafia do innych wpisów
 
@@ -1582,14 +1582,32 @@ class ZdjeciaNaStronie(unittest.TestCase):
         uzyte = {grafiki.wybierz_zdjecie(self._wpis(id=str(i)))["plik"] for i in range(3)}
         self.assertEqual(len(uzyte), 3)
 
-    def test_podpis_ma_autora_licencje_i_zrodlo_oraz_ucieka_html(self):
+    def test_podpis_to_tylko_link_do_strony_zdjecia_bez_autora_i_licencji_w_tekscie(self):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/kady-1.jpg", "Kady", autor='<script>x</script>')])
         h = grafiki.ilustracja(self._wpis())
         self.assertIn("Zdjęcie poglądowe", h)
-        self.assertIn("CC BY-SA 4.0", h)
-        self.assertIn("creativecommons.org/licenses/by-sa/4.0", h)
-        self.assertIn("Wikimedia Commons", h)
-        self.assertNotIn("<script>x</script>", h)
+        self.assertIn('href="https://commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg"', h)      # tam są autor i licencja
+        self.assertNotIn("CC BY-SA", h)
+        self.assertNotIn("Fot.:", h)
+        self.assertNotIn("<script>", h)
+
+    def test_podpis_jest_osobnym_akapitem_pod_ramka_zdjecia(self):
+        h = grafiki.ilustracja(self._wpis())
+        self.assertNotIn("<figure", h)
+        self.assertNotIn("figcaption", h)
+        self.assertRegex(h, r'<div class="ilu foto k-inne"><img [^>]+></div><p class="podpis"><a [^>]+>Zdjęcie poglądowe</a></p>')
+
+    def test_autor_zdjecia_ze_zrodla_jest_escapowany(self):
+        h = grafiki.ilustracja(self._wpis(obraz="https://grodzisk.pl/f.jpg", obraz_autor="<b>Jan</b>"))
+        self.assertNotIn("<b>Jan</b>", h)
+        self.assertIn("&lt;b&gt;Jan&lt;/b&gt;", h)
+
+    def test_temat_z_tytulu_ma_pierwszenstwo_przed_notka(self):
+        w = self._wpis(id="70", place="Mościska", kind="wyd", title="Charytatywne warsztaty szycia",
+                       text="Dochód przeznaczony na leczenie w szpitalu, zapisy do piątku.")
+        self.assertEqual(grafiki.temat(w), "kultura")
+        bez = self._wpis(id="71", place="Mościska", kind="inne", title="Wiadomość z gminy", text="Zbiórka dla szpitala.")
+        self.assertEqual(grafiki.temat(bez), "zdrowie")      # gdy tytuł nic nie mówi, liczy się notka
 
     def test_zdjecie_z_pola_obraz_ma_pierwszenstwo_przed_zdjeciem_z_commons(self):
         h = grafiki.ilustracja(self._wpis(obraz="https://grodzisk.pl/foto.jpg"))
@@ -1628,7 +1646,8 @@ class ZdjeciaNaStronie(unittest.TestCase):
             page = out.read_text(encoding="utf-8")
         self.assertIn('src="zdjecia/kady-1.jpg"', page)
         self.assertIn("z-foto", page)
-        self.assertIn("Jan Kowalski", page)
+        self.assertIn("commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg", page)
+        self.assertNotIn("Jan Kowalski", page)
 
 
 class PobieranieZdjec(unittest.TestCase):
