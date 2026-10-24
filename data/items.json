@@ -515,6 +515,22 @@
   "tkey": "adc20e8adaaa"
  },
  {
+  "id": "995f190e39b8",
+  "title": "Masih Alinejad uhonorowana w Łodzi Medalem Wolności",
+  "url": "https://lodz.twoje-miasto.pl/art-wydarzenia/masih-alinejad-uhonorowana-w-lodzi-i1271767",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-24",
+  "published": "2026-10-24",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "c347dd04c728",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
   "id": "3e7ecda8ba3d",
   "title": "Obcy / GRODZISKI KLUB FILMOWY",
   "url": "https://www.centrumkultury.eu/wydarzenie/obcy-grodziski-klub-filmowy/",
@@ -1926,7 +1942,9 @@
   "tkey": "7bc0d1a298ba",
   "opis_proba": "v2",
   "text": "16 października w Bibliotece Publicznej Gminy Grodzisk Mazowiecki odbyła się XII Ogólnopolska Noc Bibliotek. W programie znalazły się spotkania autorskie, pokazy filmowe, gra interaktywna oraz koncert.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "XII edycja Ogólnopolskiej Nocy Bibliotek odbyła się w Grodzisku Mazowieckim"
  },
  {
   "id": "eb64a3cde911",
@@ -1943,7 +1961,9 @@
   "tkey": "abd5197161bb",
   "opis_proba": "v3",
   "text": "Powiat grodziski zorganizował w Grodzisku Mazowieckim uroczystość z okazji Dnia Edukacji Narodowej. Podczas spotkania wręczono nagrody zasłużonym pedagogom i pracownikom oświaty.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Władze powiatu grodziskiego nagrodziły wyróżniających się pracowników lokalnej oświaty"
  },
  {
   "id": "a66316bac6d4",
@@ -2284,7 +2304,9 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "W Bibliotece Publicznej Gminy Grodzisk Mazowiecki odbyła się inauguracja XII Ogólnopolskiej Nocy Bibliotek. W programie znalazły się projekcje filmów, spotkania autorskie, gry interaktywne oraz koncert.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "W Grodzisku Mazowieckim zorganizowano inaugurację XII Ogólnopolskiej Nocy Bibliotek"
  },
  {
   "id": "7b56b244cfdc",
@@ -2597,7 +2619,9 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "W sobotnim meczu 11. kolejki Betclic 1. ligi Pogoń Grodzisk Mazowiecki przegrała u siebie z Polonią Warszawa 0:1. Jedyną bramkę dla gości zdobył w 85. minucie Dave Gnaase.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Porażka Pogoni Grodzisk Mazowiecki 0:1 w starciu z Polonią Warszawa"
  },
  {
   "id": "09f1a8ef56e2",
@@ -3082,7 +3106,9 @@
   "event_iso": "2026-10-19",
   "opis_proba": "v2",
   "text": "Mieszkańcy Grodziska Mazowieckiego mogą od 19 października zapisywać się na zaplanowaną na 7 listopada wycieczkę do warszawskich nekropolii i Fabryki Norblina. Koszt biletów wynosi 105 zł lub 80 zł dla dzieci, a wyjazd z miasta nastąpi o godzinie 8:00.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Zapisy na wycieczkę z Grodziska Mazowieckiego do Warszawy ruszą 19 października"
  },
  {
   "id": "8ff574819791",
@@ -3098,7 +3124,9 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "Jednostka straży pożarnej w Grodzisku Mazowieckim wzbogaciła się o dwie pary nogawic antyprzecięciowych do pracy z pilarkami. Nowy sprzęt ochronny zwiększy bezpieczeństwo ratowników podczas usuwania wiatrołomów.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Strażacy z Grodziska Mazowieckiego otrzymali dwie pary specjalistycznych nogawic ochronnych"
  },
  {
   "id": "2cecb7ba6dfb",
@@ -3114,7 +3142,9 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "W Grodzisku Mazowieckim odbyła się XII Noc Bibliotek pod hasłem „Biblioteka (się) sprawdza”. W programie placówki znalazły się seanse filmowe, gry literackie, spotkania autorskie oraz koncert.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "W Grodzisku Mazowieckim zorganizowano dwunastą edycję Nocy Bibliotek"
  },
  {
   "id": "5b0e4a8d843f",
@@ -3872,7 +3902,9 @@
   "event_iso": "2026-10-17",
   "opis_proba": "v2",
   "text": "17 października o godzinie 12:00 w Filii nr 1 w Kadach odbędą się bezpłatne warsztaty plastyczne dla dzieci od szóstego roku życia z ilustratorem książek. Spotkanie zorganizowano w ramach gminnego programu bibliotecznego.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Bezpłatne zajęcia plastyczne z ilustratorem dla dzieci w Kadach"
  },
  {
   "id": "946467f12886",
@@ -3888,7 +3920,9 @@
   "event_iso": "2026-10-25",
   "opis_proba": "v2",
   "text": "W dniach 5–25 października w Pawilonie Kultury przy ul. Westfala w Grodzisku Mazowieckim można bezpłatnie oglądać wystawę poświęconą doświadczeniu migracji i utraty domu. Ekspozycja przygotowana przez gminną bibliotekę i partnerów składa się z jedenastu plansz.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Bezpłatna wystawa poświęcona migracji w Pawilonie Kultury w Grodzisku Mazowieckim"
  },
  {
   "id": "bcf491e3424f",
@@ -3904,7 +3938,9 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "Biblioteka Publiczna Gminy Grodzisk Mazowiecki organizuje bezpłatne warsztaty programowania w grze Minecraft dla dzieci od ośmiu lat. Zajęcia odbywają się w poniedziałki w salach Mediateki, a na wydarzenie obowiązują wcześniejsze zapisy.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Bezpłatne warsztaty programowania w Minecraft w Mediatece w Grodzisku Mazowieckim"
  },
  {
   "id": "911cdb7f9edb",
@@ -3920,7 +3956,9 @@
   "event_iso": null,
   "opis_proba": "v3",
   "text": "W Pawilonie Kultury przy ul. Westfala w Grodzisku Mazowieckim odbywają się bezpłatne spotkania Bibliotecznego Klubu Seniora. Zajęcia organizowane są w poniedziałki w godzinach 14:00–16:00.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Bezpłatne poniedziałkowe spotkania Bibliotecznego Klubu Seniora w Grodzisku Mazowieckim"
  },
  {
   "id": "9c0d87577f5e",
@@ -3936,7 +3974,9 @@
   "event_iso": "2026-05-03",
   "opis_proba": "v3",
   "text": "Biblioteka Publiczna Gminy Grodzisk Mazowiecki organizuje bezpłatne korepetycje z języka angielskiego dla młodzieży od 14. roku życia. Spotkania z native speakerem odbywają się w poniedziałki o godzinie 15:30 w Mediatece przy ulicy 3 Maja.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Darmowe lekcje języka angielskiego dla młodzieży w grodziskiej Mediatece"
  },
  {
   "id": "10576cce70d3",
@@ -3952,7 +3992,9 @@
   "event_iso": null,
   "opis_proba": "v3",
   "text": "Biblioteka Główna w Grodzisku Mazowieckim organizuje bezpłatne warsztaty z programowania w grze Minecraft dla dzieci od 8. roku życia. Zajęcia odbywają się w poniedziałki w godzinach 16:00–17:30, a na uczestników obowiązują zapisy.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Warsztaty programowania w grze Minecraft w bibliotece w Grodzisku Mazowieckim"
  },
  {
   "id": "655f1b228058",
@@ -3968,7 +4010,9 @@
   "event_iso": "2026-10-22",
   "opis_proba": "v2",
   "text": "W czwartek, 22 października, tenisści stołowi z Grodziska Mazowieckiego zmierzą się na własnej sali przy ul. Sportowej z drużyną z Grudziądza. Spotkanie w ramach LOTTO Superligi rozpocznie się o godzinie 16.55, a wstęp dla kibiców jest bezpłatny.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Mecz tenisa stołowego LOTTO Superligi w Grodzisku Mazowieckim 22 października"
  },
  {
   "id": "bbcf9518e784",
@@ -3984,7 +4028,9 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "Pięcioro tenisistów stołowych z Grodziska Mazowieckiego wystartowało w Mistrzostwach Europy w Ljublanie. Dwóch zawodników grodziskiego klubu dotarło do 1/8 finału turnieju singlowego.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Dwaj tenisiści z Grodziska Mazowieckiego awansowali do 1/8 finału w Ljublanie"
  },
  {
   "id": "044128ea2efa",
