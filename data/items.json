@@ -645,6 +645,22 @@
   "tkey": "622913acd954"
  },
  {
+  "id": "b1f1700426c2",
+  "title": "Noc będzie dłuższa o godzinę. W Milanówku nadchodzi zmiana czasu",
+  "url": "https://grodziski24.pl/20261024294277/noc-bedzie-dluzsza-o-godzine-w-milanowku-nadchodzi-zmiana-czasu",
+  "source": "Grodziski24",
+  "source_id": "grodziski24",
+  "first_seen": "2026-10-24",
+  "published": "2026-10-24",
+  "kind": "inne",
+  "place": "Milanówek",
+  "when": null,
+  "event_iso": null,
+  "tkey": "3e8a3fb8ec63",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
   "id": "3e7ecda8ba3d",
   "title": "Obcy / GRODZISKI KLUB FILMOWY",
   "url": "https://www.centrumkultury.eu/wydarzenie/obcy-grodziski-klub-filmowy/",
