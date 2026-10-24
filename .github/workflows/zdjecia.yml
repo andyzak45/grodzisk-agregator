@@ -4,10 +4,11 @@ on:
   workflow_dispatch:       # tylko ręcznie: przycisk "Run workflow"
     inputs:
       tryb:
-        description: 'pobierz = pobranie zdjęć z data/zdjecia_wybor.txt i przebudowa strony; kandydaci = nowy arkusz do wyboru'
+        description: 'pobierz = pobranie zdjęć z data/zdjecia_wybor.txt i przebudowa strony; tematy = arkusz tylko ze zdjęciami ogólnymi do tematów; kandydaci = pełny arkusz (miejsca i tematy)'
         type: choice
         options:
           - pobierz
+          - tematy
           - kandydaci
         default: pobierz
 
@@ -32,11 +33,11 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Kandydaci na zdjęcia (arkusz do wyboru)
-        if: ${{ inputs.tryb == 'kandydaci' }}
+        if: ${{ inputs.tryb == 'kandydaci' || inputs.tryb == 'tematy' }}
         env:
           PYTHONUNBUFFERED: "1"
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
-        run: python zdjecia_commons.py
+        run: python zdjecia_commons.py ${{ inputs.tryb == 'tematy' && '--tematy' || '' }}
 
       - name: Pobranie wybranych zdjęć i przebudowa strony
         if: ${{ inputs.tryb == 'pobierz' }}
