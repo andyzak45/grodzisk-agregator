@@ -4,10 +4,11 @@ on:
   workflow_dispatch:       # tylko ręcznie: przycisk "Run workflow"
     inputs:
       tryb:
-        description: 'pobierz = pobranie zdjęć z data/zdjecia_wybor.txt i przebudowa strony; tematy = arkusz tylko ze zdjęciami ogólnymi do tematów; szukaj = arkusz z wyników wyszukiwania Commons o Grodzisku; kandydaci = pełny arkusz (miejsca i tematy)'
+        description: 'pobierz = pobranie zdjęć z data/zdjecia_wybor.txt i przebudowa strony; wsie = automatyczny wybór po 3 zdjęcia dla każdej miejscowości gminy, pobranie i przebudowa; tematy = arkusz tylko ze zdjęciami ogólnymi do tematów; szukaj = arkusz z wyników wyszukiwania Commons o Grodzisku; kandydaci = pełny arkusz (miejsca i tematy)'
         type: choice
         options:
           - pobierz
+          - wsie
           - tematy
           - szukaj
           - kandydaci
@@ -39,15 +40,15 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Kandydaci na zdjęcia (arkusz do wyboru)
-        if: ${{ inputs.tryb == 'kandydaci' || inputs.tryb == 'tematy' || inputs.tryb == 'szukaj' }}
+        if: ${{ inputs.tryb == 'kandydaci' || inputs.tryb == 'tematy' || inputs.tryb == 'szukaj' || inputs.tryb == 'wsie' }}
         env:
           PYTHONUNBUFFERED: "1"
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
           FRAZA: ${{ inputs.fraza }}
-        run: python zdjecia_commons.py ${{ inputs.tryb == 'tematy' && '--tematy' || inputs.tryb == 'szukaj' && '--szukaj' || '' }}
+        run: python zdjecia_commons.py ${{ inputs.tryb == 'tematy' && '--tematy' || inputs.tryb == 'szukaj' && '--szukaj' || inputs.tryb == 'wsie' && '--wsie' || '' }}
 
       - name: Pobranie wybranych zdjęć i przebudowa strony
-        if: ${{ inputs.tryb == 'pobierz' }}
+        if: ${{ inputs.tryb == 'pobierz' || inputs.tryb == 'wsie' }}
         env:
           PYTHONUNBUFFERED: "1"
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
