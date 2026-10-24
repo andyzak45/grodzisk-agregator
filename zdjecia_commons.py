@@ -159,10 +159,10 @@ def znajdz_kategorie_tematow(fetch):
     return wynik
 
 
-def szukaj_plikow(fetch, wykluczone=()):
+def szukaj_plikow(fetch, wykluczone=(), frazy=None):
     """Tytuły plików znalezione wyszukiwarką Commons dla FRAZY_SZUKANIA: [(tytuł, fraza)], bez wykluczonych i powtórzeń."""
     wynik, widziane = [], set(wykluczone)
-    for fraza in FRAZY_SZUKANIA:
+    for fraza in (frazy or FRAZY_SZUKANIA):
         d = fetch({"action": "query", "list": "search", "srsearch": f"{fraza} filetype:bitmap", "srnamespace": "6",
                    "srlimit": str(MAX_WYNIKOW_FRAZY)})
         for w in (d.get("query") or {}).get("search", []):
@@ -268,10 +268,10 @@ def _wybrane_tytuly(katalog):
     return {l.split("|")[0].strip().replace("_", " ") for l in sciezka.read_text(encoding="utf-8").splitlines() if l.strip().startswith("File:")}
 
 
-def main_szukaj(fetch=pobierz, katalog=ROOT / "data"):
+def main_szukaj(fetch=pobierz, katalog=ROOT / "data", frazy=None):
     """Kandydaci z wyszukiwarki Commons po frazach o Grodzisku. Pomija pliki już wybrane w data/zdjecia_wybor.txt."""
     print("Szukam plików na Commons po frazach...")
-    znalezione = szukaj_plikow(fetch, _wybrane_tytuly(katalog))
+    znalezione = szukaj_plikow(fetch, _wybrane_tytuly(katalog), frazy)
     if not znalezione:
         print("Wyszukiwarka nic nie zwróciła. Sprawdź połączenie z Commons.")
         return 1
@@ -314,5 +314,6 @@ def main(fetch=pobierz, katalog=ROOT / "data", miejsca=True):
 
 if __name__ == "__main__":
     if "--szukaj" in sys.argv:
-        sys.exit(main_szukaj())
+        # własne frazy z zmiennej FRAZA, oddzielone średnikami (np. "Książenice; Książenice szkoła"); bez niej domyślny zestaw o Grodzisku
+        sys.exit(main_szukaj(frazy=[f.strip() for f in os.environ.get("FRAZA", "").split(";") if f.strip()] or None))
     sys.exit(main(miejsca="--tematy" not in sys.argv))

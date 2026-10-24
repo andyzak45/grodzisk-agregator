@@ -1382,6 +1382,17 @@ class ZdjeciaCommons(unittest.TestCase):
         self.assertIn('value="File:Nowe.jpg"', arkusz)
         self.assertNotIn("Wybrane.jpg", arkusz)
 
+    def test_tryb_szukaj_z_wlasna_fraza(self):
+        frazy = []
+        def fetch(par):
+            if par.get("list") == "search":
+                frazy.append(par["srsearch"])
+                return {"query": {"search": [{"title": "File:Ksiazenice.jpg"}]}}
+            return {"query": {"pages": [self._strona(t) for t in par["titles"].split("|")]}}
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(zc.main_szukaj(fetch, Path(d), ["Książenice", "Książenice szkoła"]), 0)
+        self.assertEqual(frazy, ["Książenice filetype:bitmap", "Książenice szkoła filetype:bitmap"])
+
     def test_tryb_szukaj_bez_wynikow_to_blad(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(zc.main_szukaj(lambda par: {}, Path(d)), 1)
@@ -1587,14 +1598,14 @@ class PobieranieZdjec(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             sc = Path(d) / "w.txt"
             sc.write_text("File:A.jpg\n\nkomentarz\nFile:A.jpg\n  File:B.jpg  \n", encoding="utf-8")
-            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", None, []), ("File:B.jpg", None, [])])
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", None, [], None), ("File:B.jpg", None, [], None)])
             self.assertEqual(zp.wczytaj_wybor(Path(d) / "brak.txt"), [])
 
     def test_linia_z_tematem_to_zdjecie_ogolne(self):
         with tempfile.TemporaryDirectory() as d:
             sc = Path(d) / "w.txt"
             sc.write_text("File:A.jpg | droga\nFile:B.jpg|nieznany\nFile:C.jpg\n", encoding="utf-8")
-            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", "droga", []), ("File:B.jpg", None, []), ("File:C.jpg", None, [])])
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", "droga", [], None), ("File:B.jpg", None, [], None), ("File:C.jpg", None, [], None)])
 
     def test_zdjecie_ogolne_zapisuje_sie_bez_miejscowosci(self):
         strony = {"File:Roboty.jpg": self._strona("File:Roboty.jpg"), "File:Stawy Goliana 2022.jpg": self._strona("File:Stawy Goliana 2022.jpg")}
@@ -1612,7 +1623,7 @@ class PobieranieZdjec(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             sc = Path(d) / "w.txt"
             sc.write_text("File:Mediateka_Grodzisk_Mazowiecki_1.jpg | kultura | Mediate, centrum kultur\n", encoding="utf-8")
-            self.assertEqual(zp.wczytaj_wybor(sc), [("File:Mediateka Grodzisk Mazowiecki 1.jpg", "kultura", ["mediate", "centrum kultur"])])
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:Mediateka Grodzisk Mazowiecki 1.jpg", "kultura", ["mediate", "centrum kultur"], None)])
 
     def test_zdjecie_ze_slowami_zapisuje_sie_z_miejscem_i_slowami(self):
         strony = {"File:Mediateka Grodzisk Mazowiecki 1.jpg": self._strona("File:Mediateka Grodzisk Mazowiecki 1.jpg")}
@@ -1623,6 +1634,17 @@ class PobieranieZdjec(unittest.TestCase):
             zp.main(lambda par: {"query": {"pages": [strony[t] for t in par["titles"].split("|")]}}, lambda url: b"x", korzen)
             z = json.loads((korzen / "data" / "zdjecia.json").read_text(encoding="utf-8"))[0]
         self.assertEqual((z["miejsce"], z["temat"], z["slowa"]), ("Grodzisk Mazowiecki", "kultura", ["mediate"]))
+
+    def test_miejscowosc_podana_wprost_w_czwartym_polu(self):
+        strony = {"File:IMG 1234.jpg": self._strona("File:IMG 1234.jpg")}
+        with tempfile.TemporaryDirectory() as d:
+            korzen = Path(d)
+            (korzen / "data").mkdir()
+            (korzen / "data" / "zdjecia_wybor.txt").write_text("File:IMG_1234.jpg | | | Książenice\n", encoding="utf-8")
+            self.assertEqual(zp.wczytaj_wybor(korzen / "data" / "zdjecia_wybor.txt"), [("File:IMG 1234.jpg", None, [], "Książenice")])
+            zp.main(lambda par: {"query": {"pages": [strony[t] for t in par["titles"].split("|")]}}, lambda url: b"x", korzen)
+            z = json.loads((korzen / "data" / "zdjecia.json").read_text(encoding="utf-8"))[0]
+        self.assertEqual(z["miejsce"], "Książenice")
 
     def test_miejsce_i_temat_z_nazwy_pliku(self):
         self.assertEqual(zp.miejsce("File:KOZERY NOWE 01.jpg"), "Kozery Nowe")
