@@ -125,14 +125,19 @@ def wybierz_zdjecie(it):
     if klucz in _WYBOR:
         return _WYBOR[klucz]
     miejsce = it["place"].split("|")[0]
-    if miejsce in ("cała gmina", "okolica", MIASTO):
+    nazwy = [z for z in ZDJECIA if z.get("slowa") and z["miejsce"] in (miejsce, "cała gmina") and re.search(r"\b(?:" + "|".join(z["slowa"]) + ")", norm(f'{it.get("title", "")} {it.get("tytul") or ""}'))]
+    if nazwy:                      # wpis o konkretnym miejscu (np. Mediateka) dostaje zdjęcie tego miejsca, jeśli je mamy; "slowa" to rdzenie bez końcówek, bo polskie nazwy się odmieniają (Mediateka, Mediatece, Mediatekę)
+        kand = nazwy
+    elif miejsce in ("cała gmina", "okolica", MIASTO):
         t = temat_zdjecia(it)
-        kand = [z for z in ZDJECIA if z["miejsce"] == MIASTO and z["temat"] == t] if t else []
+        kand = [z for z in ZDJECIA if z["miejsce"] == MIASTO and z["temat"] == t and not z.get("slowa")] if t else []
     else:
-        kand = [z for z in ZDJECIA if z["miejsce"] == miejsce]
+        kand = [z for z in ZDJECIA if z["miejsce"] == miejsce and not z.get("slowa")]
     if not kand and it["kind"] != "zdr":      # zapas: zdjęcie ogólne do tematu (nie przy zdarzeniach policji, by nie sugerować miejsca)
         t = temat(it)
-        kand = [z for z in ZDJECIA if not z["miejsce"] and z["temat"] == t] or [z for z in ZDJECIA if not z["miejsce"] and z["temat"] == "ogolne"]
+        kand = ([z for z in ZDJECIA if not z["miejsce"] and z["temat"] == t]
+                or ([z for z in ZDJECIA if z["temat"] == t and not z.get("slowa")] if t != "ogolne" else [])      # brak zdjęcia ogólnego: dowolne z tego tematu (np. ratusz, stadion)
+                or [z for z in ZDJECIA if not z["miejsce"] and z["temat"] == "ogolne"])
     wybrane = min(kand, key=lambda z: (_UZYCIA[z["plik"]], zlib.crc32(f'{klucz}{z["plik"]}'.encode()))) if kand else None
     if wybrane:
         _UZYCIA[wybrane["plik"]] += 1
@@ -140,14 +145,20 @@ def wybierz_zdjecie(it):
     return wybrane
 
 
-def podpis(z):
-    """Podpis wymagany przez licencję: autor, licencja (z linkiem) i strona źródłowa. Zdjęcie jest tylko poglądowe (miejsca) albo ilustracyjne (ogólne)."""
+def podpis(z, it=None):
+    """Podpis: autor i licencja (z linkiem, jeśli jest), a dla zdjęć z Commons także strona źródłowa. Zdjęcie jest tylko
+    poglądowe (to samo miejsce co wpis) albo ilustracyjne (inne miejsce lub ogólne)."""
     autor = html.escape(z["autor"][:60] + ("…" if len(z["autor"]) > 60 else ""))
-    lic = html.escape(z["licencja"])
-    if z.get("licencja_url"):
-        lic = f'<a href="{html.escape(z["licencja_url"])}" target="_blank" rel="noopener">{lic}</a>'
-    return (f'{"Zdjęcie ilustracyjne" if not z["miejsce"] else "Zdjęcie poglądowe"} · Fot.: {autor} · {lic} · '
-            f'<a href="{html.escape(z["strona"])}" target="_blank" rel="noopener">Wikimedia Commons</a>')
+    ilustracyjne = it is None or z["miejsce"] != it["place"].split("|")[0]      # zdjęcie innego miejsca niż wpis, więc tylko ilustruje temat
+    czesci = [f'{"Zdjęcie ilustracyjne" if ilustracyjne else "Zdjęcie poglądowe"}', f"Fot.: {autor}"]
+    if z.get("licencja"):
+        lic = html.escape(z["licencja"])
+        if z.get("licencja_url"):
+            lic = f'<a href="{html.escape(z["licencja_url"])}" target="_blank" rel="noopener">{lic}</a>'
+        czesci.append(lic)
+    if z.get("strona"):
+        czesci.append(f'<a href="{html.escape(z["strona"])}" target="_blank" rel="noopener">Wikimedia Commons</a>')
+    return " · ".join(czesci)
 
 
 def sprite():
@@ -174,7 +185,7 @@ def ilustracja(it, klasa="ilu"):
     z = wybierz_zdjecie(it)
     if z:
         return (f'<figure class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(z["plik"])}" alt="" loading="lazy" decoding="async">'
-                f'<figcaption>{podpis(z)}</figcaption></figure>')
+                f'<figcaption>{podpis(z, it)}</figcaption></figure>')
     t = temat(it)
     return (f'<div class="{klasa} k-{it["kind"]}" role="img" aria-label="Grafika poglądowa: {OPISY[t]}">'
             f'<svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ilu-{t}"/></svg></div>')
@@ -185,6 +196,6 @@ def tlo_czolowki(it):
     z = wybierz_zdjecie(it) if not it.get("obraz") else None
     if z:
         return (f'<img class="hero-foto" src="{html.escape(z["plik"])}" alt="" decoding="async">'
-                f'<span class="hero-fot">{podpis(z)}</span>'), " z-foto"
+                f'<span class="hero-fot">{podpis(z, it)}</span>'), " z-foto"
     return (f'<svg class="hero-ilu" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
             f'<use href="#ilu-{temat(it)}"/></svg>'), ""

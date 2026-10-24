@@ -265,7 +265,8 @@ def build(items, template_path, out_path, today=None, aktualizacja=None):
     today = today or date.today()
     pool = widoczne(items, today)
     korzen = Path(out_path).parent       # zdjęcia i data/zdjecia.json leżą obok index.html
-    grafiki.ustaw_zdjecia(grafiki.wczytaj_zdjecia(korzen / "data" / "zdjecia.json", korzen))
+    grafiki.ustaw_zdjecia(grafiki.wczytaj_zdjecia(korzen / "data" / "zdjecia_wlasne.json", korzen)
+                          + grafiki.wczytaj_zdjecia(korzen / "data" / "zdjecia.json", korzen))
     po_rodzajach = {k: kolejnosc(k, [i for i in pool if i["kind"] == k], today)[:MAX_W_KATEGORII] for k in KIND_UI}
     pokazane = [i for k in KIND_UI for i in po_rodzajach[k]]
     front, wyrozniane = pierwsza_strona(pokazane, today)
