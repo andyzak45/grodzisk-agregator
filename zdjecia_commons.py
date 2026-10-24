@@ -5,7 +5,7 @@ Uruchamiany ręcznie (workflow "Zbieranie zdjęć z Wikimedia Commons"). Niczego
   data/zdjecia_kandydaci.html  (arkusz przeglądowy z miniaturami; zaznaczasz zdjęcia, które nam pasują)
 Zdjęcia wybiera człowiek: skrypt tylko odsiewa to, czego na pewno nie wolno użyć (licencje z NC, ND, brak licencji,
 zbyt małe pliki, formaty inne niż JPEG i PNG) i oznacza ostrzeżenia (znaki towarowe, prawa osobiste).
-Użycie: python zdjecia_commons.py
+Użycie: python zdjecia_commons.py [--tematy]    (--tematy: tylko zdjęcia ogólne do tematów)
 """
 import html
 import json
@@ -38,7 +38,7 @@ TEMATY_OGOLNE = {
     "droga": ["Roadworks in Poland", "Road construction in Poland"],
     "woda": ["Water supply in Poland", "Sewage in Poland"],
     "pociag": ["Koleje Mazowieckie", "Warszawska Kolej Dojazdowa"],
-    "bezpieczenstwo": ["Police vehicles in Poland", "Fire engines in Poland"],
+    "bezpieczenstwo": ["Police vehicles in Poland", "Fire engines in Poland", "Fire brigades in Poland", "Police in Poland"],
     "zdrowie": ["Hospitals in Poland", "Ambulances in Poland"],
     "szkola": ["Schools in Poland", "Primary schools in Poland"],
     "sport": ["Sports facilities in Poland", "Football in Poland"],
@@ -50,6 +50,7 @@ TEMATY_OGOLNE = {
 }
 WZORZEC_POLSKI = r"poland|polsk|polish|mazovi|mazowie|warsza|koleje mazowieckie"
 MAX_NA_TEMAT = 60        # tyle plików na temat bierzemy do przejrzenia
+GLEBOKOSC_TEMATOW = 4    # kategorie tematyczne bywają głębsze (np. "... by voivodeship"), więc schodzimy niżej niż przy miejscach
 GLEBOKOSC = 2            # tyle poziomów podkategorii schodzimy w dół
 MAX_KATEGORII = 80
 MAX_PLIKOW = 800
@@ -151,7 +152,7 @@ def znajdz_kategorie_tematow(fetch):
     return wynik
 
 
-def zbierz_pliki(fetch, kategorie, limit=None, max_kategorii=None):
+def zbierz_pliki(fetch, kategorie, limit=None, max_kategorii=None, glebokosc=GLEBOKOSC):
     """Tytuły plików z kategorii i ich podkategorii (do GLEBOKOSC poziomów, z limitami)."""
     limit, max_kategorii = limit or MAX_PLIKOW, max_kategorii or MAX_KATEGORII
     pliki, odwiedzone, kolejka = [], set(), [(k, 0) for k in kategorie]
@@ -169,7 +170,7 @@ def zbierz_pliki(fetch, kategorie, limit=None, max_kategorii=None):
             for m in (d.get("query") or {}).get("categorymembers", []):
                 if m["title"].startswith("File:") and m["title"] not in pliki:
                     pliki.append(m["title"])
-                elif m["title"].startswith("Category:") and poziom < GLEBOKOSC:
+                elif m["title"].startswith("Category:") and poziom < glebokosc:
                     kolejka.append((m["title"], poziom + 1))
             cont = (d.get("continue") or {}).get("cmcontinue")
             if not cont or len(pliki) >= limit:
@@ -238,9 +239,10 @@ def arkusz(kandydaci):
         '</script></body></html>')
 
 
-def main(fetch=pobierz, katalog=ROOT / "data"):
-    print("Szukam kategorii Commons dla gminy i powiatu...")
-    kategorie = znajdz_kategorie(fetch)
+def main(fetch=pobierz, katalog=ROOT / "data", miejsca=True):
+    """miejsca=False: tylko zdjęcia ogólne do tematów (bez ponownego przeglądania zdjęć miejsc)."""
+    print("Szukam kategorii Commons dla gminy i powiatu..." if miejsca else "Szukam kategorii tematycznych Commons...")
+    kategorie = znajdz_kategorie(fetch) if miejsca else []
     print(f"  kategorie miejsc: {len(kategorie)}: {', '.join(k.removeprefix('Category:') for k in kategorie)}")
     tematy = znajdz_kategorie_tematow(fetch)
     print("  kategorie tematyczne: " + "; ".join(f"{t}: {len(k)}" for t, k in tematy.items()))
@@ -252,7 +254,7 @@ def main(fetch=pobierz, katalog=ROOT / "data"):
     for temat, kat in tematy.items():
         if not kat:
             continue
-        for k in szczegoly(fetch, zbierz_pliki(fetch, kat, MAX_NA_TEMAT, 12)):
+        for k in szczegoly(fetch, zbierz_pliki(fetch, kat, MAX_NA_TEMAT, 30, GLEBOKOSC_TEMATOW)):
             if k["tytul"] not in widziane:
                 widziane.add(k["tytul"])
                 kandydaci.append({**k, "temat_szukany": temat})
@@ -265,4 +267,4 @@ def main(fetch=pobierz, katalog=ROOT / "data"):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(miejsca="--tematy" not in sys.argv))

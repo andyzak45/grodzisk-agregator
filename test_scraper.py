@@ -1348,6 +1348,23 @@ class ZdjeciaCommons(unittest.TestCase):
         self.assertIn("Zdjęcia ogólne, temat: droga", arkusz)
         self.assertNotIn("Germany", arkusz)
 
+    def test_tryb_tematy_nie_przeglada_miejsc_i_schodzi_glebiej(self):
+        zapytania = []
+        def fetch(par):
+            zapytania.append(par)
+            if par.get("list") == "search":
+                return {"query": {"search": [{"title": "Category:Police vehicles in Poland"}]}} if par["srsearch"] == "Police vehicles in Poland" else {}
+            if par.get("list") == "categorymembers":
+                dane = {"Category:Police vehicles in Poland": [{"title": "Category:A"}], "Category:A": [{"title": "Category:B"}],
+                        "Category:B": [{"title": "Category:C"}], "Category:C": [{"title": "File:Radiowoz.jpg"}]}
+                return {"query": {"categorymembers": dane.get(par["cmtitle"], [])}}
+            return {"query": {"pages": [self._strona("File:Radiowoz.jpg")]}}
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(zc.main(fetch, Path(d), miejsca=False), 0)
+            kand = json.loads((Path(d) / "zdjecia_kandydaci.json").read_text(encoding="utf-8"))
+        self.assertEqual([(k["tytul"], k["temat_szukany"]) for k in kand], [("File:Radiowoz.jpg", "bezpieczenstwo")])      # plik 3 poziomy w głąb
+        self.assertFalse(any(z.get("srsearch") == "Grodzisk Mazowiecki" for z in zapytania))
+
     def test_brak_kategorii_to_blad_a_nie_pusty_plik(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(zc.main(lambda par: {}, Path(d)), 1)
