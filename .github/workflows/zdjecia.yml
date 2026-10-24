@@ -4,11 +4,12 @@ on:
   workflow_dispatch:       # tylko ręcznie: przycisk "Run workflow"
     inputs:
       tryb:
-        description: 'pobierz = pobranie zdjęć z data/zdjecia_wybor.txt i przebudowa strony; tematy = arkusz tylko ze zdjęciami ogólnymi do tematów; kandydaci = pełny arkusz (miejsca i tematy)'
+        description: 'pobierz = pobranie zdjęć z data/zdjecia_wybor.txt i przebudowa strony; tematy = arkusz tylko ze zdjęciami ogólnymi do tematów; szukaj = arkusz z wyników wyszukiwania Commons o Grodzisku; kandydaci = pełny arkusz (miejsca i tematy)'
         type: choice
         options:
           - pobierz
           - tematy
+          - szukaj
           - kandydaci
         default: pobierz
 
@@ -33,11 +34,11 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Kandydaci na zdjęcia (arkusz do wyboru)
-        if: ${{ inputs.tryb == 'kandydaci' || inputs.tryb == 'tematy' }}
+        if: ${{ inputs.tryb == 'kandydaci' || inputs.tryb == 'tematy' || inputs.tryb == 'szukaj' }}
         env:
           PYTHONUNBUFFERED: "1"
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
-        run: python zdjecia_commons.py ${{ inputs.tryb == 'tematy' && '--tematy' || '' }}
+        run: python zdjecia_commons.py ${{ inputs.tryb == 'tematy' && '--tematy' || inputs.tryb == 'szukaj' && '--szukaj' || '' }}
 
       - name: Pobranie wybranych zdjęć i przebudowa strony
         if: ${{ inputs.tryb == 'pobierz' }}
