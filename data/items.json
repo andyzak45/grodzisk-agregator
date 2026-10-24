@@ -16,7 +16,10 @@
   "text": "W sali sesyjnej Willi Niespodzianka przy ul. Kościuszki 12 w Grodzisku Mazowieckim odbędą się spotkania dotyczące projektu planu ogólnego gminy. Wydarzenia zaplanowano na 26 października w godzinach 10:00–17:00 oraz 4 listopada w godzinach 10:00–15:00.",
   "opis_auto": true,
   "tytul": "Spotkania informacyjne w sprawie projektu planu ogólnego w Grodzisku Mazowieckim",
-  "tytul_proba": true
+  "tytul_proba": true,
+  "also": [
+   "Grodzisk Twoje Miasto"
+  ]
  },
  {
   "id": "075222214bbb",
@@ -529,6 +532,117 @@
   "tkey": "c347dd04c728",
   "opis_proba": "v3",
   "poza_okolica": true
+ },
+ {
+  "id": "ded0b62c3b9d",
+  "title": "Nowacka: AI to wspaniałe narzędzie albo zabójcze, jeśli wykorzystane w złym celu",
+  "url": "https://lodz.twoje-miasto.pl/art-edukacja-i-szkolenia/nowacka-ai-to-wspaniale-narzedzie-i1273993",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-24",
+  "published": "2026-10-24",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "ff16cf60babc",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
+  "id": "c01ee9d5376f",
+  "title": "Episkopat o ochronie życia, komisji ds. nadużyć i problemach...",
+  "url": "https://zakopane.twoje-miasto.pl/art-religia/episkopat-o-ochronie-zycia-komisji-i1273963",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-24",
+  "published": "2026-10-24",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "1f4ab3f2e0a5",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
+  "id": "1c976b9c5bde",
+  "title": "MRPiPS w listopadzie chce ruszyć z kampanią promującą rodzicielstwo",
+  "url": "https://warszawa.twoje-miasto.pl/art-spoleczne/mrpips-w-listopadzie-chce-ruszyc-i1271809",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-24",
+  "published": "2026-10-24",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "d006dd5bc858",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
+  "id": "ddfbd6c7ae39",
+  "title": "Prokuratura w Warszawie: areszt dla podejrzanego o usiłowanie...",
+  "url": "https://warszawa.twoje-miasto.pl/art-na-sygnale/prokuratura-w-warszawie-areszt-dla-i1273957",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-10-24",
+  "published": "2026-10-24",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "99d7112e34af",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
+  "id": "569f6176a766",
+  "title": "Nowy park w powiecie grodziskim. Pokazano wizualizacje",
+  "url": "https://www.przegladregionalny.pl/artykul/11401,nowy-park-w-powiecie-grodziskim-pokazano-wizualizacje",
+  "source": "Przegląd Regionalny",
+  "source_id": "przeglad-regionalny",
+  "first_seen": "2026-10-24",
+  "published": "2026-10-24",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "a92edf78d43b",
+  "opis_proba": "v3",
+  "text": "Gmina Grodzisk Mazowiecki ogłosiła przetarg na wykonanie projektu zagospodarowania terenu wokół zbiornika wodnego w Książenicach. Nowy park rekreacyjny o powierzchni ponad 1,6 hektara ma powstać przy ulicy Jarzębinowej.",
+  "opis_auto": true,
+  "tytul": "Gmina Grodzisk Mazowiecki poszukuje projektanta nowego parku w Książenicach",
+  "tytul_proba": true
+ },
+ {
+  "id": "29b5380af7c0",
+  "title": "Cyberprzemoc, groźby i procedura 4U. Ogólnopolski program policji trafi do uczniów",
+  "url": "https://wpr24.pl/cyberprzemoc-grozby-i-procedura-4u-ogolnopolski-program-policji-trafi-do-uczniow/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-10-24",
+  "published": "2026-10-24",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "a5c888d86914"
+ },
+ {
+  "id": "4ceb3d8b907d",
+  "title": "Przełom w sprawie Pałacu w Młochowie. Ponad 8 mln zł z UE i nowy przetarg na remont",
+  "url": "https://wpr24.pl/przelom-w-sprawie-palacu-w-mlochowie-ponad-8-mln-zl-z-ue-i-nowy-przetarg-na-remont/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-10-24",
+  "published": "2026-10-24",
+  "kind": "inw",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "622913acd954"
  },
  {
   "id": "3e7ecda8ba3d",
@@ -1836,7 +1950,10 @@
   "event_iso": null,
   "tkey": "95ebf91fe2ea",
   "opis_proba": "v3",
-  "poza_okolica": true
+  "poza_okolica": true,
+  "also": [
+   "Przegląd Regionalny"
+  ]
  },
  {
   "id": "e4a042f2aa87",
@@ -2325,7 +2442,9 @@
   ],
   "opis_proba": "v2",
   "text": "Gmina Grodzisk Mazowiecki pozyskała unijne dofinansowanie na trzy inwestycje o łącznej wartości ponad 32 mln zł. Do końca 2028 roku powstaną nowe ścieżki rowerowe, parking „Parkuj i Jedź” w Szczęsnym oraz zmodernizowane zostaną zabytkowe budynki.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Unijne wsparcie trafi na trzy inwestycje w gminie Grodzisk Mazowiecki"
  },
  {
   "id": "1d57b2d65289",
@@ -2344,7 +2463,9 @@
   "also": [
    "Grodzisk Twoje Miasto",
    "Przegląd Regionalny"
-  ]
+  ],
+  "tytul_proba": true,
+  "tytul": "Urząd w Grodzisku Mazowieckim opublikował projekt planu ogólnego"
  },
  {
   "id": "53fc9034a81f",
@@ -2756,7 +2877,9 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "Gmina Grodzisk Mazowiecki pozyskała unijne dofinansowanie na remonty zabytkowych kamienic oraz budowę nowych tras pieszo-rowerowych i parkingu. Pieniądze te są częścią puli ponad 35 mln zł przeznaczonej na inwestycje w podwarszawskich samorządach.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Unijne fundusze przeznaczone na odnowę kamienic i infrastrukturę w Grodzisku Mazowieckim"
  },
  {
   "id": "19db6bf2fd54",
@@ -3235,7 +3358,9 @@
   "event_iso": null,
   "opis_proba": "v2",
   "text": "We wsi Szczęsne w gminie Grodzisk Mazowiecki ruszyła rewitalizacja zbiornika wodnego przy ul. Sasankowej. W ramach inwestycji powstanie park z alejkami, oświetleniem i placem zabaw, której zakończenie zaplanowano na sierpień 2027 roku.",
-  "opis_auto": true
+  "opis_auto": true,
+  "tytul_proba": true,
+  "tytul": "Rozpoczęła się budowa parku oraz odnowa zbiornika wodnego w Szczęsnem"
  },
  {
   "id": "30a1fb37dab3",
