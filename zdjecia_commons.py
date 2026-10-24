@@ -5,7 +5,8 @@ Uruchamiany ręcznie (workflow "Zbieranie zdjęć z Wikimedia Commons"). Niczego
   data/zdjecia_kandydaci.html  (arkusz przeglądowy z miniaturami; zaznaczasz zdjęcia, które nam pasują)
 Zdjęcia wybiera człowiek: skrypt tylko odsiewa to, czego na pewno nie wolno użyć (licencje z NC, ND, brak licencji,
 zbyt małe pliki, formaty inne niż JPEG i PNG) i oznacza ostrzeżenia (znaki towarowe, prawa osobiste).
-Użycie: python zdjecia_commons.py [--tematy | --szukaj]
+Użycie: python zdjecia_commons.py [--tematy | --szukaj | --wsie]
+  --wsie: automatyczny wybór po 3 zdjęcia dla każdej miejscowości gminy (data/zdjecia_wsie.txt);
   --tematy: tylko zdjęcia ogólne do tematów;  --szukaj: pliki znalezione wyszukiwarką Commons po frazach o Grodzisku
 """
 import html
@@ -131,6 +132,7 @@ def rekord(strona):
         "opis": czysty_tekst((meta.get("ImageDescription") or {}).get("value"))[:300],
         "data": czysty_tekst((meta.get("DateTimeOriginal") or {}).get("value")),
         "uwagi": uwagi(meta),
+        "kategorie": [c for c in czysty_tekst((meta.get("Categories") or {}).get("value")).split("|") if c.strip()],
     }
 
 
@@ -261,6 +263,61 @@ def arkusz(kandydaci):
         '</script></body></html>')
 
 
+# ---------- automatyczny wybór zdjęć dla miejscowości gminy ----------
+TARGET_NA_WIES = 3          # tyle zdjęć chcemy mieć na miejscowość (liczymy też te już wybrane ręcznie)
+WYNIKOW_NA_WIES = 25
+# zdjęcia, których nie wybieramy automatycznie: ludzie, cmentarze i groby, imprezy, mecze
+NIEPOTRZEBNE = re.compile(r"cmentarz|cmentarn|\bgrob|\bgrób|kirkut|jewish|nagrob|pogrzeb|funeral|portret|portrait|zawodnik|\bmecz|match|"
+                          r"dzieci|children|uczni|festyn|konkurs|uroczysto|wizyta|spotkanie|koncert|\blud(zie|zi)", re.I)
+
+
+def wybierz_dla_wsi(kandydaci, wies, ile):
+    """Najlepsze zdjęcia miejscowości bez ludzi: poziome, duże, z nazwą wsi w tytule lub kategoriach."""
+    wies_n = re.sub(r"[^a-z0-9]+", " ", wies.lower().translate(str.maketrans("ąćęłńóśźż", "acelnoszz"))).strip()
+    dobre = [k for k in kandydaci if not k["uwagi"] and not NIEPOTRZEBNE.search(f'{k["tytul"]} {k["opis"]}')]
+
+    def klucz(k):
+        tekst = re.sub(r"[^a-z0-9]+", " ", f'{k["tytul"]} {" ".join(k.get("kategorie", []))}'.lower().translate(
+            str.maketrans("ąćęłńóśźż", "acelnoszz")))
+        poziome = 1.2 <= (k["szerokosc"] or 1) / (k["wysokosc"] or 1) <= 2.4
+        return (poziome, wies_n in tekst, k["szerokosc"] or 0)
+
+    return sorted(dobre, key=klucz, reverse=True)[:ile]
+
+
+def main_wsie(fetch=pobierz, katalog=ROOT / "data"):
+    """Dla każdej miejscowości gminy szuka zdjęć na Commons (nazwa wsi i Grodzisk Mazowiecki w tekście pliku) i wybiera automatycznie
+    brakujące do TARGET_NA_WIES. Zapisuje data/zdjecia_wsie.txt (gotowe do pobrania) oraz arkusz podglądowy data/zdjecia_wsie.html."""
+    import zdjecia_pobierz as zp
+    from klasyfikacja import PLACES, w_gminie
+    wsie = [n for n in PLACES if w_gminie(n)]
+    wybrane = zp.wczytaj_wybor(katalog / "zdjecia_wybor.txt")
+    juz = {t for t, _, _, _ in wybrane}
+    mamy = {}
+    for t, temat, slowa, mj in wybrane:
+        m = mj or ("" if temat and not slowa else zp.miejsce(t))
+        mamy[m] = mamy.get(m, 0) + 1
+    linie, podglad = [], []
+    for wies in wsie:
+        brak = TARGET_NA_WIES - mamy.get(wies, 0)
+        if brak <= 0:
+            continue
+        d = fetch({"action": "query", "list": "search", "srsearch": f'"{wies}" "Grodzisk Mazowiecki" filetype:bitmap',
+                   "srnamespace": "6", "srlimit": str(WYNIKOW_NA_WIES)})
+        tytuly = [w["title"] for w in (d.get("query") or {}).get("search", []) if w["title"] not in juz]
+        wybor = wybierz_dla_wsi(szczegoly(fetch, tytuly), wies, brak) if tytuly else []
+        print(f"  {wies}: znaleziono {len(tytuly)}, wybrano {len(wybor)}")
+        for k in wybor:
+            juz.add(k["tytul"])
+            linie.append(f'{k["tytul"]} | | | {wies}')
+            podglad.append({**k, "grupa": wies})
+    katalog.mkdir(exist_ok=True)
+    (katalog / "zdjecia_wsie.txt").write_text("\n".join(linie) + ("\n" if linie else ""), encoding="utf-8")
+    (katalog / "zdjecia_wsie.html").write_text(arkusz(podglad), encoding="utf-8")
+    print(f"Wybrano automatycznie {len(linie)} zdjęć dla {len({p['grupa'] for p in podglad})} miejscowości: data/zdjecia_wsie.txt")
+    return 0
+
+
 def _wybrane_tytuly(katalog):
     sciezka = katalog / "zdjecia_wybor.txt"
     if not sciezka.exists():
@@ -313,6 +370,8 @@ def main(fetch=pobierz, katalog=ROOT / "data", miejsca=True):
 
 
 if __name__ == "__main__":
+    if "--wsie" in sys.argv:
+        sys.exit(main_wsie())
     if "--szukaj" in sys.argv:
         # własne frazy z zmiennej FRAZA, oddzielone średnikami (np. "Książenice; Książenice szkoła"); bez niej domyślny zestaw o Grodzisku
         sys.exit(main_szukaj(frazy=[f.strip() for f in os.environ.get("FRAZA", "").split(";") if f.strip()] or None))

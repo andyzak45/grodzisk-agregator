@@ -1393,6 +1393,49 @@ class ZdjeciaCommons(unittest.TestCase):
             self.assertEqual(zc.main_szukaj(fetch, Path(d), ["Książenice", "Książenice szkoła"]), 0)
         self.assertEqual(frazy, ["Książenice filetype:bitmap", "Książenice szkoła filetype:bitmap"])
 
+    def _kand(self, tytul, opis="Wieś", szer=2000, wys=1200, uwagi=(), kategorie=()):
+        return {"tytul": tytul, "opis": opis, "szerokosc": szer, "wysokosc": wys, "uwagi": list(uwagi), "kategorie": list(kategorie)}
+
+    def test_wybor_dla_wsi_pomija_ludzi_cmentarze_i_wybiera_poziome_z_nazwa_wsi(self):
+        kand = [self._kand("File:Kady 01.jpg"), self._kand("File:Kady 02.jpg", szer=2400),
+                self._kand("File:Cmentarz w Kadach.jpg"), self._kand("File:Kady dzieci na festynie.jpg"),
+                self._kand("File:Kady pion.jpg", szer=1000, wys=1800), self._kand("File:Kady 03.jpg", uwagi=["prawdopodobnie ludzie"]),
+                self._kand("File:IMG 0001.jpg", kategorie=["Kady"]), self._kand("File:Inne.jpg")]
+        wybrane = [k["tytul"] for k in zc.wybierz_dla_wsi(kand, "Kady", 3)]
+        self.assertEqual(wybrane, ["File:Kady 02.jpg", "File:Kady 01.jpg", "File:IMG 0001.jpg"])
+
+    def test_wsie_uzupelniaja_do_trzech_i_pomijaja_to_co_juz_wybrane(self):
+        zapytania = []
+        def fetch(par):
+            if par.get("list") == "search":
+                zapytania.append(par["srsearch"])
+                if par["srsearch"].startswith('"Kady"'):
+                    return {"query": {"search": [{"title": f"File:Kady {i}.jpg"} for i in range(1, 6)]}}
+                return {"query": {"search": []}}
+            return {"query": {"pages": [dict(self._strona(t), title=t) for t in par["titles"].split("|")]}}
+        with tempfile.TemporaryDirectory() as d:
+            katalog = Path(d)
+            (katalog / "zdjecia_wybor.txt").write_text("File:KADY ul.Mazowiecka f.2.jpg\nFile:Kady 1.jpg | | | Kady\n", encoding="utf-8")
+            self.assertEqual(zc.main_wsie(fetch, katalog), 0)
+            linie = (katalog / "zdjecia_wsie.txt").read_text(encoding="utf-8").splitlines()
+            podglad = (katalog / "zdjecia_wsie.html").read_text(encoding="utf-8")
+        self.assertEqual(len(linie), 1)                      # dwa zdjęcia Kadów już są (po nazwie i wprost), brakuje jednego
+        self.assertTrue(linie[0].endswith("| | | Kady"))
+        self.assertNotIn("Kady 1.jpg", linie[0])
+        self.assertIn("Kady", podglad)
+        self.assertTrue(any('"Książenice" "Grodzisk Mazowiecki"' in z for z in zapytania))      # każda wieś ma własne zapytanie
+
+    def test_pobieranie_czyta_tez_automatyczny_wybor_wsi(self):
+        strony = {"File:Reczne.jpg": self._strona("File:Reczne.jpg"), "File:Wies.jpg": self._strona("File:Wies.jpg")}
+        with tempfile.TemporaryDirectory() as d:
+            korzen = Path(d)
+            (korzen / "data").mkdir()
+            (korzen / "data" / "zdjecia_wybor.txt").write_text("File:Reczne.jpg | | | Kozery\n", encoding="utf-8")
+            (korzen / "data" / "zdjecia_wsie.txt").write_text("File:Wies.jpg | | | Kady\nFile:Reczne.jpg | | | Kady\n", encoding="utf-8")
+            zp.main(lambda par: {"query": {"pages": [strony[t] for t in par["titles"].split("|")]}}, lambda url: b"x", korzen)
+            zapis = {z["tytul"]: z["miejsce"] for z in json.loads((korzen / "data" / "zdjecia.json").read_text(encoding="utf-8"))}
+        self.assertEqual(zapis, {"File:Reczne.jpg": "Kozery", "File:Wies.jpg": "Kady"})      # wybór ręczny ma pierwszeństwo
+
     def test_tryb_szukaj_bez_wynikow_to_blad(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(zc.main_szukaj(lambda par: {}, Path(d)), 1)

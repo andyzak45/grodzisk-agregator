@@ -91,6 +91,8 @@ def wczytaj_wybor(sciezka):
 
 def main(fetch=zc.pobierz, pobierz=pobierz_plik, katalog=ROOT):
     wybor = wczytaj_wybor(katalog / "data" / "zdjecia_wybor.txt")
+    znane = {t for t, _, _, _ in wybor}
+    wybor += [w for w in wczytaj_wybor(katalog / "data" / "zdjecia_wsie.txt") if w[0] not in znane]      # automatyczny wybór dla wsi
     tematy_wyboru = {t: (tm, sl, mj) for t, tm, sl, mj in wybor}
     tytuly = [t for t, _, _, _ in wybor]
     if not tytuly:
