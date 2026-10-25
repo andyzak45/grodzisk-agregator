@@ -92,7 +92,6 @@ File:Budynek G2.jpg | szkola
 File:Elementary School No. 47 in Gdynia, Poland.jpg | szkola
 File:Schule Nr. 2 in Narzym, Gmina Iłowo-Osada, Powiat Działdowski, Woiwodschaft Ermland-Masuren, Polen.png | szkola
 File:Czytelnia Biblioteki Wydziału Historii UW.jpg | kultura
-File:ChBP w Chełmie.jpg | kultura
 File:Park - Brwinów 09.jpg | srodowisko
 File:Park - Brwinów 10.jpg | srodowisko
 File:Park - Brwinów 11.jpg | srodowisko
@@ -118,3 +117,5 @@ File:2025 Warszawa las w Aleksandrowie, 5.jpg | ogolne
 File:2019 Warszawa Borowa Góra.jpg | ogolne
 File:Bagno Całowianie (1).jpg | ogolne
 File:2025 Józefów Wiejska, 1.jpg | ogolne
+File:Mediateka_Grodzisk_Mazowiecki_1.jpg | kultura | mediate
+File:Grodzisk_Mazowiecki_2021_(10).jpg | pociag | dworc, stacj kolejow
