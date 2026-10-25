@@ -145,7 +145,7 @@ def _czesci(it, today):
     opis_html = f'<p class="opis">{e(tekst)}</p>' if tekst else ""
     zrodlo = e(it["source"]) + (f' <span class="also">oraz {e(", ".join(it["also"]))}</span>' if it.get("also") else "")
     tag = f'<span class="tag t-{e(it["kind"])}">{e(label)}</span>'
-    meta = f'<div class="meta-bar">{tag}{znaczek}{data}<span>{zrodlo}</span></div>'
+    meta = f'<div class="meta-bar">{tag}{znaczek}{data}</div>'
     link = f'<a href="{e(it["url"])}" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a>'
     return bg, meta, opis_html, when, link
 
@@ -345,7 +345,7 @@ def wiersz_archiwum(it, today):
     haystack = " ".join([tytul(it), tekst, it["source"], miejsce, label]).lower()
     zauw = ""
     meta = (f'<span>{d.day}.{d.month:02d}.{d.year}{zauw}</span><span>{e(label)}</span>'
-            + (f'<span>{e(miejsce)}</span>' if miejsce else "") + f'<span>{e(it["source"])}</span>')
+            + (f'<span>{e(miejsce)}</span>' if miejsce else ""))
     return (f'<li data-kind="{e(it["kind"])}" data-s="{e(haystack)}">'
             f'<a class="t" href="{e(it["url"])}" target="_blank" rel="noopener">{e(tytul(it))}</a>'
             f'<div class="arch-meta">{meta}</div>'

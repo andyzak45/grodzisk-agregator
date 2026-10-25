@@ -1251,7 +1251,7 @@ class Grafiki(unittest.TestCase):
         z = grafiki.ilustracja(self._wpis(kind="inw", obraz="https://grodzisk.pl/foto.jpg"))
         self.assertIn('src="https://grodzisk.pl/foto.jpg"', z)
         self.assertIn('referrerpolicy="no-referrer"', z)
-        self.assertIn("Źródło zdjęcia", z)
+        self.assertNotIn("Źródło zdjęcia", z)
         self.assertNotIn("Fot.:", z)
         self.assertNotIn("<use", z)
 
@@ -1512,7 +1512,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         self.assertEqual(grafiki.wybierz_zdjecie(remont)["plik"], "zdjecia/droga-1.jpg")
         inne = self._wpis(id="21", place="Kozery", title="Wieści z gminy", kind="inne")
         self.assertEqual(grafiki.wybierz_zdjecie(inne)["plik"], "zdjecia/ogolne-1.jpg")      # brak zdjęcia do tematu: ogólne
-        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(remont))
+        self.assertNotIn("Źródło zdjęcia", grafiki.ilustracja(remont))
         for slowo in ("ilustracyjne", "poglądowe"):
             self.assertNotIn(slowo, grafiki.ilustracja(remont))      # bez etykiet "ilustracyjne" pod zdjęciem
 
@@ -1520,7 +1520,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/ratusz.jpg", "Grodzisk Mazowiecki", "urzad")])
         wies = self._wpis(id="30", place="Kozery", title="Nabór wniosków o dotację", kind="inne")
         self.assertEqual(grafiki.wybierz_zdjecie(wies)["plik"], "zdjecia/ratusz.jpg")
-        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(wies))
+        self.assertNotIn("Źródło zdjęcia", grafiki.ilustracja(wies))
         self.assertNotIn("ilustracyjne", grafiki.ilustracja(wies))
 
     def test_zdjecie_wsi_nie_jest_zapasem_dla_wpisu_bez_tematu(self):
@@ -1576,7 +1576,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/droga-1.jpg", "", "droga"), self._foto("zdjecia/kady-1.jpg", "Kady", "droga")])
         w = self._wpis(id="24", place="Kady", title="Remont drogi", kind="inw")
         self.assertEqual(grafiki.wybierz_zdjecie(w)["plik"], "zdjecia/kady-1.jpg")
-        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(w))
+        self.assertNotIn("Źródło zdjęcia", grafiki.ilustracja(w))
 
     def test_wybor_jest_staly_dla_wpisu(self):
         grafiki.ustaw_zdjecia([self._foto(f"zdjecia/kady-{i}.jpg", "Kady") for i in range(3)])
@@ -1591,9 +1591,8 @@ class ZdjeciaNaStronie(unittest.TestCase):
     def test_podpis_to_tylko_link_do_strony_zdjecia_bez_autora_i_licencji_w_tekscie(self):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/kady-1.jpg", "Kady", autor='<script>x</script>')])
         h = grafiki.ilustracja(self._wpis())
-        self.assertIn("Źródło zdjęcia", h)
-        self.assertNotIn("poglądowe", h)
-        self.assertIn('href="https://commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg"', h)      # tam są autor i licencja
+        self.assertNotIn("Źródło zdjęcia", h)
+        self.assertNotIn('commons.wikimedia.org', h)      # podpisów pod zdjęciami nie ma
         self.assertNotIn("CC BY-SA", h)
         self.assertNotIn("Fot.:", h)
         self.assertNotIn("<script>", h)
@@ -1602,7 +1601,8 @@ class ZdjeciaNaStronie(unittest.TestCase):
         h = grafiki.ilustracja(self._wpis())
         self.assertNotIn("<figure", h)
         self.assertNotIn("figcaption", h)
-        self.assertRegex(h, r'<div class="ilu foto k-inne"><img [^>]+></div><p class="podpis"><a [^>]+>Źródło zdjęcia</a></p>')
+        self.assertRegex(h, r'<div class="ilu foto k-inne"><img [^>]+></div>')
+        self.assertNotIn('class="podpis"', h)
 
     def test_adres_zdjecia_ze_zrodla_jest_escapowany(self):
         h = grafiki.ilustracja(self._wpis(obraz='https://grodzisk.pl/a"b.jpg'))
@@ -1653,7 +1653,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
             page = out.read_text(encoding="utf-8")
         self.assertIn('src="zdjecia/kady-1.jpg"', page)
         self.assertIn("z-foto", page)
-        self.assertIn("commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg", page)
+        self.assertNotIn("commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg", page)
         self.assertNotIn("Jan Kowalski", page)
 
 
