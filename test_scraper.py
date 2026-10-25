@@ -1248,10 +1248,11 @@ class Grafiki(unittest.TestCase):
         bez = grafiki.ilustracja(self._wpis(kind="inw", title="Remont drogi"))
         self.assertIn('class="ilu k-inw"', bez)
         self.assertIn('<use href="#ilu-droga"/>', bez)
-        z = grafiki.ilustracja(self._wpis(kind="inw", obraz="https://grodzisk.pl/foto.jpg", obraz_autor="Urząd Miejski"))
+        z = grafiki.ilustracja(self._wpis(kind="inw", obraz="https://grodzisk.pl/foto.jpg"))
         self.assertIn('src="https://grodzisk.pl/foto.jpg"', z)
         self.assertIn('referrerpolicy="no-referrer"', z)
-        self.assertIn("Fot.: Urząd Miejski", z)
+        self.assertIn("Źródło zdjęcia", z)
+        self.assertNotIn("Fot.:", z)
         self.assertNotIn("<use", z)
 
     def test_obraz_tylko_z_https(self):
@@ -1511,16 +1512,16 @@ class ZdjeciaNaStronie(unittest.TestCase):
         self.assertEqual(grafiki.wybierz_zdjecie(remont)["plik"], "zdjecia/droga-1.jpg")
         inne = self._wpis(id="21", place="Kozery", title="Wieści z gminy", kind="inne")
         self.assertEqual(grafiki.wybierz_zdjecie(inne)["plik"], "zdjecia/ogolne-1.jpg")      # brak zdjęcia do tematu: ogólne
-        self.assertIn("Zdjęcie ilustracyjne", grafiki.ilustracja(remont))
-        self.assertNotIn("poglądowe", grafiki.ilustracja(remont))
+        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(remont))
+        for slowo in ("ilustracyjne", "poglądowe"):
+            self.assertNotIn(slowo, grafiki.ilustracja(remont))      # bez etykiet "ilustracyjne" pod zdjęciem
 
     def test_temat_bez_zdjecia_ogolnego_bierze_zdjecie_z_tego_tematu_jako_ilustracyjne(self):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/ratusz.jpg", "Grodzisk Mazowiecki", "urzad")])
         wies = self._wpis(id="30", place="Kozery", title="Nabór wniosków o dotację", kind="inne")
         self.assertEqual(grafiki.wybierz_zdjecie(wies)["plik"], "zdjecia/ratusz.jpg")
-        self.assertIn("Zdjęcie ilustracyjne", grafiki.ilustracja(wies))
-        miasto = self._wpis(id="31", place="Grodzisk Mazowiecki", title="Burmistrz ogłosił nabór", kind="inne")
-        self.assertIn("Zdjęcie poglądowe", grafiki.ilustracja(miasto))      # to samo miejsce, więc poglądowe
+        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(wies))
+        self.assertNotIn("ilustracyjne", grafiki.ilustracja(wies))
 
     def test_zdjecie_wsi_nie_jest_zapasem_dla_wpisu_bez_tematu(self):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/kady-1.jpg", "Kady", "ogolne")])
@@ -1533,8 +1534,8 @@ class ZdjeciaNaStronie(unittest.TestCase):
         wpis = self._wpis(id="50", place="Grodzisk Mazowiecki", title="Darmowy seans opery w grodziskiej Mediatece", kind="wyd")
         self.assertEqual(grafiki.wybierz_zdjecie(wpis)["plik"], "zdjecia/mediateka.jpg")
         h = grafiki.ilustracja(wpis)
-        self.assertIn("Zdjęcie poglądowe", h)
-        self.assertIn('<p class="podpis">Zdjęcie poglądowe</p>', h)      # własne zdjęcie: bez linku i bez autora
+        self.assertIn('<img src="zdjecia/mediateka.jpg"', h)
+        self.assertNotIn("podpis", h)      # własne zdjęcie: bez żadnego podpisu
         self.assertNotIn("Anna", h)
         inny = self._wpis(id="51", place="Grodzisk Mazowiecki", title="Koncert w parku", kind="wyd")
         self.assertEqual(grafiki.wybierz_zdjecie(inny)["plik"], "zdjecia/kultura-ogolne.jpg")      # zdjęcie Mediateki nie trafia do innych wpisów
@@ -1575,7 +1576,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/droga-1.jpg", "", "droga"), self._foto("zdjecia/kady-1.jpg", "Kady", "droga")])
         w = self._wpis(id="24", place="Kady", title="Remont drogi", kind="inw")
         self.assertEqual(grafiki.wybierz_zdjecie(w)["plik"], "zdjecia/kady-1.jpg")
-        self.assertIn("Zdjęcie poglądowe", grafiki.ilustracja(w))
+        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(w))
 
     def test_wybor_jest_staly_dla_wpisu(self):
         grafiki.ustaw_zdjecia([self._foto(f"zdjecia/kady-{i}.jpg", "Kady") for i in range(3)])
@@ -1590,7 +1591,8 @@ class ZdjeciaNaStronie(unittest.TestCase):
     def test_podpis_to_tylko_link_do_strony_zdjecia_bez_autora_i_licencji_w_tekscie(self):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/kady-1.jpg", "Kady", autor='<script>x</script>')])
         h = grafiki.ilustracja(self._wpis())
-        self.assertIn("Zdjęcie poglądowe", h)
+        self.assertIn("Źródło zdjęcia", h)
+        self.assertNotIn("poglądowe", h)
         self.assertIn('href="https://commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg"', h)      # tam są autor i licencja
         self.assertNotIn("CC BY-SA", h)
         self.assertNotIn("Fot.:", h)
@@ -1600,12 +1602,12 @@ class ZdjeciaNaStronie(unittest.TestCase):
         h = grafiki.ilustracja(self._wpis())
         self.assertNotIn("<figure", h)
         self.assertNotIn("figcaption", h)
-        self.assertRegex(h, r'<div class="ilu foto k-inne"><img [^>]+></div><p class="podpis"><a [^>]+>Zdjęcie poglądowe</a></p>')
+        self.assertRegex(h, r'<div class="ilu foto k-inne"><img [^>]+></div><p class="podpis"><a [^>]+>Źródło zdjęcia</a></p>')
 
-    def test_autor_zdjecia_ze_zrodla_jest_escapowany(self):
-        h = grafiki.ilustracja(self._wpis(obraz="https://grodzisk.pl/f.jpg", obraz_autor="<b>Jan</b>"))
-        self.assertNotIn("<b>Jan</b>", h)
-        self.assertIn("&lt;b&gt;Jan&lt;/b&gt;", h)
+    def test_adres_zdjecia_ze_zrodla_jest_escapowany(self):
+        h = grafiki.ilustracja(self._wpis(obraz='https://grodzisk.pl/a"b.jpg'))
+        self.assertNotIn('a"b.jpg', h)
+        self.assertIn("a&quot;b.jpg", h)
 
     def test_temat_z_tytulu_ma_pierwszenstwo_przed_notka(self):
         w = self._wpis(id="70", place="Mościska", kind="wyd", title="Charytatywne warsztaty szycia",

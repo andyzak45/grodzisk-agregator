@@ -145,14 +145,15 @@ def wybierz_zdjecie(it):
     return wybrane
 
 
+ETYKIETA_ZDJECIA = "Źródło zdjęcia"
+
+
 def podpis(z, it=None):
-    """Podpis pod zdjęciem: tylko rodzaj ("poglądowe" gdy to samo miejsce co wpis, inaczej "ilustracyjne"). Dla zdjęć z Commons to link
-    do strony pliku, gdzie są autor i licencja, co przy licencjach CC wystarcza jako uznanie autorstwa (hiperłącze do źródła)."""
-    ilustracyjne = it is None or z["miejsce"] != it["place"].split("|")[0]      # zdjęcie innego miejsca niż wpis, więc tylko ilustruje temat
-    rodzaj = "Zdjęcie ilustracyjne" if ilustracyjne else "Zdjęcie poglądowe"
+    """Pod zdjęciem tylko link do strony pliku na Commons (tam są autor i licencja, co przy licencjach CC wystarcza jako uznanie
+    autorstwa przez hiperłącze). Zdjęcie własne bez takiej strony nie ma podpisu wcale."""
     if z.get("strona"):
-        return f'<a href="{html.escape(z["strona"])}" target="_blank" rel="noopener">{rodzaj}</a>'
-    return rodzaj
+        return f'<a href="{html.escape(z["strona"])}" target="_blank" rel="noopener">{ETYKIETA_ZDJECIA}</a>'
+    return ""
 
 
 def sprite():
@@ -174,14 +175,14 @@ def temat(it):
 def ilustracja(it, klasa="ilu"):
     """Karta ze zdjęciem (pole "obraz", np. od źródła, które wyraziło zgodę) albo z naszą grafiką poglądową."""
     obraz = it.get("obraz")
-    if obraz and obraz.startswith("https://"):
-        autor = html.escape(it.get("obraz_autor") or it["source"])
+    if obraz and obraz.startswith("https://"):      # zdjęcie ze źródła wpisu: link prowadzi do oryginalnego artykułu
         return (f'<div class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(obraz)}" alt="" loading="lazy" referrerpolicy="no-referrer"></div>'
-                f'<p class="podpis">Fot.: {autor}</p>')
+                f'<p class="podpis"><a href="{html.escape(it["url"])}" target="_blank" rel="noopener">{ETYKIETA_ZDJECIA}</a></p>')
     z = wybierz_zdjecie(it)
     if z:      # zdjęcie w ramce o stałej proporcji, a podpis jako osobny akapit pod nią: nic się nie nakłada na pasek kategorii
+        pod = podpis(z, it)
         return (f'<div class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(z["plik"])}" alt="" loading="lazy" decoding="async"></div>'
-                f'<p class="podpis">{podpis(z, it)}</p>')
+                + (f'<p class="podpis">{pod}</p>' if pod else ""))
     t = temat(it)
     return (f'<div class="{klasa} k-{it["kind"]}" role="img" aria-label="Grafika poglądowa: {OPISY[t]}">'
             f'<svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ilu-{t}"/></svg></div>')
@@ -191,7 +192,8 @@ def tlo_czolowki(it):
     """Tło dużej karty: zdjęcie z podpisem albo grafika. Zwraca (znacznik, dodatkowa klasa)."""
     z = wybierz_zdjecie(it) if not it.get("obraz") else None
     if z:
+        pod = podpis(z, it)
         return (f'<img class="hero-foto" src="{html.escape(z["plik"])}" alt="" decoding="async">'
-                f'<span class="hero-fot">{podpis(z, it)}</span>'), " z-foto"
+                + (f'<span class="hero-fot">{pod}</span>' if pod else "")), " z-foto"
     return (f'<svg class="hero-ilu" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
             f'<use href="#ilu-{temat(it)}"/></svg>'), ""
