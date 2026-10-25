@@ -86,6 +86,8 @@
         .badge { color: var(--accent); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
         h3 { margin: 0 0 0.5rem 0; font-family: var(--cond); font-size: 1.25rem; font-weight: 700; line-height: 1.2; color: #0f172a; }
         .opis { color: #374151; font-size: 0.92rem; margin: 0 0 0.7rem 0; }
+        .kat-grid .opis { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+        @media (max-width: 600px) { .kat-grid .opis { display: block; overflow: visible; } }
         .when { color: #111827; font-size: 0.88rem; margin: 0 0 0.8rem 0; font-weight: 700; }
         .read-more { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 0.82rem; margin-top: auto; display: inline-flex; align-items: center; }
         .ico { width: 34px; height: 34px; color: rgba(255,255,255,0.92); flex-shrink: 0; }
@@ -122,7 +124,7 @@
         <p class="empty" id="brak" hidden>Brak aktualnych wpisów.</p>
     </main>
     <footer>
-        <p>Informacje zbierane z publicznych stron lokalnych instytucji i mediów oraz opracowywane przez redakcję. Pokazujemy fakty i link do oryginału, pełne treści czytaj u wydawców. Grafiki i zdjęcia przy wpisach są poglądowe i nie przedstawiają opisywanych wydarzeń ani osób. Zdjęcia pochodzą z Wikimedia Commons na wolnych licencjach oraz są własnymi zdjęciami redakcji: <a href="zdjecia.html">autorzy i licencje zdjęć</a>. Przy zdarzeniach nie podajemy danych osób. Zauważyłeś błąd? Napisz do redakcji.</p>
+        <p>Informacje zbierane z publicznych stron lokalnych instytucji i mediów oraz opracowywane przez redakcję. Pokazujemy fakty i link do oryginału, pełne treści czytaj u wydawców. Grafiki i zdjęcia przy wpisach są poglądowe i nie przedstawiają opisywanych wydarzeń ani osób. Zdjęcia pochodzą z Wikimedia Commons na wolnych licencjach: link pod zdjęciem prowadzi do strony pliku z autorem i licencją. Przy zdarzeniach nie podajemy danych osób. Zauważyłeś błąd? Napisz do redakcji.</p>
     </footer>
     <script>
     (function () {
