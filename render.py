@@ -282,7 +282,56 @@ def build(items, template_path, out_path, today=None, aktualizacja=None):
     page = page.replace("<!-- DYNAMIC_CARDS_PLACEHOLDER -->", strumien(pokazane, wyrozniane, today))
     page = page.replace("<!-- UPDATED_PLACEHOLDER -->", f"Ostatnia aktualizacja: {(aktualizacja.strftime('%d.%m.%Y, godz. %H:%M') if aktualizacja else today.strftime('%d.%m.%Y'))}")
     Path(out_path).write_text(page, encoding="utf-8")
+    build_zdjecia(template_path, korzen / "zdjecia.html")
     return pokazane
+
+
+def build_zdjecia(template_path, out_path):
+    """Strona zdjecia.html: autorzy i licencje wszystkich zdjęć na stronie (uznanie autorstwa wymagane przez licencje CC).
+    Zdjęcia z Commons: link do strony pliku, autor, licencja. Zdjęcia własne (bez pola "strona"): autor z pola "autor" albo redakcja."""
+    korzen = Path(out_path).parent
+    wlasne = grafiki.wczytaj_zdjecia(korzen / "data" / "zdjecia_wlasne.json", korzen)
+    commons = grafiki.wczytaj_zdjecia(korzen / "data" / "zdjecia.json", korzen)
+
+    def wiersz(z):
+        nazwa = e((z.get("tytul") or Path(z["plik"]).stem).removeprefix("File:"))
+        if z.get("strona"):
+            nazwa = f'<a href="{e(z["strona"])}" target="_blank" rel="noopener">{nazwa}</a>'
+        autor = e(z.get("autor") or ("redakcja Grodzisk lokalnie" if not z.get("strona") else "autor na stronie pliku"))
+        lic = z.get("licencja")
+        if lic and z.get("licencja_url"):
+            lic = f'<a href="{e(z["licencja_url"])}" target="_blank" rel="noopener">{e(lic)}</a>'
+        elif lic:
+            lic = e(lic)
+        else:
+            lic = "wszelkie prawa zastrzeżone" if not z.get("strona") else ""
+        return (f'<li><img src="{e(z["plik"])}" alt="" loading="lazy" width="64" height="48">'
+                f'<span class="fz-t">{nazwa}</span><span class="fz-m">{autor}' + (f" · {lic}" if lic else "") + "</span></li>")
+
+    def sekcja(tytul, zdj):
+        if not zdj:
+            return ""
+        zdj = sorted(zdj, key=lambda z: (z.get("tytul") or z["plik"]).lower())
+        return f'<h2 class="fz-h">{e(tytul)} ({len(zdj)})</h2><ul class="fz-list">{"".join(wiersz(z) for z in zdj)}</ul>'
+
+    body = (sekcja("Zdjęcia własne", wlasne) + sekcja("Zdjęcia z Wikimedia Commons", commons)
+            or '<p class="empty">Na stronie nie ma jeszcze zdjęć.</p>')
+    css = """
+        .fz-h { font-family: var(--cond); font-size: 1.4rem; text-transform: uppercase; margin: 2rem 0 0.5rem; }
+        .fz-list { list-style: none; margin: 0; padding: 0; }
+        .fz-list li { display: grid; grid-template-columns: 64px 1fr; column-gap: 0.8rem; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; }
+        .fz-list img { grid-row: span 2; width: 64px; height: 48px; object-fit: cover; border-radius: 4px; }
+        .fz-m { color: var(--text-muted); font-size: 0.78rem; }
+        .arch-link { font-size: 0.9rem; font-weight: 700; color: var(--accent); text-decoration: none; }
+    """
+    head = Path(template_path).read_text(encoding="utf-8").split("<body>")[0]
+    head = head.replace("<title>Grodzisk lokalnie</title>", "<title>Zdjęcia – Grodzisk lokalnie</title>")
+    head = head.replace("    </style>", css + "    </style>", 1)
+    page = (head + '<body>\n<header><div class="header-container"><h1>Grodzisk<span> lokalnie</span> – zdjęcia</h1>'
+            '<a class="arch-link" href="index.html">&larr; Strona główna</a></div></header>\n<main>'
+            '<p>Zdjęcia na stronie to zdjęcia własne redakcji oraz zdjęcia z Wikimedia Commons na wolnych licencjach. '
+            f'Poniżej autorzy i licencje.</p>{body}</main>\n<footer><p>Zdjęcia mają charakter poglądowy.</p></footer></body></html>')
+    Path(out_path).write_text(page, encoding="utf-8")
 
 
 MIESIACE = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień",
