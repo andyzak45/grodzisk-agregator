@@ -136,10 +136,9 @@ def _czesci(it, today):
         when = (f'<p class="when">Kiedy: <time datetime="{e(it["event_iso"])}" data-t="{e(godz or "")}">'
                 f'{e(termin if it["event_iso"] else "")}</time></p>')
     if it.get("published"):
-        data = (f'<time datetime="{e(it["published"])}">{e(data_ui(it["published"], today))}</time>'
-                if not termin else "")
+        data = f'<time datetime="{e(it["published"])}">{e(data_ui(it["published"], today))}</time>'
     else:
-        data = f'<span>{e(dzien(it["first_seen"]))}</span>' if not termin else ""
+        data = f'<span>{e(dzien(it["first_seen"]))}</span>'      # data na każdej karcie, także gdy wpis ma termin (wtedy dodatkowo "Kiedy:")
     znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
     tekst = opis(it, today)
     opis_html = f'<p class="opis">{e(tekst)}</p>' if tekst else ""
