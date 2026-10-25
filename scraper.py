@@ -559,3 +559,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# wersja-kompletu: 2026-10-25-1

@@ -158,3 +158,5 @@ def main(fetch=zc.pobierz, pobierz=pobierz_plik, katalog=ROOT):
 
 if __name__ == "__main__":
     sys.exit(main())
+
+# wersja-kompletu: 2026-10-25-1

@@ -181,3 +181,5 @@ def wyciagnij_termin(text, today=None):
     if tm:
         label += f", godz. {int(tm.group(1))}:{tm.group(2)}"
     return label, d.isoformat()
+
+# wersja-kompletu: 2026-10-25-1

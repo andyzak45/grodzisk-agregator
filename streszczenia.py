@@ -494,3 +494,5 @@ def zastosuj_reczne(store, sciezka):
         it["text"], it["opis_auto"] = notka, True
         n += 1
     return n
+
+# wersja-kompletu: 2026-10-25-1

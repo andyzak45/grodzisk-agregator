@@ -376,3 +376,5 @@ if __name__ == "__main__":
         # własne frazy z zmiennej FRAZA, oddzielone średnikami (np. "Książenice; Książenice szkoła"); bez niej domyślny zestaw o Grodzisku
         sys.exit(main_szukaj(frazy=[f.strip() for f in os.environ.get("FRAZA", "").split(";") if f.strip()] or None))
     sys.exit(main(miejsca="--tematy" not in sys.argv))
+
+# wersja-kompletu: 2026-10-25-1

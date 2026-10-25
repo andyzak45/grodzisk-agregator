@@ -132,3 +132,5 @@ _INNY_REGION = re.compile(r"\bwoj\.\s+(?!mazowiec)|\bwojew[oó]dzt\w*\s+(?!mazow
 def inny_region(title):
     """Tytuł mówi wprost o innym województwie (np. 'alert RCB dla woj. lubelskiego'): to nie jest wiadomość lokalna."""
     return bool(_INNY_REGION.search(title or ""))
+
+# wersja-kompletu: 2026-10-25-1

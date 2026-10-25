@@ -889,6 +889,20 @@ class GeminiMartweModele(unittest.TestCase):
             streszczenia._gemini_ok.clear(); streszczenia._gemini_martwe.clear()
 
 
+class AKomplet(unittest.TestCase):
+    """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
+    WERSJA = "2026-10-25-1"
+    PLIKI = ['grafiki.py', 'render.py', 'scraper.py', 'streszczenia.py', 'klasyfikacja.py', 'redakcja.py', 'zdjecia_commons.py', 'zdjecia_pobierz.py', 'template.html']
+
+    def test_wszystkie_pliki_maja_te_sama_wersje(self):
+        stare = []
+        for nazwa in self.PLIKI:
+            tekst = (Path(__file__).resolve().parent / nazwa).read_text(encoding="utf-8")
+            if f"wersja-kompletu: {self.WERSJA}" not in tekst:
+                stare.append(nazwa)
+        self.assertEqual(stare, [], "Te pliki są w starej wersji, wgraj je ponownie z najnowszego kompletu: " + ", ".join(stare))
+
+
 class Archiwum(unittest.TestCase):
     def _wpis(self, i, dni_temu, **kw):
         d = (TODAY - timedelta(days=dni_temu)).isoformat()
