@@ -461,15 +461,37 @@ def scal_duplikaty(store):
     return usuniete
 
 
-def na_czas(src, today, force):
-    return force or src["freq"] == "daily" or (src["freq"] == "weekly" and today.weekday() == 0) \
-        or (src["freq"] == "rare" and today.day == 1)
+# Pory przebiegów w ciągu dnia (godziny w Polsce, do ustalenia). Źródło z "razy": 1 jest pobierane tylko rano, z 2 rano i wieczorem,
+# z 3 o każdej porze. Harmonogram w .github/workflows/scraper.yml uruchamia bota o tych porach (czas UTC, więc o godzinę mniej).
+SLOTY_GODZINY = [7, 13, 19]
+SLOTY_ZRODEL = {1: {0}, 2: {0, 2}, 3: {0, 1, 2}}
+
+
+def sloty_zrodla(src):
+    return SLOTY_ZRODEL[min(3, max(1, int(src.get("razy", 1))))]
+
+
+def slot_teraz(czas):
+    """Numer pory dnia (0, 1, 2), do której najbliżej jest podana godzina; przebiegi bywają opóźnione o kilkanaście minut."""
+    h = czas.hour + czas.minute / 60
+    return min(range(len(SLOTY_GODZINY)), key=lambda i: abs(SLOTY_GODZINY[i] - h))
+
+
+def na_czas(src, today, force, slot=None):
+    """Czy pobrać źródło: --all pobiera wszystko, w przeciwnym razie liczy się dzień (codziennie, tygodniowo, rzadko),
+    a przy przebiegu o konkretnej porze (slot) także liczba aktualizacji dziennie ("razy")."""
+    if force:
+        return True
+    dzien = src["freq"] == "daily" or (src["freq"] == "weekly" and today.weekday() == 0) or (src["freq"] == "rare" and today.day == 1)
+    return dzien and (slot is None or slot in sloty_zrodla(src))
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--all", action="store_true", help="pobierz też źródła tygodniowe i rzadkie")
     ap.add_argument("--only", help="pobierz tylko to źródło (id)")
+    ap.add_argument("--slot", help="pora dnia: auto (z zegara) albo 0, 1, 2. Pobiera tylko źródła przewidziane na tę porę (pole razy w sources.json); "
+                                   "bez tej opcji pobiera wszystkie źródła na dziś")
     ap.add_argument("--render-only", action="store_true", help="tylko zbuduj stronę z zapisanych danych")
     args = ap.parse_args()
     czas = teraz()
@@ -487,12 +509,15 @@ def main():
 
     if not args.render_only:
         fetcher = Fetcher()
+        slot = slot_teraz(czas) if args.slot == "auto" else (int(args.slot) if args.slot and args.slot.isdigit() else None)
+        if slot is not None:
+            print(f"Przebieg o porze {slot + 1} z {len(SLOTY_GODZINY)} (około {SLOTY_GODZINY[slot]}:00)")
         budzet = {"left": MAX_SZCZEGOLOW}
         ok = 0
         for src in sources:
             if not src.get("enabled", True) or (args.only and src["id"] != args.only):
                 continue
-            if not args.only and not na_czas(src, today, args.all):
+            if not args.only and not na_czas(src, today, args.all, slot):
                 continue
             try:
                 diag = {}

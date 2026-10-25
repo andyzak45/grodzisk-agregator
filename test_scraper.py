@@ -1251,7 +1251,7 @@ class Grafiki(unittest.TestCase):
         z = grafiki.ilustracja(self._wpis(kind="inw", obraz="https://grodzisk.pl/foto.jpg"))
         self.assertIn('src="https://grodzisk.pl/foto.jpg"', z)
         self.assertIn('referrerpolicy="no-referrer"', z)
-        self.assertNotIn("Źródło zdjęcia", z)
+        self.assertIn("Źródło zdjęcia", z)
         self.assertNotIn("Fot.:", z)
         self.assertNotIn("<use", z)
 
@@ -1512,7 +1512,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         self.assertEqual(grafiki.wybierz_zdjecie(remont)["plik"], "zdjecia/droga-1.jpg")
         inne = self._wpis(id="21", place="Kozery", title="Wieści z gminy", kind="inne")
         self.assertEqual(grafiki.wybierz_zdjecie(inne)["plik"], "zdjecia/ogolne-1.jpg")      # brak zdjęcia do tematu: ogólne
-        self.assertNotIn("Źródło zdjęcia", grafiki.ilustracja(remont))
+        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(remont))
         for slowo in ("ilustracyjne", "poglądowe"):
             self.assertNotIn(slowo, grafiki.ilustracja(remont))      # bez etykiet "ilustracyjne" pod zdjęciem
 
@@ -1520,7 +1520,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/ratusz.jpg", "Grodzisk Mazowiecki", "urzad")])
         wies = self._wpis(id="30", place="Kozery", title="Nabór wniosków o dotację", kind="inne")
         self.assertEqual(grafiki.wybierz_zdjecie(wies)["plik"], "zdjecia/ratusz.jpg")
-        self.assertNotIn("Źródło zdjęcia", grafiki.ilustracja(wies))
+        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(wies))
         self.assertNotIn("ilustracyjne", grafiki.ilustracja(wies))
 
     def test_zdjecie_wsi_nie_jest_zapasem_dla_wpisu_bez_tematu(self):
@@ -1576,7 +1576,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/droga-1.jpg", "", "droga"), self._foto("zdjecia/kady-1.jpg", "Kady", "droga")])
         w = self._wpis(id="24", place="Kady", title="Remont drogi", kind="inw")
         self.assertEqual(grafiki.wybierz_zdjecie(w)["plik"], "zdjecia/kady-1.jpg")
-        self.assertNotIn("Źródło zdjęcia", grafiki.ilustracja(w))
+        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(w))
 
     def test_wybor_jest_staly_dla_wpisu(self):
         grafiki.ustaw_zdjecia([self._foto(f"zdjecia/kady-{i}.jpg", "Kady") for i in range(3)])
@@ -1591,8 +1591,9 @@ class ZdjeciaNaStronie(unittest.TestCase):
     def test_podpis_to_tylko_link_do_strony_zdjecia_bez_autora_i_licencji_w_tekscie(self):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/kady-1.jpg", "Kady", autor='<script>x</script>')])
         h = grafiki.ilustracja(self._wpis())
-        self.assertNotIn("Źródło zdjęcia", h)
-        self.assertNotIn('commons.wikimedia.org', h)      # podpisów pod zdjęciami nie ma
+        self.assertIn("Źródło zdjęcia", h)
+        self.assertNotIn("poglądowe", h)
+        self.assertIn('href="https://commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg"', h)      # tam są autor i licencja
         self.assertNotIn("CC BY-SA", h)
         self.assertNotIn("Fot.:", h)
         self.assertNotIn("<script>", h)
@@ -1601,8 +1602,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         h = grafiki.ilustracja(self._wpis())
         self.assertNotIn("<figure", h)
         self.assertNotIn("figcaption", h)
-        self.assertRegex(h, r'<div class="ilu foto k-inne"><img [^>]+></div>')
-        self.assertNotIn('class="podpis"', h)
+        self.assertRegex(h, r'<div class="ilu foto k-inne"><img [^>]+></div><p class="podpis"><a [^>]+>Źródło zdjęcia</a></p>')
 
     def test_adres_zdjecia_ze_zrodla_jest_escapowany(self):
         h = grafiki.ilustracja(self._wpis(obraz='https://grodzisk.pl/a"b.jpg'))
@@ -1653,7 +1653,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
             page = out.read_text(encoding="utf-8")
         self.assertIn('src="zdjecia/kady-1.jpg"', page)
         self.assertIn("z-foto", page)
-        self.assertNotIn("commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg", page)
+        self.assertIn("commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg", page)
         self.assertNotIn("Jan Kowalski", page)
 
 
@@ -1788,6 +1788,44 @@ class PobieranieZdjec(unittest.TestCase):
             wywolania = []
             self.assertEqual(zp.main(fetch, lambda url: wywolania.append(url) or b"ok", korzen), 0)
             self.assertEqual(wywolania, [])      # plik już jest na dysku
+
+
+class PoryDnia(unittest.TestCase):
+    TODAY = date(2026, 10, 22)      # czwartek
+
+    def _src(self, **kw):
+        return {"id": "z", "freq": "daily", "enabled": True, **kw}
+
+    def test_pora_dnia_z_godziny_najblizszy_przebieg(self):
+        for godzina, minuta, oczekiwana in [(5, 50, 0), (6, 0, 0), (7, 40, 0), (11, 5, 1), (12, 10, 1), (13, 30, 1), (17, 55, 2), (19, 10, 2), (23, 0, 2)]:
+            self.assertEqual(scraper.slot_teraz(datetime(2026, 10, 22, godzina, minuta)), oczekiwana, f"{godzina}:{minuta}")
+
+    def test_liczba_aktualizacji_dziennie_wyznacza_pory(self):
+        self.assertEqual({0: scraper.na_czas(self._src(razy=1), self.TODAY, False, 0), 1: scraper.na_czas(self._src(razy=1), self.TODAY, False, 1),
+                          2: scraper.na_czas(self._src(razy=1), self.TODAY, False, 2)}, {0: True, 1: False, 2: False})
+        self.assertEqual([scraper.na_czas(self._src(razy=2), self.TODAY, False, i) for i in range(3)], [True, False, True])
+        self.assertEqual([scraper.na_czas(self._src(razy=3), self.TODAY, False, i) for i in range(3)], [True, True, True])
+
+    def test_bez_pola_razy_to_raz_dziennie_a_wartosci_spoza_zakresu_sa_obcinane(self):
+        self.assertEqual([scraper.na_czas(self._src(), self.TODAY, False, i) for i in range(3)], [True, False, False])
+        self.assertEqual([scraper.na_czas(self._src(razy=9), self.TODAY, False, i) for i in range(3)], [True, True, True])
+        self.assertEqual([scraper.na_czas(self._src(razy=0), self.TODAY, False, i) for i in range(3)], [True, False, False])
+
+    def test_bez_pory_pobiera_wszystkie_zrodla_na_dzis_a_all_wszystko(self):
+        self.assertTrue(scraper.na_czas(self._src(razy=1), self.TODAY, False))                 # ręczne uruchomienie
+        self.assertFalse(scraper.na_czas(self._src(freq="weekly", razy=3), self.TODAY, False))      # czwartek, źródło tygodniowe
+        self.assertTrue(scraper.na_czas(self._src(freq="weekly", razy=3), self.TODAY, True))       # --all
+        self.assertTrue(scraper.na_czas(self._src(freq="weekly"), date(2026, 10, 26), False, 0))    # poniedziałek, rano
+
+    def test_zrodla_w_pliku_maja_poprawne_pola(self):
+        zrodla = json.loads((Path(__file__).resolve().parent / "sources.json").read_text(encoding="utf-8"))
+        ids = [z["id"] for z in zrodla]
+        self.assertEqual(len(ids), len(set(ids)))
+        for z in zrodla:
+            self.assertIn(z["freq"], ("daily", "weekly", "rare"), z["id"])
+            self.assertIn(z.get("razy", 1), (1, 2, 3), z["id"])
+            self.assertTrue(z["url"].startswith("http"), z["id"])
+            self.assertNotIn("facebook.com", z["url"], z["id"])      # Facebooka nie pobieramy
 
 
 class TerminyIDuplikaty(unittest.TestCase):
