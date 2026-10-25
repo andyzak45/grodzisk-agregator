@@ -2,13 +2,18 @@ name: Automatyczny scraper lokalny
 
 on:
   schedule:
-    - cron: '0 5 * * *'   # 5:00 UTC, czyli 6:00 lub 7:00 w Polsce zależnie od pory roku
+    - cron: '0 5,11,17 * * *'   # 5:00, 11:00 i 17:00 UTC, czyli ok. 7:00, 13:00 i 19:00 w Polsce (godziny do ustalenia, patrz SLOTY_GODZINY w scraper.py)
   workflow_dispatch:       # ręczne uruchomienie przyciskiem "Run workflow"
   push:
     paths:
       - 'data/manual.json'  # po edycji wpisów ręcznych strona przebudowuje się od razu
       - 'render.py'         # zmiana wyglądu też przebudowuje stronę (tryb --render-only, bez zużycia limitu AI)
       - 'redakcja.py'
+      - 'template.html'
+      - 'grafiki.py'
+      - 'klasyfikacja.py'
+      - 'scraper.py'
+      - 'sources.json'
 
 permissions:
   contents: write
@@ -46,14 +51,16 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
             python scraper.py --render-only
+          elif [ "${{ github.event_name }}" = "schedule" ]; then
+            python scraper.py --slot auto        # o stałej porze pobiera tylko źródła przewidziane na tę porę
           else
-            python scraper.py
+            python scraper.py                    # ręczne uruchomienie pobiera wszystkie źródła na dziś
           fi
 
       - name: Zapis zmian na stronie
         run: |
           git config user.name "Grodzisk lokalnie bot"
           git config user.email "bot@users.noreply.github.com"
-          git add index.html archiwum.html zdjecia.html data/
+          git add index.html archiwum.html data/
           git diff --cached --quiet || git commit -m "Automatyczna aktualizacja ($(date -u +%F))"
           git push
