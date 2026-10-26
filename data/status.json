@@ -1,5 +1,5 @@
 {
- "run": "2026-10-25T21:37:28+01:00",
+ "run": "2026-10-26T06:27:26+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
@@ -19,12 +19,12 @@
   "grodziski24": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 1
   },
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 4
+   "new": 1
   },
   "przeglad-regionalny": {
    "ok": true,
@@ -39,27 +39,60 @@
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 0
   },
   "centrum-kultury": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 1
   },
   "mediateka": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 1
+  },
+  "biblioteka": {
+   "ok": true,
+   "found": 10,
+   "new": 6
+  },
+  "grodzisksport": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 153094,
+    "article": 0,
+    "naglowki": 7,
+    "feed": false,
+    "tytul": "Portal informacyjny OSiR Grodzisk Mazowiecki - OSiR Grodzisk Mazowiecki",
+    "tekst": "Portal informacyjny OSiR Grodzisk Mazowiecki - OSiR Grodzisk Mazowiecki Strona korzysta z plików cookies w celu realizacji usług. Możesz określić warunki przech"
+   }
+  },
+  "hala-caiis": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 113475,
+    "article": 0,
+    "naglowki": 2,
+    "feed": false,
+    "tytul": "OSiR Grodzisk Mazowiecki",
+    "tekst": "OSiR Grodzisk Mazowiecki Strona korzysta z plików cookies w celu realizacji usług. Możesz określić warunki przechowywania lub dostępu do plików cookies klikając"
+   }
   },
   "bogoria": {
    "ok": true,
    "found": 10,
-   "new": 2
+   "new": 0
   },
   "budo": {
    "ok": true,
    "found": 8,
-   "new": 1
+   "new": 0
   },
   "muay-thai": {
    "ok": true,
@@ -115,7 +148,7 @@
    "new": 0,
    "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
    "diag": {
-    "bajty": 64445,
+    "bajty": 64444,
     "article": 3,
     "naglowki": 23,
     "feed": false,
@@ -154,12 +187,12 @@
   "zwik": {
    "ok": true,
    "found": 15,
-   "new": 8
+   "new": 0
   },
   "okinawa": {
    "ok": true,
    "found": 1,
-   "new": 1
+   "new": 0
   },
   "pumptrack": {
    "ok": true,
@@ -178,22 +211,21 @@
   "parafia-mbnp": {
    "ok": true,
    "found": 1,
-   "new": 1
+   "new": 0
   },
   "parafia-przemienienia": {
    "ok": true,
    "found": 14,
-   "new": 2
+   "new": 0
   },
   "parafia-mb": {
-   "ok": true,
-   "found": 1,
-   "new": 0
+   "ok": false,
+   "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1010)>"
   },
   "dworek-chelmonskiego": {
    "ok": true,
    "found": 6,
-   "new": 5
+   "new": 0
   }
  }
 }
