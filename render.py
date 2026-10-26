@@ -37,6 +37,7 @@ NAJNOWSZE = 5            # tyle pozycji w pasku "Najnowsze"
 NA_START = 12             # tyle wpisów widać od razu w strumieniu aktualności (reszta po kliknięciu "Pokaż więcej")
 MAX_W_KATEGORII = 12      # tyle najwyżej z jednej kategorii na stronie (reszta w archiwum), żeby jedna nie zalała reszty
 SHOW_DAYS = 14
+HORYZONT_ZAPOWIEDZI_DNI = 60      # wpis z terminem dalszym niż tyle dni jeszcze nie jest aktualnością: pojawi się, gdy termin się zbliży
 TERMINY_DNI = 14         # blok "Najbliższe terminy" obejmuje tyle dni do przodu
 TERMINY_MAX = 8
 ZAWSZE_W_MENU = {"ost", "zdr"}   # te kategorie zostają w menu nawet puste (przyciemnione, z zerem); sekcji bez wpisów i tak nie ma
@@ -84,7 +85,10 @@ def widoczne(items, today):
     """Wpisy z ostatnich dni oraz wydarzenia, które jeszcze się nie odbyły.
     Zapowiedzi bez terminu są słabą informacją, więc zostają krótko i w małej liczbie."""
     out, bez_terminu = [], 0
+    horyzont = (today + timedelta(days=HORYZONT_ZAPOWIEDZI_DNI)).isoformat()
     for it in sorted(items, key=lambda i: i["first_seen"], reverse=True):
+        if (it.get("event_iso") or "") > horyzont:
+            continue
         if it["kind"] == "wyd" and not it.get("event_iso"):
             if wiek(it, today) > BEZ_TERMINU_DNI or bez_terminu >= BEZ_TERMINU_MAX:
                 continue
@@ -260,13 +264,38 @@ def strumien(pokazane, wyrozniane, today):
             f'<button type="button" class="more" hidden></button></section>')
 
 
+def build_zdjecia(zdjecia, out_path):
+    """Strona "Zdjęcia: autorzy i licencje": pod zdjęciami na stronie nie ma podpisów, więc tu jest pełne uznanie autorstwa
+    (autor, licencja z linkiem i strona pliku na Commons)."""
+    wiersze = []
+    for z in sorted(zdjecia, key=lambda z: z["plik"]):
+        lic = e(z.get("licencja") or "")
+        if z.get("licencja_url"):
+            lic = f'<a href="{e(z["licencja_url"])}" target="_blank" rel="noopener">{lic}</a>'
+        zrodlo = (f'<a href="{e(z["strona"])}" target="_blank" rel="noopener">Wikimedia Commons</a>' if z.get("strona") else "zdjęcie własne")
+        wiersze.append(f'<tr><td><img src="{e(z["plik"])}" alt="" loading="lazy"></td><td>{e(z.get("autor") or "")}</td><td>{lic}</td><td>{zrodlo}</td></tr>')
+    html_ = ('<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">'
+             '<title>Zdjęcia: autorzy i licencje | Grodzisk lokalnie</title><style>'
+             'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:1000px;margin:1.5rem auto;padding:0 1rem;color:#111827;line-height:1.5}'
+             'a{color:#2563eb}table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{border-bottom:1px solid #e5e7eb;padding:.5rem;text-align:left;vertical-align:middle}'
+             'td img{width:110px;height:70px;object-fit:cover;display:block}</style></head><body>'
+             '<p><a href="index.html">&larr; Grodzisk lokalnie</a></p><h1>Zdjęcia: autorzy i licencje</h1>'
+             '<p>Zdjęcia przy wpisach są poglądowe i nie przedstawiają opisywanych wydarzeń ani osób. Pochodzą z Wikimedia Commons na wolnych licencjach '
+             'albo są własnością redakcji. Poniżej autorzy i warunki użycia.</p>'
+             '<table><thead><tr><th>Zdjęcie</th><th>Autor</th><th>Licencja</th><th>Źródło</th></tr></thead><tbody>' + "".join(wiersze) +
+             '</tbody></table></body></html>')
+    Path(out_path).write_text(html_, encoding="utf-8")
+
+
 def build(items, template_path, out_path, today=None, aktualizacja=None):
     """aktualizacja: czas ostatniego pobrania danych (z godziną); bez niego pod tytułem jest sama data."""
     today = today or date.today()
     pool = widoczne(items, today)
     korzen = Path(out_path).parent       # zdjęcia i data/zdjecia.json leżą obok index.html
     grafiki.ustaw_zdjecia(grafiki.wczytaj_zdjecia(korzen / "data" / "zdjecia_wlasne.json", korzen)
-                          + grafiki.wczytaj_zdjecia(korzen / "data" / "zdjecia.json", korzen))
+                          + grafiki.wczytaj_zdjecia(korzen / "data" / "zdjecia.json", korzen, grafiki.dozwolone_tytuly(korzen / "data")))
+    if grafiki.ZDJECIA:
+        build_zdjecia(grafiki.ZDJECIA, korzen / "zdjecia.html")
     po_rodzajach = {k: kolejnosc(k, [i for i in pool if i["kind"] == k], today)[:MAX_W_KATEGORII] for k in KIND_UI}
     pokazane = [i for k in KIND_UI for i in po_rodzajach[k]]
     front, wyrozniane = pierwsza_strona(pokazane, today)
@@ -393,4 +422,4 @@ def build_archive(items, shown, template_path, out_path, today=None):
     Path(out_path).write_text(page, encoding="utf-8")
     return len(reszta)
 
-# wersja-kompletu: 2026-10-25-1
+# wersja-kompletu: 2026-10-25-3

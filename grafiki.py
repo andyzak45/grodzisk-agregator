@@ -97,13 +97,28 @@ _UZYCIA = Counter()
 _WYBOR = {}
 
 
-def wczytaj_zdjecia(sciezka, korzen):
+def dozwolone_tytuly(katalog_data):
+    """Tytuły plików z data/zdjecia_wybor.txt i data/zdjecia_wsie.txt albo None, gdy żadnego z tych plików nie ma (wtedy bez filtra)."""
+    wynik, jest = set(), False
+    for nazwa in ("zdjecia_wybor.txt", "zdjecia_wsie.txt"):
+        sciezka = Path(katalog_data) / nazwa
+        if sciezka.exists():
+            jest = True
+            for linia in sciezka.read_text(encoding="utf-8").splitlines():
+                t = linia.split("|")[0].strip().replace("_", " ")
+                if t.startswith("File:"):
+                    wynik.add(t)
+    return wynik if jest else None
+
+
+def wczytaj_zdjecia(sciezka, korzen, dozwolone=None):
     """Lista zdjęć z data/zdjecia.json, z pominięciem tych, których pliku nie ma na dysku."""
     try:
         dane = json.loads(Path(sciezka).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return []
-    return [z for z in dane if isinstance(z, dict) and z.get("plik") and (Path(korzen) / z["plik"]).exists()]
+    return [z for z in dane if isinstance(z, dict) and z.get("plik") and (Path(korzen) / z["plik"]).exists()
+            and (dozwolone is None or z.get("tytul") in dozwolone)]
 
 
 def ustaw_zdjecia(lista):
@@ -125,18 +140,20 @@ def wybierz_zdjecie(it):
     if klucz in _WYBOR:
         return _WYBOR[klucz]
     miejsce = it["place"].split("|")[0]
-    nazwy = [z for z in ZDJECIA if z.get("slowa") and z["miejsce"] in (miejsce, "cała gmina") and re.search(r"\b(?:" + "|".join(z["slowa"]) + ")", norm(f'{it.get("title", "")} {it.get("tytul") or ""}'))]
+    tytul_n = norm(f'{it.get("title", "")} {it.get("tytul") or ""}')
+    nazwy = [z for z in ZDJECIA if z["miejsce"] in (miejsce, "cała gmina")
+             and ((z.get("slowa") and re.search(r"\b(?:" + "|".join(z["slowa"]) + ")", tytul_n)) or it.get("source_id") in z.get("zrodla", ()))]
     if nazwy:                      # wpis o konkretnym miejscu (np. Mediateka) dostaje zdjęcie tego miejsca, jeśli je mamy; "slowa" to rdzenie bez końcówek, bo polskie nazwy się odmieniają (Mediateka, Mediatece, Mediatekę)
         kand = nazwy
     elif miejsce in ("cała gmina", "okolica", MIASTO):
         t = temat_zdjecia(it)
-        kand = [z for z in ZDJECIA if z["miejsce"] == MIASTO and z["temat"] == t and not z.get("slowa")] if t else []
+        kand = [z for z in ZDJECIA if z["miejsce"] == MIASTO and z["temat"] == t and not z.get("slowa") and not z.get("zrodla")] if t else []
     else:
-        kand = [z for z in ZDJECIA if z["miejsce"] == miejsce and not z.get("slowa")]
+        kand = [z for z in ZDJECIA if z["miejsce"] == miejsce and not z.get("slowa") and not z.get("zrodla")]
     if not kand and it["kind"] != "zdr":      # zapas: zdjęcie ogólne do tematu (nie przy zdarzeniach policji, by nie sugerować miejsca)
-        t = temat(it)
+        t = temat_ze_slow(it) or "ogolne"
         kand = ([z for z in ZDJECIA if not z["miejsce"] and z["temat"] == t]
-                or ([z for z in ZDJECIA if z["temat"] == t and not z.get("slowa")] if t != "ogolne" else [])      # brak zdjęcia ogólnego: dowolne z tego tematu (np. ratusz, stadion)
+                or ([z for z in ZDJECIA if z["temat"] == t and not z.get("slowa") and not z.get("zrodla")] if t != "ogolne" else [])      # brak zdjęcia ogólnego: dowolne z tego tematu (np. ratusz, stadion)
                 or [z for z in ZDJECIA if not z["miejsce"] and z["temat"] == "ogolne"])
     wybrane = min(kand, key=lambda z: (_UZYCIA[z["plik"]], zlib.crc32(f'{klucz}{z["plik"]}'.encode()))) if kand else None
     if wybrane:
@@ -145,15 +162,12 @@ def wybierz_zdjecie(it):
     return wybrane
 
 
-ETYKIETA_ZDJECIA = "Źródło zdjęcia"
-
-
-def podpis(z, it=None):
-    """Pod zdjęciem tylko link do strony pliku na Commons (tam są autor i licencja, co przy licencjach CC wystarcza jako uznanie
-    autorstwa przez hiperłącze). Zdjęcie własne bez takiej strony nie ma podpisu wcale."""
-    if z.get("strona"):
-        return f'<a href="{html.escape(z["strona"])}" target="_blank" rel="noopener">{ETYKIETA_ZDJECIA}</a>'
-    return ""
+def opis_zdjecia(z):
+    """Tekst w podpowiedzi po najechaniu na zdjęcie (atrybut title). Pełne uznanie autorstwa jest na stronie zdjecia.html."""
+    czesci = [f'Fot.: {z["autor"]}'] if z.get("autor") else []
+    if z.get("licencja"):
+        czesci.append(z["licencja"])
+    return html.escape(", ".join(czesci), quote=True)
 
 
 def sprite():
@@ -162,40 +176,42 @@ def sprite():
     return f'<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>{sym}</defs></svg>'
 
 
-def temat(it):
-    """Temat grafiki lub zdjęcia: najpierw z samego tytułu (jest najpewniejszy), dopiero potem z tytułu i notki razem."""
+def temat_ze_slow(it):
+    """Temat wynikający ze słów w tytule (najpierw), a gdy tytuł nic nie mówi, w tytule i notce. None, gdy żadne słowo nie pasuje."""
     tytul = f'{it.get("title", "")} {it.get("tytul") or ""}'
     for tekst in (norm(tytul), norm(f'{tytul} {it.get("text") or ""}')):
         for nazwa, wzorzec in TEMATY:
             if re.search(wzorzec, tekst):
                 return nazwa
-    return PO_RODZAJU.get(it["kind"], "ogolne")
+    return None
+
+
+def temat(it):
+    """Temat grafiki: ze słów, a w ostateczności z rodzaju wpisu."""
+    return temat_ze_slow(it) or PO_RODZAJU.get(it["kind"], "ogolne")
 
 
 def ilustracja(it, klasa="ilu"):
     """Karta ze zdjęciem (pole "obraz", np. od źródła, które wyraziło zgodę) albo z naszą grafiką poglądową."""
     obraz = it.get("obraz")
-    if obraz and obraz.startswith("https://"):      # zdjęcie ze źródła wpisu: link prowadzi do oryginalnego artykułu
-        return (f'<div class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(obraz)}" alt="" loading="lazy" referrerpolicy="no-referrer"></div>'
-                f'<p class="podpis"><a href="{html.escape(it["url"])}" target="_blank" rel="noopener">{ETYKIETA_ZDJECIA}</a></p>')
+    if obraz and obraz.startswith("https://"):      # zdjęcie ze źródła wpisu
+        return (f'<div class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(obraz)}" alt="" title="Fot.: {html.escape(it["source"], quote=True)}" '
+                f'loading="lazy" referrerpolicy="no-referrer"></div>')
     z = wybierz_zdjecie(it)
-    if z:      # zdjęcie w ramce o stałej proporcji, a podpis jako osobny akapit pod nią: nic się nie nakłada na pasek kategorii
-        pod = podpis(z, it)
-        return (f'<div class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(z["plik"])}" alt="" loading="lazy" decoding="async"></div>'
-                + (f'<p class="podpis">{pod}</p>' if pod else ""))
+    if z:      # zdjęcie w ramce o stałej proporcji, bez podpisu (autorzy i licencje są na stronie zdjecia.html)
+        return (f'<div class="{klasa} foto k-{it["kind"]}"><img src="{html.escape(z["plik"])}" alt="" title="{opis_zdjecia(z)}" '
+                f'loading="lazy" decoding="async"></div>')
     t = temat(it)
     return (f'<div class="{klasa} k-{it["kind"]}" role="img" aria-label="Grafika poglądowa: {OPISY[t]}">'
             f'<svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ilu-{t}"/></svg></div>')
 
 
 def tlo_czolowki(it):
-    """Tło dużej karty: zdjęcie z podpisem albo grafika. Zwraca (znacznik, dodatkowa klasa)."""
+    """Tło dużej karty: zdjęcie albo grafika. Zwraca (znacznik, dodatkowa klasa)."""
     z = wybierz_zdjecie(it) if not it.get("obraz") else None
     if z:
-        pod = podpis(z, it)
-        return (f'<img class="hero-foto" src="{html.escape(z["plik"])}" alt="" decoding="async">'
-                + (f'<span class="hero-fot">{pod}</span>' if pod else "")), " z-foto"
+        return f'<img class="hero-foto" src="{html.escape(z["plik"])}" alt="" title="{opis_zdjecia(z)}" decoding="async">', " z-foto"
     return (f'<svg class="hero-ilu" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
             f'<use href="#ilu-{temat(it)}"/></svg>'), ""
 
-# wersja-kompletu: 2026-10-25-1
+# wersja-kompletu: 2026-10-25-4

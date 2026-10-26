@@ -891,17 +891,17 @@ class GeminiMartweModele(unittest.TestCase):
 
 class AKomplet(unittest.TestCase):
     """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
-    WERSJA = "2026-10-25-1"
-    PLIKI = ['grafiki.py', 'render.py', 'scraper.py', 'streszczenia.py', 'klasyfikacja.py', 'redakcja.py', 'zdjecia_commons.py', 'zdjecia_pobierz.py', 'template.html']
+    WERSJE = {"grafiki.py": "2026-10-25-4", "render.py": "2026-10-25-3", "scraper.py": "2026-10-25-2", "streszczenia.py": "2026-10-25-2",
+              "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-2", "zdjecia_commons.py": "2026-10-25-4",
+              "zdjecia_pobierz.py": "2026-10-25-4", "template.html": "2026-10-25-2"}
 
-    def test_wszystkie_pliki_maja_te_sama_wersje(self):
+    def test_wszystkie_pliki_maja_wymagana_wersje(self):
         stare = []
-        for nazwa in self.PLIKI:
+        for nazwa, wersja in self.WERSJE.items():
             tekst = (Path(__file__).resolve().parent / nazwa).read_text(encoding="utf-8")
-            if f"wersja-kompletu: {self.WERSJA}" not in tekst:
+            if f"wersja-kompletu: {wersja}" not in tekst:
                 stare.append(nazwa)
         self.assertEqual(stare, [], "Te pliki są w starej wersji, wgraj je ponownie z najnowszego kompletu: " + ", ".join(stare))
-
 
 class Archiwum(unittest.TestCase):
     def _wpis(self, i, dni_temu, **kw):
@@ -1265,8 +1265,9 @@ class Grafiki(unittest.TestCase):
         z = grafiki.ilustracja(self._wpis(kind="inw", obraz="https://grodzisk.pl/foto.jpg"))
         self.assertIn('src="https://grodzisk.pl/foto.jpg"', z)
         self.assertIn('referrerpolicy="no-referrer"', z)
-        self.assertIn("Źródło zdjęcia", z)
-        self.assertNotIn("Fot.:", z)
+        self.assertNotIn("Źródło zdjęcia", z)
+        self.assertNotIn("<p", z)      # pod zdjęciem nie ma podpisu
+        self.assertIn('title="Fot.: Źródło"', z)
         self.assertNotIn("<use", z)
 
     def test_obraz_tylko_z_https(self):
@@ -1526,7 +1527,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         self.assertEqual(grafiki.wybierz_zdjecie(remont)["plik"], "zdjecia/droga-1.jpg")
         inne = self._wpis(id="21", place="Kozery", title="Wieści z gminy", kind="inne")
         self.assertEqual(grafiki.wybierz_zdjecie(inne)["plik"], "zdjecia/ogolne-1.jpg")      # brak zdjęcia do tematu: ogólne
-        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(remont))
+        self.assertNotIn("Źródło zdjęcia", grafiki.ilustracja(remont))
         for slowo in ("ilustracyjne", "poglądowe"):
             self.assertNotIn(slowo, grafiki.ilustracja(remont))      # bez etykiet "ilustracyjne" pod zdjęciem
 
@@ -1534,12 +1535,54 @@ class ZdjeciaNaStronie(unittest.TestCase):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/ratusz.jpg", "Grodzisk Mazowiecki", "urzad")])
         wies = self._wpis(id="30", place="Kozery", title="Nabór wniosków o dotację", kind="inne")
         self.assertEqual(grafiki.wybierz_zdjecie(wies)["plik"], "zdjecia/ratusz.jpg")
-        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(wies))
+        self.assertNotIn("Źródło zdjęcia", grafiki.ilustracja(wies))
         self.assertNotIn("ilustracyjne", grafiki.ilustracja(wies))
 
     def test_zdjecie_wsi_nie_jest_zapasem_dla_wpisu_bez_tematu(self):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/kady-1.jpg", "Kady", "ogolne")])
         self.assertIsNone(grafiki.wybierz_zdjecie(self._wpis(id="32", place="Kozery", title="Wieści z gminy")))
+
+    def test_wydarzenie_bez_slow_kluczowych_nie_dostaje_zdjecia_z_tematu_kultura(self):
+        grafiki.ustaw_zdjecia([self._foto("zdjecia/biblioteka.jpg", "", "kultura"), self._foto("zdjecia/las.jpg", "", "ogolne")])
+        spotkanie = self._wpis(id="80", place="cała gmina", kind="wyd", title="Spotkania informacyjne w sprawie projektu planu ogólnego",
+                               text="Spotkania odbędą się w sali Willi Niespodzianka przy ul. Kościuszki.")
+        self.assertEqual(grafiki.wybierz_zdjecie(spotkanie)["plik"], "zdjecia/las.jpg")      # neutralne, a nie biblioteka
+        koncert = self._wpis(id="81", place="cała gmina", kind="wyd", title="Koncert w parku")
+        self.assertEqual(grafiki.wybierz_zdjecie(koncert)["plik"], "zdjecia/biblioteka.jpg")      # tytuł mówi o kulturze
+
+    def test_zdjecie_usuniete_z_listy_znika_ze_strony_bez_ponownego_pobierania(self):
+        lista = [self._foto("zdjecia/a.jpg", "Kady"), self._foto("zdjecia/b.jpg", "Kady")]
+        with tempfile.TemporaryDirectory() as d:
+            korzen = Path(d)
+            (korzen / "zdjecia").mkdir(); (korzen / "data").mkdir()
+            for n in ("a", "b"):
+                (korzen / "zdjecia" / f"{n}.jpg").write_bytes(b"x")
+            (korzen / "data" / "zdjecia.json").write_text(json.dumps(lista), encoding="utf-8")
+            self.assertEqual(grafiki.dozwolone_tytuly(korzen / "data"), None)      # bez pliku z listą nie filtrujemy
+            (korzen / "data" / "zdjecia_wybor.txt").write_text("File:zdjecia/a.jpg | | | Kady\n", encoding="utf-8")
+            dozwolone = grafiki.dozwolone_tytuly(korzen / "data")
+            wynik = grafiki.wczytaj_zdjecia(korzen / "data" / "zdjecia.json", korzen, dozwolone)
+        self.assertEqual([z["plik"] for z in wynik], ["zdjecia/a.jpg"])
+
+    def test_zdjecia_przypisane_do_zrodla_dostaja_wszystkie_wpisy_z_tego_zrodla(self):
+        dworek = dict(self._foto("zdjecia/dworek.jpg", "Adamowizna", "kultura"), zrodla=["dworek-chelmonskiego"])
+        grafiki.ustaw_zdjecia([dworek, self._foto("zdjecia/szkola.jpg", "Adamowizna", "szkola")])
+        z_dworku = self._wpis(id="90", place="Adamowizna", source_id="dworek-chelmonskiego", title="Wydarzenie plenerowe z okazji tradycji Dziadów")
+        inny = self._wpis(id="91", place="Adamowizna", source_id="grodziski24", title="Remont drogi w Adamowiźnie")
+        self.assertEqual(grafiki.wybierz_zdjecie(z_dworku)["plik"], "zdjecia/dworek.jpg")
+        self.assertEqual(grafiki.wybierz_zdjecie(inny)["plik"], "zdjecia/szkola.jpg")      # zdjęcie dworku nie trafia do innych wpisów
+
+    def test_linia_ze_zrodlem_zapisuje_zdjecie_z_miejscem_i_zrodlem(self):
+        strony = {"File:Dworek.jpg": {"title": "File:Dworek.jpg", "imageinfo": [{"mime": "image/jpeg", "width": 2000, "height": 1500,
+                  "url": "https://u/o.jpg", "thumburl": "https://u/t.jpg", "extmetadata": {"LicenseShortName": {"value": "CC BY 4.0"}, "Artist": {"value": "Ola"}}}]}}
+        with tempfile.TemporaryDirectory() as d:
+            korzen = Path(d)
+            (korzen / "data").mkdir()
+            (korzen / "data" / "zdjecia_wybor.txt").write_text("File:Dworek.jpg | kultura | | Adamowizna | dworek-chelmonskiego, inne\n", encoding="utf-8")
+            zp.main(lambda par: {"query": {"pages": [strony[t] for t in par["titles"].split("|")]}}, lambda url: b"x", korzen)
+            z = json.loads((korzen / "data" / "zdjecia.json").read_text(encoding="utf-8"))[0]
+        self.assertEqual((z["miejsce"], z["temat"], z["zrodla"]), ("Adamowizna", "kultura", ["dworek-chelmonskiego", "inne"]))
+        self.assertNotIn("slowa", z)
 
     def test_zdjecie_nazwanego_miejsca_ma_pierwszenstwo_przed_ogolnym(self):
         mediateka = dict(self._foto("zdjecia/mediateka.jpg", "Grodzisk Mazowiecki", "kultura", autor="Anna", licencja="zdjęcie własne"),
@@ -1550,7 +1593,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         h = grafiki.ilustracja(wpis)
         self.assertIn('<img src="zdjecia/mediateka.jpg"', h)
         self.assertNotIn("podpis", h)      # własne zdjęcie: bez żadnego podpisu
-        self.assertNotIn("Anna", h)
+        self.assertIn('title="Fot.: Anna, zdjęcie własne"', h)
         inny = self._wpis(id="51", place="Grodzisk Mazowiecki", title="Koncert w parku", kind="wyd")
         self.assertEqual(grafiki.wybierz_zdjecie(inny)["plik"], "zdjecia/kultura-ogolne.jpg")      # zdjęcie Mediateki nie trafia do innych wpisów
 
@@ -1590,7 +1633,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/droga-1.jpg", "", "droga"), self._foto("zdjecia/kady-1.jpg", "Kady", "droga")])
         w = self._wpis(id="24", place="Kady", title="Remont drogi", kind="inw")
         self.assertEqual(grafiki.wybierz_zdjecie(w)["plik"], "zdjecia/kady-1.jpg")
-        self.assertIn("Źródło zdjęcia", grafiki.ilustracja(w))
+        self.assertNotIn("Źródło zdjęcia", grafiki.ilustracja(w))
 
     def test_wybor_jest_staly_dla_wpisu(self):
         grafiki.ustaw_zdjecia([self._foto(f"zdjecia/kady-{i}.jpg", "Kady") for i in range(3)])
@@ -1602,21 +1645,17 @@ class ZdjeciaNaStronie(unittest.TestCase):
         uzyte = {grafiki.wybierz_zdjecie(self._wpis(id=str(i)))["plik"] for i in range(3)}
         self.assertEqual(len(uzyte), 3)
 
-    def test_podpis_to_tylko_link_do_strony_zdjecia_bez_autora_i_licencji_w_tekscie(self):
+    def test_autor_w_podpowiedzi_jest_escapowany(self):
         grafiki.ustaw_zdjecia([self._foto("zdjecia/kady-1.jpg", "Kady", autor='<script>x</script>')])
         h = grafiki.ilustracja(self._wpis())
-        self.assertIn("Źródło zdjęcia", h)
-        self.assertNotIn("poglądowe", h)
-        self.assertIn('href="https://commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg"', h)      # tam są autor i licencja
-        self.assertNotIn("CC BY-SA", h)
-        self.assertNotIn("Fot.:", h)
         self.assertNotIn("<script>", h)
+        self.assertIn("&lt;script&gt;", h)
 
-    def test_podpis_jest_osobnym_akapitem_pod_ramka_zdjecia(self):
+    def test_pod_zdjeciem_nie_ma_podpisu_tylko_podpowiedz_z_autorem_i_licencja(self):
         h = grafiki.ilustracja(self._wpis())
-        self.assertNotIn("<figure", h)
-        self.assertNotIn("figcaption", h)
-        self.assertRegex(h, r'<div class="ilu foto k-inne"><img [^>]+></div><p class="podpis"><a [^>]+>Źródło zdjęcia</a></p>')
+        for slowo in ("<p", "podpis", "figcaption", "Źródło zdjęcia"):
+            self.assertNotIn(slowo, h)
+        self.assertRegex(h, r'^<div class="ilu foto k-inne"><img [^>]*title="Fot\.: Jan Kowalski, CC BY-SA 4\.0"[^>]*></div>$')
 
     def test_adres_zdjecia_ze_zrodla_jest_escapowany(self):
         h = grafiki.ilustracja(self._wpis(obraz='https://grodzisk.pl/a"b.jpg'))
@@ -1665,10 +1704,15 @@ class ZdjeciaNaStronie(unittest.TestCase):
             out = korzen / "index.html"
             render.build([self._wpis(kind="inw", title="Remont w Kadach")], Path(__file__).resolve().parent / "template.html", out, today)
             page = out.read_text(encoding="utf-8")
+            autorzy = (korzen / "zdjecia.html").read_text(encoding="utf-8")
+        self.assertIn("Jan Kowalski", autorzy)
+        self.assertIn("CC BY-SA 4.0", autorzy)
+        self.assertIn("https://commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg", autorzy)
         self.assertIn('src="zdjecia/kady-1.jpg"', page)
         self.assertIn("z-foto", page)
-        self.assertIn("commons.wikimedia.org/wiki/File:zdjecia/kady-1.jpg", page)
-        self.assertNotIn("Jan Kowalski", page)
+        self.assertNotIn("commons.wikimedia.org", page)      # na stronie głównej nie ma linków ani podpisów do zdjęć
+        self.assertNotIn("Źródło zdjęcia", page)
+        self.assertIn('href="zdjecia.html"', page)           # jest tylko link w stopce do strony z autorami
 
 
 class PobieranieZdjec(unittest.TestCase):
@@ -1681,14 +1725,14 @@ class PobieranieZdjec(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             sc = Path(d) / "w.txt"
             sc.write_text("File:A.jpg\n\nkomentarz\nFile:A.jpg\n  File:B.jpg  \n", encoding="utf-8")
-            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", None, [], None), ("File:B.jpg", None, [], None)])
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", None, [], None, []), ("File:B.jpg", None, [], None, [])])
             self.assertEqual(zp.wczytaj_wybor(Path(d) / "brak.txt"), [])
 
     def test_linia_z_tematem_to_zdjecie_ogolne(self):
         with tempfile.TemporaryDirectory() as d:
             sc = Path(d) / "w.txt"
             sc.write_text("File:A.jpg | droga\nFile:B.jpg|nieznany\nFile:C.jpg\n", encoding="utf-8")
-            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", "droga", [], None), ("File:B.jpg", None, [], None), ("File:C.jpg", None, [], None)])
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:A.jpg", "droga", [], None, []), ("File:B.jpg", None, [], None, []), ("File:C.jpg", None, [], None, [])])
 
     def test_zdjecie_ogolne_zapisuje_sie_bez_miejscowosci(self):
         strony = {"File:Roboty.jpg": self._strona("File:Roboty.jpg"), "File:Stawy Goliana 2022.jpg": self._strona("File:Stawy Goliana 2022.jpg")}
@@ -1706,7 +1750,7 @@ class PobieranieZdjec(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             sc = Path(d) / "w.txt"
             sc.write_text("File:Mediateka_Grodzisk_Mazowiecki_1.jpg | kultura | Mediate, centrum kultur\n", encoding="utf-8")
-            self.assertEqual(zp.wczytaj_wybor(sc), [("File:Mediateka Grodzisk Mazowiecki 1.jpg", "kultura", ["mediate", "centrum kultur"], None)])
+            self.assertEqual(zp.wczytaj_wybor(sc), [("File:Mediateka Grodzisk Mazowiecki 1.jpg", "kultura", ["mediate", "centrum kultur"], None, [])])
 
     def test_zdjecie_ze_slowami_zapisuje_sie_z_miejscem_i_slowami(self):
         strony = {"File:Mediateka Grodzisk Mazowiecki 1.jpg": self._strona("File:Mediateka Grodzisk Mazowiecki 1.jpg")}
@@ -1724,7 +1768,7 @@ class PobieranieZdjec(unittest.TestCase):
             korzen = Path(d)
             (korzen / "data").mkdir()
             (korzen / "data" / "zdjecia_wybor.txt").write_text("File:IMG_1234.jpg | | | Książenice\n", encoding="utf-8")
-            self.assertEqual(zp.wczytaj_wybor(korzen / "data" / "zdjecia_wybor.txt"), [("File:IMG 1234.jpg", None, [], "Książenice")])
+            self.assertEqual(zp.wczytaj_wybor(korzen / "data" / "zdjecia_wybor.txt"), [("File:IMG 1234.jpg", None, [], "Książenice", [])])
             zp.main(lambda par: {"query": {"pages": [strony[t] for t in par["titles"].split("|")]}}, lambda url: b"x", korzen)
             z = json.loads((korzen / "data" / "zdjecia.json").read_text(encoding="utf-8"))[0]
         self.assertEqual(z["miejsce"], "Książenice")
@@ -1840,6 +1884,55 @@ class PoryDnia(unittest.TestCase):
             self.assertIn(z.get("razy", 1), (1, 2, 3), z["id"])
             self.assertTrue(z["url"].startswith("http"), z["id"])
             self.assertNotIn("facebook.com", z["url"], z["id"])      # Facebooka nie pobieramy
+
+
+class StronaAutorowZdjec(unittest.TestCase):
+    def test_strona_autorow_ma_wiersz_na_zdjecie_i_escapuje_html(self):
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "zdjecia.html"
+            render.build_zdjecia([
+                {"plik": "zdjecia/a.jpg", "autor": "<b>Ala</b>", "licencja": "CC BY 4.0", "licencja_url": "https://creativecommons.org/licenses/by/4.0/",
+                 "strona": "https://commons.wikimedia.org/wiki/File:A.jpg"},
+                {"plik": "zdjecia/b.jpg", "autor": "Anna", "licencja": "zdjęcie własne"}], out)
+            h = out.read_text(encoding="utf-8")
+        self.assertEqual(h.count("<tr><td>"), 2)
+        self.assertNotIn("<b>Ala</b>", h)
+        self.assertIn("&lt;b&gt;Ala&lt;/b&gt;", h)
+        self.assertIn("creativecommons.org/licenses/by/4.0/", h)
+        self.assertIn("zdjęcie własne", h)
+
+
+class TerminyZakresyIHoryzont(unittest.TestCase):
+    TODAY = date(2026, 10, 25)
+
+    def test_rok_z_konca_zakresu_dotyczy_tez_poczatku(self):
+        etykieta, iso = wyciagnij_termin("Od 1 lutego do 1 lipca 2026 roku w parku udostępniona zostanie ekspozycja.", self.TODAY)
+        self.assertEqual(iso, "2026-02-01")
+        etykieta, iso = wyciagnij_termin("Od 20 grudnia do 10 stycznia 2027 trwa kiermasz.", date(2026, 12, 1))
+        self.assertEqual(iso, "2026-12-20")      # początek w poprzednim roku niż koniec
+
+    def test_data_bez_roku_i_bez_zakresu_jak_dotychczas(self):
+        self.assertEqual(wyciagnij_termin("Bal 14 stycznia", self.TODAY)[1], "2027-01-14")
+
+    def _wpis(self, **kw):
+        base = {"id": "1", "title": "Wystawa", "url": "https://x.pl/1", "source": "Źródło", "source_id": "z1", "first_seen": "2026-10-24",
+                "published": "2026-10-24", "kind": "wyd", "place": "Adamowizna", "when": None, "event_iso": None, "text": "Notka."}
+        base.update(kw)
+        return base
+
+    def test_zapisany_wpis_ze_zlym_rokiem_zakresu_jest_poprawiany(self):
+        wpis = self._wpis(event_iso="2027-02-01", when="1.02.2027", kind="wyd",
+                          text="Od 1 lutego do 1 lipca 2026 roku w parku przy dworze udostępniona zostanie ekspozycja.")
+        store = {"1": wpis}
+        scraper.napraw_terminy(store, self.TODAY)
+        self.assertEqual(wpis["event_iso"], "2026-02-01")
+        self.assertEqual(render.widoczne([wpis], self.TODAY), [])      # wystawa sprzed miesięcy nie jest już aktualnością
+
+    def test_wydarzenie_dalej_niz_horyzont_nie_jest_jeszcze_aktualnoscia(self):
+        daleko = self._wpis(id="2", url="https://x.pl/2", event_iso="2027-02-01", when="1.02.2027")
+        blisko = self._wpis(id="3", url="https://x.pl/3", event_iso="2026-11-20", when="20.11")
+        wynik = render.widoczne([daleko, blisko], self.TODAY)
+        self.assertEqual([i["id"] for i in wynik], ["3"])
 
 
 class TerminyIDuplikaty(unittest.TestCase):
