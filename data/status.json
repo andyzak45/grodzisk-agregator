@@ -1,5 +1,5 @@
 {
- "run": "2026-10-26T06:27:26+01:00",
+ "run": "2026-10-26T21:27:35+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
@@ -14,22 +14,22 @@
   "policja": {
    "ok": true,
    "found": 12,
-   "new": 0
+   "new": 1
   },
   "grodziski24": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 3
   },
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 4
   },
   "przeglad-regionalny": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 5
   },
   "grodziskinfo": {
    "ok": true,
@@ -39,22 +39,22 @@
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 4
   },
   "centrum-kultury": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "mediateka": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "biblioteka": {
    "ok": true,
    "found": 10,
-   "new": 6
+   "new": 3
   },
   "grodzisksport": {
    "ok": true,
@@ -62,7 +62,7 @@
    "new": 0,
    "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
    "diag": {
-    "bajty": 153094,
+    "bajty": 153043,
     "article": 0,
     "naglowki": 7,
     "feed": false,
@@ -76,7 +76,7 @@
    "new": 0,
    "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
    "diag": {
-    "bajty": 113475,
+    "bajty": 113270,
     "article": 0,
     "naglowki": 2,
     "feed": false,
@@ -87,7 +87,7 @@
   "bogoria": {
    "ok": true,
    "found": 10,
-   "new": 0
+   "new": 1
   },
   "budo": {
    "ok": true,
@@ -148,7 +148,7 @@
    "new": 0,
    "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
    "diag": {
-    "bajty": 64444,
+    "bajty": 64724,
     "article": 3,
     "naglowki": 23,
     "feed": false,
@@ -187,7 +187,7 @@
   "zwik": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 1
   },
   "okinawa": {
    "ok": true,
@@ -200,7 +200,7 @@
    "new": 0,
    "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
    "diag": {
-    "bajty": 54490,
+    "bajty": 53272,
     "article": 0,
     "naglowki": 10,
     "feed": false,
@@ -219,8 +219,9 @@
    "new": 0
   },
   "parafia-mb": {
-   "ok": false,
-   "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1010)>"
+   "ok": true,
+   "found": 1,
+   "new": 0
   },
   "dworek-chelmonskiego": {
    "ok": true,
