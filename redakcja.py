@@ -133,4 +133,4 @@ def inny_region(title):
     """Tytuł mówi wprost o innym województwie (np. 'alert RCB dla woj. lubelskiego'): to nie jest wiadomość lokalna."""
     return bool(_INNY_REGION.search(title or ""))
 
-# wersja-kompletu: 2026-10-25-1
+# wersja-kompletu: 2026-10-25-2

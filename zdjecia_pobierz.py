@@ -66,13 +66,15 @@ def mniejsza_miniatura(fetch, tytul):
 
 
 def wczytaj_wybor(sciezka):
-    """Lista (tytuł, temat lub None, słowa kluczowe, miejscowość lub None). Formaty linii:
+    """Lista (tytuł, temat lub None, słowa kluczowe, miejscowość lub None, id źródeł). Formaty linii:
       File:X.jpg                    zdjęcie miejsca (miejscowość i temat z nazwy pliku)
       File:X.jpg | droga            zdjęcie ogólne do tematu, bez miejscowości
       File:X.jpg | kultura | mediate, centrum kultur
                                     zdjęcie konkretnego miejsca: dostają je wpisy, w których tytule jest jedno z podanych słów
                                     (rdzenie bez końcówek, bo polskie nazwy się odmieniają)
-      File:X.jpg | | | Książenice   miejscowość podana wprost, gdy nie wynika z nazwy pliku (puste pola można pominąć)"""
+      File:X.jpg | | | Książenice   miejscowość podana wprost, gdy nie wynika z nazwy pliku (puste pola można pominąć)
+      File:X.jpg | kultura | | Adamowizna | dworek-chelmonskiego
+                                    zdjęcie przypisane do źródła: dostają je wszystkie wpisy z tego źródła (id z sources.json)"""
     if not sciezka.exists():
         return []
     out, widziane = [], set()
@@ -85,16 +87,17 @@ def wczytaj_wybor(sciezka):
         temat_linii = pola[1] if len(pola) > 1 and pola[1] in OPISY else None
         slowa = [norm(x.strip()) for x in pola[2].split(",") if x.strip()] if len(pola) > 2 else []
         wprost = pola[3] if len(pola) > 3 and pola[3] else None
-        out.append((tytul, temat_linii, slowa, wprost))
+        zrodla = [x.strip().lower() for x in pola[4].split(",") if x.strip()] if len(pola) > 4 else []
+        out.append((tytul, temat_linii, slowa, wprost, zrodla))
     return out
 
 
 def main(fetch=zc.pobierz, pobierz=pobierz_plik, katalog=ROOT):
     wybor = wczytaj_wybor(katalog / "data" / "zdjecia_wybor.txt")
-    znane = {t for t, _, _, _ in wybor}
+    znane = {w[0] for w in wybor}
     wybor += [w for w in wczytaj_wybor(katalog / "data" / "zdjecia_wsie.txt") if w[0] not in znane]      # automatyczny wybór dla wsi
-    tematy_wyboru = {t: (tm, sl, mj) for t, tm, sl, mj in wybor}
-    tytuly = [t for t, _, _, _ in wybor]
+    tematy_wyboru = {t: (tm, sl, mj, zr) for t, tm, sl, mj, zr in wybor}
+    tytuly = [w[0] for w in wybor]
     if not tytuly:
         print("Brak tytułów w data/zdjecia_wybor.txt.")
         return 1
@@ -134,9 +137,10 @@ def main(fetch=zc.pobierz, pobierz=pobierz_plik, katalog=ROOT):
                 sciezka.write_bytes(dane)
             wynik.append({"plik": f"zdjecia/{lokalny}", "tytul": r["tytul"], "strona": r["strona"], "autor": r["autor"],
                           "licencja": r["licencja"], "licencja_url": r["licencja_url"],
-                          "miejsce": tematy_wyboru[t][2] or ("" if (tematy_wyboru[t][0] and not tematy_wyboru[t][1]) else miejsce(r["tytul"])),
+                          "miejsce": tematy_wyboru[t][2] or ("" if (tematy_wyboru[t][0] and not tematy_wyboru[t][1] and not tematy_wyboru[t][3]) else miejsce(r["tytul"])),
                           "temat": tematy_wyboru[t][0] or temat(r["tytul"])}
-                         | ({"slowa": tematy_wyboru[t][1]} if tematy_wyboru[t][1] else {}))
+                         | ({"slowa": tematy_wyboru[t][1]} if tematy_wyboru[t][1] else {})
+                         | ({"zrodla": tematy_wyboru[t][3]} if tematy_wyboru[t][3] else {}))
     (katalog / "data" / "zdjecia.json").write_text(json.dumps(wynik, ensure_ascii=False, indent=1), encoding="utf-8")
     uzywane = {Path(z["plik"]).name for z in wynik}
     wlasne = katalog / "data" / "zdjecia_wlasne.json"
@@ -159,4 +163,4 @@ def main(fetch=zc.pobierz, pobierz=pobierz_plik, katalog=ROOT):
 if __name__ == "__main__":
     sys.exit(main())
 
-# wersja-kompletu: 2026-10-25-1
+# wersja-kompletu: 2026-10-25-4

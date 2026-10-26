@@ -169,6 +169,12 @@ def wyciagnij_termin(text, today=None):
             day, month, year = int(m.group(1)), int(m.group(2)), m.group(3)
     if day is None:
         return None, None
+    if not year:      # zakres "od 1 lutego do 1 lipca 2026": rok podany przy końcu dotyczy też początku
+        reszta = t[m.end():m.end() + 60]
+        m2 = _DATE_WORD.search(reszta) or _DATE_NUM.search(reszta)
+        if m2 and m2.group(3):
+            miesiac_konca = MONTHS[m2.group(2)] if m2.re is _DATE_WORD else int(m2.group(2))
+            year = str(int(m2.group(3)) - (1 if month > miesiac_konca else 0))
     y = int(year) if year else today.year
     try:
         d = date(y, month, day)
@@ -182,4 +188,4 @@ def wyciagnij_termin(text, today=None):
         label += f", godz. {int(tm.group(1))}:{tm.group(2)}"
     return label, d.isoformat()
 
-# wersja-kompletu: 2026-10-25-1
+# wersja-kompletu: 2026-10-25-2

@@ -417,6 +417,9 @@ def ten_sam_temat(a, b):
     return True
 
 
+_ZAKRES_Z_ROKIEM = re.compile(r"\bod\s+\d{1,2}\s+[a-z]+\s+do\s+\d{1,2}\s+[a-z]+\s+20\d{2}")
+
+
 def napraw_terminy(store, today):
     """Porządki w terminach zapisanych wpisów:
     1) termin dalszy niż DALEKA_PRZYSZLOSC_DNI uznajemy za błąd odczytu i usuwamy (np. rok dopisany do starej daty);
@@ -426,6 +429,11 @@ def napraw_terminy(store, today):
     granica = (today + timedelta(days=DALEKA_PRZYSZLOSC_DNI)).isoformat()
     zmian = 0
     for it in store.values():
+        if it.get("text") and _ZAKRES_Z_ROKIEM.search(norm(it["text"])):      # "od 1 lutego do 1 lipca 2026": wcześniejszy odczyt mógł dać zły rok
+            etykieta, d = wyciagnij_termin(it["text"], date.fromisoformat(it["first_seen"]))
+            if d and d != it.get("event_iso"):
+                it["when"], it["event_iso"] = etykieta, d
+                zmian += 1
         if it.get("event_iso") and it["event_iso"] > granica:
             it["when"] = it["event_iso"] = None
             zmian += 1
@@ -560,4 +568,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# wersja-kompletu: 2026-10-25-1
+# wersja-kompletu: 2026-10-25-2

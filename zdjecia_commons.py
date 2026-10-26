@@ -292,10 +292,10 @@ def main_wsie(fetch=pobierz, katalog=ROOT / "data"):
     from klasyfikacja import PLACES, w_gminie
     wsie = [n for n in PLACES if w_gminie(n)]
     wybrane = zp.wczytaj_wybor(katalog / "zdjecia_wybor.txt")
-    juz = {t for t, _, _, _ in wybrane}
+    juz = {w[0] for w in wybrane}
     mamy = {}
-    for t, temat, slowa, mj in wybrane:
-        m = mj or ("" if temat and not slowa else zp.miejsce(t))
+    for t, temat, slowa, mj, zrodla in wybrane:
+        m = mj or ("" if temat and not slowa and not zrodla else zp.miejsce(t))
         mamy[m] = mamy.get(m, 0) + 1
     linie, podglad = [], []
     for wies in wsie:
@@ -377,4 +377,4 @@ if __name__ == "__main__":
         sys.exit(main_szukaj(frazy=[f.strip() for f in os.environ.get("FRAZA", "").split(";") if f.strip()] or None))
     sys.exit(main(miejsca="--tematy" not in sys.argv))
 
-# wersja-kompletu: 2026-10-25-1
+# wersja-kompletu: 2026-10-25-4

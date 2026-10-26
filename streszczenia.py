@@ -495,4 +495,4 @@ def zastosuj_reczne(store, sciezka):
         n += 1
     return n
 
-# wersja-kompletu: 2026-10-25-1
+# wersja-kompletu: 2026-10-25-2
