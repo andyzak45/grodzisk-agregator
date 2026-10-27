@@ -2058,7 +2058,7 @@ class TerminyIDuplikaty(unittest.TestCase):
         self.assertIn('<span class="mj">Szczęsne</span>', wiersze[1])
         self.assertNotIn('class="badge"', blok)
 
-    def test_terminy_sa_w_grupach_dni_a_cala_gmina_nie_ma_opisu_miejsca(self):
+    def test_terminy_sa_w_grupach_dni_a_cala_gmina_ma_nazwe_gminy(self):
         today = date(2026, 10, 22)
         items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", place="cała gmina", title="Pierwsze",
                             event_iso="2026-10-24", when="24.10, godz. 9:00"),
@@ -2072,9 +2072,16 @@ class TerminyIDuplikaty(unittest.TestCase):
         self.assertEqual(blok.count('<div class="td">'), 2)          # data raz na dzień
         self.assertEqual(blok.count("<time"), 2)
         pierwszy = blok.split('<li class="termin"')[1].split("</li>")[0]
-        self.assertNotIn('class="mj"', pierwszy)                     # cała gmina: bez nazwy
+        self.assertIn('<span class="mj">Grodzisk</span>', pierwszy)  # cała gmina: nazwa gminy, każdy wiersz ma miejscowość
         self.assertIn('class="g">9:00', pierwszy)                    # godzina tylko gdy jest
         self.assertNotIn('class="g"', blok.split('<li class="termin"')[3])      # wpis bez godziny nie ma pustej kolumny
+
+    def test_wpis_o_calej_gminie_ma_plakietke_z_nazwa_gminy_a_filtr_zna_surowe_miejsce(self):
+        today = date(2026, 10, 22)
+        page = self._strona([self._wpis(id="1", kind="inne", place="cała gmina", title="Zajęcia w szkole")], today)
+        self.assertIn('<span class="badge">Grodzisk Mazowiecki</span>', page)
+        self.assertNotIn("Cała gmina</span>", page)
+        self.assertIn('data-place="cała gmina"', page)
 
     def test_blok_terminow_ma_limit(self):
         today = date(2026, 10, 22)
