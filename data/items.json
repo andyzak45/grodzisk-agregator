@@ -171,6 +171,36 @@
   "tytul_proba": true
  },
  {
+  "id": "392abe3af1ba",
+  "title": "Poznaj Janusza I",
+  "url": "https://www.przegladregionalny.pl/artykul/11398,poznaj-janusza-i",
+  "source": "Przegląd Regionalny",
+  "source_id": "przeglad-regionalny",
+  "first_seen": "2026-10-27",
+  "published": "2026-10-27",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "d382c0051f7e",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
+  "id": "6a1787300f20",
+  "title": "Darmowa kontrola reflektorów na 9 stacjach w regionie",
+  "url": "https://wpr24.pl/darmowa-kontrola-reflektorow-na-9-stacjach-w-regionie/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-10-27",
+  "published": "2026-10-27",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "2f84211d0081"
+ },
+ {
   "id": "3e50392ae455",
   "title": "Interwencja policji: Grodzisk Mazowiecki",
   "url": "https://grodziski24.pl/20261025515564/pilka-nozna-betclic-1-liga-ruch-chorzow-pogon-grodzisk-mazowiecki-20-nozyce-chrapka-zatrzymaly-lidera",
