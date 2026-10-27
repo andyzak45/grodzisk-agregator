@@ -2071,7 +2071,10 @@ class TerminyIDuplikaty(unittest.TestCase):
         blok = blok[:blok.index("</section>")]
         self.assertEqual(blok.count('<div class="td">'), 2)          # data raz na dzień
         self.assertEqual(blok.count("<time"), 2)
-        self.assertIn('<span class="mj"></span>', blok)              # cała gmina: bez nazwy
+        pierwszy = blok.split('<li class="termin"')[1].split("</li>")[0]
+        self.assertNotIn('class="mj"', pierwszy)                     # cała gmina: bez nazwy
+        self.assertIn('class="g">9:00', pierwszy)                    # godzina tylko gdy jest
+        self.assertNotIn('class="g"', blok.split('<li class="termin"')[3])      # wpis bez godziny nie ma pustej kolumny
 
     def test_blok_terminow_ma_limit(self):
         today = date(2026, 10, 22)

@@ -217,21 +217,21 @@ def terminy(pool, today):
     w każdym wierszu: godzina, tytuł, miejscowość. Minione terminy nie wchodzą (strona z wczoraj ukrywa je dodatkowo skryptem)."""
     od, do = today.isoformat(), (today + timedelta(days=TERMINY_DNI)).isoformat()
     kand = [i for i in pool if i["kind"] != "zdr" and i.get("event_iso") and od <= i["event_iso"] <= do]
-    kand.sort(key=lambda i: (i["event_iso"], godzina(i.get("when")) or "99:99", tytul(i)))
+    kand.sort(key=lambda i: (i["event_iso"], (godzina(i.get("when")) or "99:99").zfill(5), tytul(i)))      # "9:00" przed "18:00"
     grupy = ""
     for iso, wpisy in groupby(kand[:TERMINY_MAX], key=lambda i: i["event_iso"]):
         wiersze = ""
         for i in wpisy:
-            g = godzina(i.get("when")) or ""
+            g, mj = godzina(i.get("when")), _miejsce_terminu(i["place"])
             wiersze += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
-                        f'<span class="g">{e(g)}</span>'
-                        f'<a href="{e(i["url"])}" target="_blank" rel="noopener">{e(tytul(i))}</a>'
-                        f'<span class="mj">{e(_miejsce_terminu(i["place"]))}</span></li>')
+                        + (f'<span class="g">{e(g)}</span> ' if g else "")
+                        + f'<a href="{e(i["url"])}" target="_blank" rel="noopener">{e(tytul(i))}</a>'
+                        + (f' <span class="mj">{e(mj)}</span>' if mj else "") + '</li>')
         grupy += (f'<div class="td"><h3><time datetime="{e(iso)}">{e(data_ui(iso, today))}</time></h3>'
                   f'<ul>{wiersze}</ul></div>')
     if not grupy:
         return ""
-    return f'<section class="terminy" id="terminy"><h2>Najbliższe terminy</h2>{grupy}</section>'
+    return f'<section class="terminy" id="terminy"><h2>Najbliższe terminy</h2><div class="grupy">{grupy}</div></section>'
 
 
 def filtry(items):
