@@ -39,13 +39,16 @@
         .hero > .hero-fot a { color: inherit; }
         .terminy { border-top: 3px solid var(--text-main); background: #f8fafc; padding: 0.8rem 1rem 0.9rem; margin-bottom: 1.75rem; }
         .terminy h2 { font-family: var(--cond); text-transform: uppercase; letter-spacing: 0.04em; font-size: 1.05rem; margin: 0 0 0.55rem; }
-        .terminy ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem 2rem; }
-        .termin { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr) 6.5rem; column-gap: 0.7rem; align-items: baseline; font-size: 0.95rem; line-height: 1.3; }
-        .termin .badge { justify-self: end; text-align: right; white-space: nowrap; }
-        .termin time { font-family: var(--cond); font-weight: 700; color: #e11d48; }
+        .td { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); column-gap: 0.8rem; border-top: 1px solid var(--rule); padding: 0.5rem 0 0.35rem; }
+        .terminy h2 + .td { border-top: 0; padding-top: 0.1rem; }
+        .td h3 { font-family: var(--cond); font-size: 0.95rem; font-weight: 700; color: #e11d48; margin: 0; line-height: 1.3; text-transform: capitalize; }
+        .td ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+        .termin { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; column-gap: 0.7rem; align-items: baseline; font-size: 0.95rem; line-height: 1.3; }
+        .termin .g { font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--text-muted); }
+        .termin .mj { font-size: 0.75rem; color: var(--text-muted); text-align: right; white-space: nowrap; }
         .termin a { color: var(--text-main); font-weight: 600; text-decoration: none; }
         .termin a:hover { text-decoration: underline; }
-        @media (max-width: 800px) { .terminy ul { grid-template-columns: 1fr; } .termin { grid-template-columns: 7.5rem minmax(0, 1fr) 5.5rem; } }
+        @media (max-width: 600px) { .td { grid-template-columns: 1fr; row-gap: 0.2rem; } .termin { grid-template-columns: 2.6rem minmax(0, 1fr); } .termin .mj { grid-column: 2; text-align: left; } }
         .ticker { display: flex; align-items: stretch; gap: 1rem; background: #f3f4f6; margin-bottom: 1.25rem; overflow: hidden; }
         .ticker-label { background: #bbf7a0; color: #111; font-family: var(--cond); font-weight: 800; text-transform: uppercase; padding: 0.7rem 1rem; display: flex; align-items: center; flex-shrink: 0; letter-spacing: 0.04em; }
         .ticker-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 1.4rem; flex: 1; min-width: 0; padding: 0.6rem 1.25rem 0.6rem 0; }
@@ -59,7 +62,7 @@
         .hero > .hero-ilu { position: absolute; top: 0; left: 0; width: 100%; height: 62%; color: #fff; --t: transparent; opacity: 0.2; }
         .hero h2 { font-family: var(--cond); font-weight: 800; font-size: 2.3rem; line-height: 1.1; margin: 0.5rem 0 0.7rem; color: #fff; }
         .hero .opis { color: rgba(255,255,255,0.92); font-size: 1rem; }
-        .hero .meta-bar, .hero .when { color: rgba(255,255,255,0.9); }
+        .hero .meta-bar, .hero .meta-src, .hero .when { color: rgba(255,255,255,0.9); }
         .hero .badge { background: rgba(255,255,255,0.2); color: #fff; }
         .hero .read-more { color: #fff; }
         .front-side { display: flex; flex-direction: column; gap: 1.5rem; }
@@ -80,7 +83,9 @@
         .portal-card { background: transparent; display: flex; flex-direction: column; }
         .kat-grid .portal-card { border-top: 1px solid var(--rule); padding-top: 0.6rem; }
         .card-body { display: flex; flex-direction: column; flex-grow: 1; }
-        .meta-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem 0.65rem; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.45rem; }
+        .meta-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem 0.65rem; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .meta-src { font-size: 0.75rem; color: var(--text-muted); margin: 0 0 0.45rem; }
+        .meta-src .sep { margin: 0 0.1rem; }
         .tag { font-family: var(--cond); font-weight: 800; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; padding: 0.1rem 0.45rem; background: #e2e8f0; color: #111; }
         .t-ost, .t-zdr { background: #fecaca; } .t-wyd { background: #fde68a; } .t-inw { background: #bfdbfe; } .t-spo { background: #c7d2fe; }
         .badge { color: var(--accent); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }

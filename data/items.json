@@ -82,7 +82,10 @@
   "event_iso": null,
   "tkey": "ba7bd72a678b",
   "opis_proba": "v3",
-  "poza_okolica": true
+  "poza_okolica": true,
+  "also": [
+   "Urząd Miejski"
+  ]
  },
  {
   "id": "7724eb4d886e",
