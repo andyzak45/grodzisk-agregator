@@ -201,6 +201,22 @@
   "tkey": "2f84211d0081"
  },
  {
+  "id": "7f17c13dc138",
+  "title": "1 listopada w niedzielę. Czy pracownicy dostaną dodatkowe wolne? Zapadła decyzja",
+  "url": "https://www.przegladregionalny.pl/artykul/11421,1-listopada-w-niedziele-czy-pracownicy-dostana-dodatkowe-wolne-zapadla-decyzja",
+  "source": "Przegląd Regionalny",
+  "source_id": "przeglad-regionalny",
+  "first_seen": "2026-10-27",
+  "published": "2026-10-27",
+  "kind": "inne",
+  "place": "okolica",
+  "when": "1.11",
+  "event_iso": "2026-11-01",
+  "tkey": "f26de94949c7",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
   "id": "3e50392ae455",
   "title": "Interwencja policji: Grodzisk Mazowiecki",
   "url": "https://grodziski24.pl/20261025515564/pilka-nozna-betclic-1-liga-ruch-chorzow-pogon-grodzisk-mazowiecki-20-nozyce-chrapka-zatrzymaly-lidera",
@@ -692,7 +708,7 @@
   "opis_proba": "v3",
   "text": "Filia nr 1 Biblioteki Publicznej w Kadach organizuje bezpłatne zajęcia z języka angielskiego dla dzieci w wieku od pięciu lat. Spotkania odbywają się we wtorki przy ulicy Środkowej 72, jednak lista zapisów została już zamknięta.",
   "opis_auto": true,
-  "tytul_proba": true
+  "tytul_proba": 2
  },
  {
   "id": "4db22a570797",
@@ -1287,7 +1303,7 @@
   "opis_proba": "v3",
   "text": "W Dworku Adama Chełmońskiego w Adamowiźnie 25 października w godzinach od 16.00 do 19.00 odbędzie się wieczorny plener malarski pod hasłem „Nocturny”. Zapisy na wydarzenie rozpoczęły się 13 października poprzez formularz internetowy placówki.",
   "opis_auto": true,
-  "tytul_proba": true
+  "tytul_proba": 2
  },
  {
   "id": "9b60b194bdb0",
@@ -1792,7 +1808,7 @@
   "opis_proba": "v3",
   "text": "Od 30 października do 5 listopada 2026 roku w Centrum Kultury wyświetlany będzie film „Rozważna i romantyczna”. Ekranizacja przedstawia losy dwóch sióstr, które po śmierci ojca zmagają się z trudnymi życiowymi wyborami.",
   "opis_auto": true,
-  "tytul_proba": true
+  "tytul_proba": 2
  },
  {
   "id": "9a7892b0f221",
@@ -1810,7 +1826,7 @@
   "opis_proba": "v3",
   "text": "Od 30 października do 5 listopada 2026 roku w grodziskim Centrum Kultury widzowie będą mogli obejrzeć film „Czas, który nie nadszedł”. Obraz przedstawia historię relacji dwójki ludzi w świecie zdominowanym przez kuracje zatrzymujące starzenie.",
   "opis_auto": true,
-  "tytul_proba": true
+  "tytul_proba": 2
  },
  {
   "id": "fbfc4f1964ba",
@@ -5321,7 +5337,7 @@
   "opis_proba": "v2",
   "text": "24 października w świetlicy w Mościskach odbędą się charytatywne warsztaty szycia poduszek i woreczków dla pacjentów onkologicznych. Wymagane są wcześniejsze zapisy.",
   "opis_auto": true,
-  "tytul_proba": true
+  "tytul_proba": 2
  },
  {
   "id": "d5987652432f",
