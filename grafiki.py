@@ -221,4 +221,4 @@ def tlo_czolowki(it):
     return (f'<svg class="hero-ilu" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
             f'<use href="#ilu-{temat(it)}"/></svg>'), ""
 
-# wersja-kompletu: 2026-10-27-1
+# wersja-kompletu: 2026-10-27-2

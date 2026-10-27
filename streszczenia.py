@@ -35,6 +35,7 @@ MAX_NOTKA = 300
 MAX_TYTUL = 110
 MAX_TYTULOW = 15        # tyle tytułów dopisujemy zaległym wpisom (z notką, ale bez tytułu AI) w jednym przebiegu
 MAX_WIEK_TYTULOW = 14   # starszym wpisom tytułu nie dopisujemy
+TYTUL_WERSJA = 2        # wersja zasad tytułów; wydarzenia po nieudanej próbie wg starszej wersji dostają jedną ponowną próbę (tytuł mówi, czym wydarzenie jest)
 MAX_WIEK_DNI = 7        # starszych wpisów nie uzupełniamy
 N_PRZEPISANE = 9        # tyle kolejnych słów z artykułu w notce uznajemy za przepisanie
 
@@ -405,7 +406,7 @@ def dopisz(store, zrodla, fetcher, today, limit, llm=None):
             tytul = sprawdz_tytul(tytul_ai, it["title"], tekst)
             if tytul:
                 it["tytul"] = tytul
-            it["tytul_proba"] = True        # jedna próba przy notce; zaległe tytuły uzupełnia dopisz_tytuly
+            it["tytul_proba"] = TYTUL_WERSJA        # jedna próba przy notce; zaległe tytuły uzupełnia dopisz_tytuly
             dodane += 1
             licz("dodano notkę" + ("" if tytul else " (bez tytułu AI)"), it)
         else:
@@ -415,11 +416,17 @@ def dopisz(store, zrodla, fetcher, today, limit, llm=None):
     return dodane
 
 
+def _juz_probowany(it):
+    """Wpis miał już próbę tytułu. Wyjątek: wydarzenie, które próbowano wg starszych zasad (tytuł nic o nim nie mówił)."""
+    proba = it.get("tytul_proba")
+    return bool(proba) and (proba == TYTUL_WERSJA or it["kind"] != "wyd")
+
+
 def kandydaci_tytulow(store, today):
     """Wpisy z notką, ale bez tytułu AI, od najświeższych. Zdarzenia policji mają własne, neutralne tytuły."""
     out = []
     for it in store.values():
-        if not it.get("text") or it.get("tytul") or it.get("tytul_proba") or it.get("neutral") or it["kind"] == "zdr":
+        if not it.get("text") or it.get("tytul") or _juz_probowany(it) or it.get("neutral") or it["kind"] == "zdr":
             continue
         dzien = date.fromisoformat(it.get("published") or it["first_seen"])
         if (today - dzien).days > MAX_WIEK_TYTULOW and (it.get("event_iso") or "") < today.isoformat():
@@ -451,7 +458,7 @@ def dopisz_tytuly(store, today, limit=MAX_TYTULOW, llm=None):
             print(f"  tytuł: model nie odpowiedział ({type(e).__name__}: {e})")
         else:
             bledy = 0
-            it["tytul_proba"] = True
+            it["tytul_proba"] = TYTUL_WERSJA
             tytul_ai, _ = rozbij_odpowiedz(surowa)
             tytul = sprawdz_tytul(tytul_ai, it["title"], it["text"])
             if tytul:
@@ -496,4 +503,4 @@ def zastosuj_reczne(store, sciezka):
         n += 1
     return n
 
-# wersja-kompletu: 2026-10-27-1
+# wersja-kompletu: 2026-10-27-2

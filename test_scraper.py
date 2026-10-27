@@ -891,9 +891,9 @@ class GeminiMartweModele(unittest.TestCase):
 
 class AKomplet(unittest.TestCase):
     """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
-    WERSJE = {"grafiki.py": "2026-10-27-1", "render.py": "2026-10-27-1", "scraper.py": "2026-10-25-2", "streszczenia.py": "2026-10-27-1",
+    WERSJE = {"grafiki.py": "2026-10-27-2", "render.py": "2026-10-27-2", "scraper.py": "2026-10-25-2", "streszczenia.py": "2026-10-27-2",
               "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-2", "zdjecia_commons.py": "2026-10-25-4",
-              "zdjecia_pobierz.py": "2026-10-25-4", "template.html": "2026-10-27-1"}
+              "zdjecia_pobierz.py": "2026-10-25-4", "template.html": "2026-10-27-2"}
 
     def test_wszystkie_pliki_maja_wymagana_wersje(self):
         stare = []
@@ -1157,6 +1157,15 @@ class TytulyAI(unittest.TestCase):
         llm = lambda t: f"TYTUŁ: {self.TYTUL}\nNOTKA: {self.NOTKA}"
         for kw in ({"kind": "zdr"}, {"neutral": True}, {"published": "2026-09-01", "first_seen": "2026-09-01"}, {"tytul_proba": True}):
             self.assertEqual(streszczenia.dopisz_tytuly(self._store(text=self.NOTKA, **kw), TODAY, 5, llm), 0, kw)
+
+    def test_wydarzenie_po_probie_wg_starych_zasad_dostaje_jeszcze_jedna_probe(self):
+        llm = lambda t: f"TYTUŁ: {self.TYTUL}\nNOTKA: {self.NOTKA}"
+        stare = self._store(text=self.NOTKA, kind="wyd", tytul_proba=True)
+        self.assertEqual(streszczenia.dopisz_tytuly(stare, TODAY, 5, llm), 1)
+        self.assertEqual(stare["a"]["tytul_proba"], streszczenia.TYTUL_WERSJA)
+        self.assertEqual(streszczenia.dopisz_tytuly(stare, TODAY, 5, llm), 0)      # po nowej wersji już nie
+        inne = self._store(text=self.NOTKA, kind="inne", tytul_proba=True)
+        self.assertEqual(streszczenia.dopisz_tytuly(inne, TODAY, 5, llm), 0)      # ponowna próba tylko dla wydarzeń
 
     def test_zalegle_tytuly_koncza_na_limicie_zapytan(self):
         import urllib.error

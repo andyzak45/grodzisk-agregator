@@ -442,4 +442,4 @@ def build_archive(items, shown, template_path, out_path, today=None):
     Path(out_path).write_text(page, encoding="utf-8")
     return len(reszta)
 
-# wersja-kompletu: 2026-10-27-1
+# wersja-kompletu: 2026-10-27-2
