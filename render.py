@@ -48,6 +48,7 @@ BEZ_TERMINU_MAX = 3
 
 
 POKAZUJ_BEZ_NOTKI = set()       # rodzaje pokazywane nawet bez notki. Pusty zbiór = na stronie tylko wpisy z notką.
+MIASTO_UI = "Grodzisk Mazowiecki"
 TYLKO_GMINA = True              # True: tylko gmina Grodzisk Mazowiecki (bez Milanówka, Podkowy, Pruszkowa itd.); False: też okolica
 ZRODLA_OSTRZEZEN = {"kryzysowe"}  # ...ale tylko z tych lokalnych źródeł (z portali ogólnych ostrzeżenia też wymagają notki)
 
@@ -132,28 +133,33 @@ def e(s):
     return html.escape(str(s), quote=True)
 
 
+def miejsce_widoczne(place):
+    """Miejscowość pokazywana czytelnikowi. Wpis o całej gminie dostaje nazwę gminy, żeby każda karta miała miejscowość.
+    Filtr w przeglądarce nadal korzysta z surowego miejsca (data-place), więc "cała gmina" zachowuje swoje znaczenie."""
+    return MIASTO_UI if place == "cała gmina" else miejsce_ui(place)
+
+
 def _czesci(it, today):
     """Wspólne kawałki kart: znacznik kategorii, data, miejscowość, notka, termin, źródło."""
     label, bg = KIND_UI[it["kind"]]
-    miejsce = "" if it["place"] == "cała gmina" else miejsce_ui(it["place"])    # "Cała gmina" nic nie mówi: bez plakietki
+    miejsce = miejsce_widoczne(it["place"])
     termin = termin_ui(it, today)
-    when = ""
     if termin:
         godz = godzina(it.get("when"))
         when = (f'<p class="when">Kiedy: <time datetime="{e(it["event_iso"])}" data-t="{e(godz or "")}">'
                 f'{e(termin if it["event_iso"] else "")}</time></p>')
-    if it.get("published"):
-        data = (f'<time datetime="{e(it["published"])}">{e(data_ui(it["published"], today))}</time>'
-                if not termin else "")
-    else:
-        data = f'<span>{e(dzien(it["first_seen"]))}</span>' if not termin else ""
+    elif it.get("published"):      # wpis bez terminu wydarzenia: na dole zawsze data, tylko z opisem, co ona znaczy
+        when = (f'<p class="when opub">Opublikowano: <time datetime="{e(it["published"])}">'
+                f'{e(data_ui(it["published"], today))}</time></p>')
+    else:                          # źródło nie podaje daty publikacji: pokazujemy dzień dodania, z uczciwą etykietą
+        when = f'<p class="when opub">Dodano: <span>{e(dzien(it["first_seen"]))}</span></p>'
     znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
     tekst = opis(it, today)
     opis_html = f'<p class="opis">{e(tekst)}</p>' if tekst else ""
     zrodlo = e(it["source"]) + (f' <span class="also">oraz {e(", ".join(it["also"]))}</span>' if it.get("also") else "")
     tag = f'<span class="tag t-{e(it["kind"])}">{e(label)}</span>'
     meta = (f'<div class="meta-bar">{tag}{znaczek}</div>'
-            f'<p class="meta-src"><span>{zrodlo}</span>' + (f' <span class="sep">·</span> {data}' if data else "") + '</p>')
+            f'<p class="meta-src"><span>{zrodlo}</span></p>')
     link = f'<a href="{e(it["url"])}" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a>'
     return bg, meta, opis_html, when, link
 
@@ -163,7 +169,7 @@ def karta(it, today, kopia=False):
     bg, meta, opis_html, when, link = _czesci(it, today)
     klasa, ukryta = ("portal-card copy", " hidden") if kopia else ("portal-card", "")
     return (f'<article class="{klasa}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}"{ukryta}>'
-            f'{grafiki.ilustracja(it)}<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}{when}{link}</div></article>')
+            f'{grafiki.ilustracja(it)}<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}<div class="card-foot">{when}{link}</div></div></article>')
 
 
 def karta_glowna(it, today):
@@ -171,13 +177,13 @@ def karta_glowna(it, today):
     bg, meta, opis_html, when, link = _czesci(it, today)
     tlo, klasa = grafiki.tlo_czolowki(it)
     return (f'<article class="portal-card hero {bg}{klasa}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
-            f'{tlo}<div class="hero-body">{meta}<h2>{e(tytul(it))}</h2>{opis_html}{when}{link}</div></article>')
+            f'{tlo}<div class="hero-body">{meta}<h2>{e(tytul(it))}</h2>{opis_html}<div class="card-foot">{when}{link}</div></div></article>')
 
 
 def karta_boczna(it, today):
     bg, meta, opis_html, when, link = _czesci(it, today)
     return (f'<article class="portal-card side" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
-            f'<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}{when}{link}</div></article>')
+            f'<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}<div class="card-foot">{when}{link}</div></div></article>')
 
 
 def pasek_najnowszych(pool, today):
@@ -207,9 +213,7 @@ def pierwsza_strona(pool, today):
 
 def _miejsce_terminu(place):
     """Miejscowość w wierszu terminu: miasto skrótem, wieś nazwą, cała gmina bez opisu."""
-    if place == "cała gmina":
-        return ""
-    return ", ".join("Grodzisk" if p == "Grodzisk Mazowiecki" else p for p in place.split("|") if p != "okolica")
+    return ", ".join("Grodzisk" if p in (MIASTO_UI, "cała gmina") else p for p in place.split("|") if p != "okolica")
 
 
 def terminy(pool, today):
@@ -383,7 +387,7 @@ _ARCH_JS = """
 
 def wiersz_archiwum(it, today):
     label = KIND_UI[it["kind"]][0]
-    miejsce = miejsce_ui(it["place"])
+    miejsce = miejsce_widoczne(it["place"])
     d = date.fromisoformat(data_wpisu(it))
     tekst = opis(it, today)
     auto = ""
