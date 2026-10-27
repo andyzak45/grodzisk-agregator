@@ -1,10 +1,10 @@
 {
- "run": "2026-10-26T21:27:35+01:00",
+ "run": "2026-10-27T06:27:15+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
    "found": 9,
-   "new": 0
+   "new": 1
   },
   "kryzysowe": {
    "ok": true,
@@ -14,32 +14,32 @@
   "policja": {
    "ok": true,
    "found": 12,
-   "new": 1
+   "new": 3
   },
   "grodziski24": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 4
   },
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 4
+   "new": 1
   },
   "przeglad-regionalny": {
    "ok": true,
    "found": 15,
-   "new": 5
+   "new": 0
   },
   "grodziskinfo": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 1
   },
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 4
+   "new": 0
   },
   "centrum-kultury": {
    "ok": true,
@@ -51,43 +51,10 @@
    "found": 15,
    "new": 0
   },
-  "biblioteka": {
-   "ok": true,
-   "found": 10,
-   "new": 3
-  },
-  "grodzisksport": {
-   "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 153043,
-    "article": 0,
-    "naglowki": 7,
-    "feed": false,
-    "tytul": "Portal informacyjny OSiR Grodzisk Mazowiecki - OSiR Grodzisk Mazowiecki",
-    "tekst": "Portal informacyjny OSiR Grodzisk Mazowiecki - OSiR Grodzisk Mazowiecki Strona korzysta z plików cookies w celu realizacji usług. Możesz określić warunki przech"
-   }
-  },
-  "hala-caiis": {
-   "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 113270,
-    "article": 0,
-    "naglowki": 2,
-    "feed": false,
-    "tytul": "OSiR Grodzisk Mazowiecki",
-    "tekst": "OSiR Grodzisk Mazowiecki Strona korzysta z plików cookies w celu realizacji usług. Możesz określić warunki przechowywania lub dostępu do plików cookies klikając"
-   }
-  },
   "bogoria": {
    "ok": true,
    "found": 10,
-   "new": 1
+   "new": 0
   },
   "budo": {
    "ok": true,
@@ -148,7 +115,7 @@
    "new": 0,
    "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
    "diag": {
-    "bajty": 64724,
+    "bajty": 64619,
     "article": 3,
     "naglowki": 23,
     "feed": false,
@@ -187,7 +154,7 @@
   "zwik": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "okinawa": {
    "ok": true,
