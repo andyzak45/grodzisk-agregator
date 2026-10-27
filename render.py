@@ -1,6 +1,7 @@
 """Buduje index.html z zapisanych wpisów: jeden strumień od najważniejszych i najświeższych (bez losowania). Archiwum dzieli wpisy na kategorie."""
 import html
 from datetime import date, timedelta
+from itertools import groupby
 from pathlib import Path
 
 import grafiki
@@ -60,6 +61,8 @@ def z_notka(items):
             out.append(i)
         elif i.get("poza_okolica") or inny_region(i["title"]):
             continue                  # temat ogólnopolski albo z innego regionu
+        elif TYLKO_GMINA and i["place"] != "okolica" and not w_gminie(i["place"]):
+            continue                  # miejscowość wprost spoza gminy (np. Pruszków), nawet gdy w treści pada nazwa miejscowości z gminy
         elif TYLKO_GMINA and not w_gminie(miejsce_wpisu(i.get("source_id"), i["title"], i.get("text"), i["place"])):
             continue                  # miejscowość spoza gminy (albo nie rozpoznano miejsca)
         elif i.get("text") or (i["kind"] in POKAZUJ_BEZ_NOTKI and i.get("source_id") in ZRODLA_OSTRZEZEN):
@@ -132,7 +135,7 @@ def e(s):
 def _czesci(it, today):
     """Wspólne kawałki kart: znacznik kategorii, data, miejscowość, notka, termin, źródło."""
     label, bg = KIND_UI[it["kind"]]
-    miejsce = miejsce_ui(it["place"])
+    miejsce = "" if it["place"] == "cała gmina" else miejsce_ui(it["place"])    # "Cała gmina" nic nie mówi: bez plakietki
     termin = termin_ui(it, today)
     when = ""
     if termin:
@@ -149,7 +152,8 @@ def _czesci(it, today):
     opis_html = f'<p class="opis">{e(tekst)}</p>' if tekst else ""
     zrodlo = e(it["source"]) + (f' <span class="also">oraz {e(", ".join(it["also"]))}</span>' if it.get("also") else "")
     tag = f'<span class="tag t-{e(it["kind"])}">{e(label)}</span>'
-    meta = f'<div class="meta-bar">{tag}{znaczek}{data}<span>{zrodlo}</span></div>'
+    meta = (f'<div class="meta-bar">{tag}{znaczek}</div>'
+            f'<p class="meta-src"><span>{zrodlo}</span>' + (f' <span class="sep">·</span> {data}' if data else "") + '</p>')
     link = f'<a href="{e(it["url"])}" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a>'
     return bg, meta, opis_html, when, link
 
@@ -201,21 +205,33 @@ def pierwsza_strona(pool, today):
     return html_, [glowny] + reszta
 
 
+def _miejsce_terminu(place):
+    """Miejscowość w wierszu terminu: miasto skrótem, wieś nazwą, cała gmina bez opisu."""
+    if place == "cała gmina":
+        return ""
+    return ", ".join("Grodzisk" if p == "Grodzisk Mazowiecki" else p for p in place.split("|") if p != "okolica")
+
+
 def terminy(pool, today):
-    """Najbliższe terminy: wydarzenia, nabory, zapisy, utrudnienia. Jedna lista posortowana datą, osobno od strumienia."""
+    """Najbliższe terminy: wydarzenia, nabory, zapisy. Jedna kolumna, wiersze pogrupowane dniami (data raz na dzień),
+    w każdym wierszu: godzina, tytuł, miejscowość. Minione terminy nie wchodzą (strona z wczoraj ukrywa je dodatkowo skryptem)."""
     od, do = today.isoformat(), (today + timedelta(days=TERMINY_DNI)).isoformat()
     kand = [i for i in pool if i["kind"] != "zdr" and i.get("event_iso") and od <= i["event_iso"] <= do]
     kand.sort(key=lambda i: (i["event_iso"], godzina(i.get("when")) or "99:99", tytul(i)))
-    wiersze = ""
-    for i in kand[:TERMINY_MAX]:
-        miejsce = "" if i["place"] == "Grodzisk Mazowiecki" else miejsce_ui(i["place"])   # samo miasto to domyślne miejsce
-        znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
-        wiersze += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
-                    f'<time datetime="{e(i["event_iso"])}" data-t="{e(godzina(i.get("when")) or "")}">{e(termin_ui(i, today))}</time>'
-                    f'<a href="{e(i["url"])}" target="_blank" rel="noopener">{e(tytul(i))}</a>{znaczek}</li>')
-    if not wiersze:
+    grupy = ""
+    for iso, wpisy in groupby(kand[:TERMINY_MAX], key=lambda i: i["event_iso"]):
+        wiersze = ""
+        for i in wpisy:
+            g = godzina(i.get("when")) or ""
+            wiersze += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
+                        f'<span class="g">{e(g)}</span>'
+                        f'<a href="{e(i["url"])}" target="_blank" rel="noopener">{e(tytul(i))}</a>'
+                        f'<span class="mj">{e(_miejsce_terminu(i["place"]))}</span></li>')
+        grupy += (f'<div class="td"><h3><time datetime="{e(iso)}">{e(data_ui(iso, today))}</time></h3>'
+                  f'<ul>{wiersze}</ul></div>')
+    if not grupy:
         return ""
-    return f'<section class="terminy" id="terminy"><h2>Najbliższe terminy</h2><ul>{wiersze}</ul></section>'
+    return f'<section class="terminy" id="terminy"><h2>Najbliższe terminy</h2>{grupy}</section>'
 
 
 def filtry(items):
@@ -422,4 +438,4 @@ def build_archive(items, shown, template_path, out_path, today=None):
     Path(out_path).write_text(page, encoding="utf-8")
     return len(reszta)
 
-# wersja-kompletu: 2026-10-25-3
+# wersja-kompletu: 2026-10-27-1

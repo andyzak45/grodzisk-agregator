@@ -55,7 +55,8 @@ Zasady:
 Odpowiedz w dokładnie dwóch liniach, bez wstępu:
 TYTUŁ: <nowy tytuł po polsku, 6 do 12 słów, rzeczowy, oddający sedno wiadomości. Napisz go własnymi słowami: nie kopiuj
 tytułu oryginału ani zdań z tekstu. Bez wykrzykników, pytań i zachęt. Zachowaj nazwy miejscowości i liczby z tekstu,
-niczego nie dodawaj>
+niczego nie dodawaj. Gdy to zapowiedź wydarzenia (film, spektakl, koncert, warsztaty, spotkanie, wystawa), tytuł ma mówić,
+czym to wydarzenie jest (np. "Pokaz filmu ...", "Koncert ..."), a nie być samą nazwą dzieła>
 NOTKA: <notka według zasad powyżej>"""
 
 
@@ -495,4 +496,4 @@ def zastosuj_reczne(store, sciezka):
         n += 1
     return n
 
-# wersja-kompletu: 2026-10-25-2
+# wersja-kompletu: 2026-10-27-1
