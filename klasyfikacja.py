@@ -151,6 +151,7 @@ MONTHS = {"stycznia": 1, "lutego": 2, "marca": 3, "kwietnia": 4, "maja": 5, "cze
           "lipca": 7, "sierpnia": 8, "wrzesnia": 9, "pazdziernika": 10, "listopada": 11,
           "grudnia": 12}
 _DATE_WORD = re.compile(r"\b(\d{1,2})\s+(" + "|".join(MONTHS) + r")(?:\s+(20\d{2}))?\b")
+_DATE_DASH = re.compile(r"(?<![\d.\-])(\d{1,2})-(\d{1,2})-(20\d{2})(?![\d])")      # np. "28-10-2026" w tytułach ZWiK
 _DATE_NUM = re.compile(r"(?<![\d.])(\d{1,2})\.(\d{1,2})(?:\.(20\d{2}))?(?![\d])")
 _TIME = re.compile(r"(?:godz\.?\s*|\bo\s+)(\d{1,2}):(\d{2})\b")
 
@@ -164,7 +165,7 @@ def wyciagnij_termin(text, today=None):
     if m:
         day, month, year = int(m.group(1)), MONTHS[m.group(2)], m.group(3)
     else:
-        m = _DATE_NUM.search(t)
+        m = _DATE_DASH.search(t) or _DATE_NUM.search(t)
         if m and 1 <= int(m.group(1)) <= 31 and 1 <= int(m.group(2)) <= 12:
             day, month, year = int(m.group(1)), int(m.group(2)), m.group(3)
     if day is None:
@@ -188,4 +189,4 @@ def wyciagnij_termin(text, today=None):
         label += f", godz. {int(tm.group(1))}:{tm.group(2)}"
     return label, d.isoformat()
 
-# wersja-kompletu: 2026-10-25-2
+# wersja-kompletu: 2026-10-28-1
