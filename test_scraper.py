@@ -891,7 +891,7 @@ class GeminiMartweModele(unittest.TestCase):
 
 class AKomplet(unittest.TestCase):
     """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
-    WERSJE = {"grafiki.py": "2026-10-25-4", "render.py": "2026-10-25-5", "scraper.py": "2026-10-25-2", "streszczenia.py": "2026-10-25-2",
+    WERSJE = {"grafiki.py": "2026-10-27-2", "render.py": "2026-10-25-5", "scraper.py": "2026-10-25-2", "streszczenia.py": "2026-10-27-2",
               "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-2", "zdjecia_commons.py": "2026-10-25-4",
               "zdjecia_pobierz.py": "2026-10-25-4", "template.html": "2026-10-25-5"}
 
@@ -1568,7 +1568,7 @@ class ZdjeciaNaStronie(unittest.TestCase):
         dworek = dict(self._foto("zdjecia/dworek.jpg", "Adamowizna", "kultura"), zrodla=["dworek-chelmonskiego"])
         grafiki.ustaw_zdjecia([dworek, self._foto("zdjecia/szkola.jpg", "Adamowizna", "szkola")])
         z_dworku = self._wpis(id="90", place="Adamowizna", source_id="dworek-chelmonskiego", title="Wydarzenie plenerowe z okazji tradycji Dziadów")
-        inny = self._wpis(id="91", place="Adamowizna", source_id="grodziski24", title="Remont drogi w Adamowiźnie")
+        inny = self._wpis(id="91", place="Adamowizna", source_id="grodziski24", title="Wieści z Adamowizny")
         self.assertEqual(grafiki.wybierz_zdjecie(z_dworku)["plik"], "zdjecia/dworek.jpg")
         self.assertEqual(grafiki.wybierz_zdjecie(inny)["plik"], "zdjecia/szkola.jpg")      # zdjęcie dworku nie trafia do innych wpisów
 
