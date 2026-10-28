@@ -891,9 +891,9 @@ class GeminiMartweModele(unittest.TestCase):
 
 class AKomplet(unittest.TestCase):
     """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
-    WERSJE = {"grafiki.py": "2026-10-27-2", "render.py": "2026-10-27-2", "scraper.py": "2026-10-25-2", "streszczenia.py": "2026-10-27-2",
+    WERSJE = {"grafiki.py": "2026-10-25-4", "render.py": "2026-10-25-5", "scraper.py": "2026-10-25-2", "streszczenia.py": "2026-10-25-2",
               "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-2", "zdjecia_commons.py": "2026-10-25-4",
-              "zdjecia_pobierz.py": "2026-10-25-4", "template.html": "2026-10-27-2"}
+              "zdjecia_pobierz.py": "2026-10-25-4", "template.html": "2026-10-25-5"}
 
     def test_wszystkie_pliki_maja_wymagana_wersje(self):
         stare = []
@@ -1081,12 +1081,6 @@ class TylkoGminaGrodzisk(unittest.TestCase):
         wynik = {i["id"] for i in render.z_notka(list(ids.values()))}
         self.assertEqual(wynik, {"Grodzisk Mazowiecki", "cała gmina"})
 
-    def test_miejscowosc_wprost_spoza_gminy_wygrywa_z_nazwa_wsi_w_tresci(self):
-        wpis = {"id": "p", "url": "https://x.pl/p", "source": "Przegląd Regionalny", "source_id": "przeglad-regionalny",
-                "first_seen": "2026-10-20", "published": "2026-10-20", "when": None, "event_iso": None, "kind": "ost",
-                "title": "Planowane przerwy w dostawie prądu", "text": "Przerwy dotkną Pruszków, a także Książenice.", "place": "Pruszków"}
-        self.assertEqual(render.z_notka([wpis]), [])
-
 
 class TytulyAI(unittest.TestCase):
     ARTYKUL = Notki.ARTYKUL
@@ -1157,15 +1151,6 @@ class TytulyAI(unittest.TestCase):
         llm = lambda t: f"TYTUŁ: {self.TYTUL}\nNOTKA: {self.NOTKA}"
         for kw in ({"kind": "zdr"}, {"neutral": True}, {"published": "2026-09-01", "first_seen": "2026-09-01"}, {"tytul_proba": True}):
             self.assertEqual(streszczenia.dopisz_tytuly(self._store(text=self.NOTKA, **kw), TODAY, 5, llm), 0, kw)
-
-    def test_wydarzenie_po_probie_wg_starych_zasad_dostaje_jeszcze_jedna_probe(self):
-        llm = lambda t: f"TYTUŁ: {self.TYTUL}\nNOTKA: {self.NOTKA}"
-        stare = self._store(text=self.NOTKA, kind="wyd", tytul_proba=True)
-        self.assertEqual(streszczenia.dopisz_tytuly(stare, TODAY, 5, llm), 1)
-        self.assertEqual(stare["a"]["tytul_proba"], streszczenia.TYTUL_WERSJA)
-        self.assertEqual(streszczenia.dopisz_tytuly(stare, TODAY, 5, llm), 0)      # po nowej wersji już nie
-        inne = self._store(text=self.NOTKA, kind="inne", tytul_proba=True)
-        self.assertEqual(streszczenia.dopisz_tytuly(inne, TODAY, 5, llm), 0)      # ponowna próba tylko dla wydarzeń
 
     def test_zalegle_tytuly_koncza_na_limicie_zapytan(self):
         import urllib.error
@@ -1297,8 +1282,7 @@ class Grafiki(unittest.TestCase):
         self.assertEqual(page.count('<symbol id="ilu-'), len(grafiki.OPISY))
         self.assertIn('class="hero-ilu"', page)
         self.assertIn('<div class="ilu k-inw"', page)
-        self.assertIn("Autorzy zdjęć i licencje", page)      # stopka zostawia link z uznaniem autorstwa
-        self.assertNotIn("poglądowe", page)
+        self.assertIn("poglądowe", page)
 
 
 class ZdjeciaCommons(unittest.TestCase):
@@ -1584,25 +1568,9 @@ class ZdjeciaNaStronie(unittest.TestCase):
         dworek = dict(self._foto("zdjecia/dworek.jpg", "Adamowizna", "kultura"), zrodla=["dworek-chelmonskiego"])
         grafiki.ustaw_zdjecia([dworek, self._foto("zdjecia/szkola.jpg", "Adamowizna", "szkola")])
         z_dworku = self._wpis(id="90", place="Adamowizna", source_id="dworek-chelmonskiego", title="Wydarzenie plenerowe z okazji tradycji Dziadów")
-        inny = self._wpis(id="91", place="Adamowizna", source_id="grodziski24", title="Zajęcia w szkole w Adamowiźnie")
+        inny = self._wpis(id="91", place="Adamowizna", source_id="grodziski24", title="Remont drogi w Adamowiźnie")
         self.assertEqual(grafiki.wybierz_zdjecie(z_dworku)["plik"], "zdjecia/dworek.jpg")
         self.assertEqual(grafiki.wybierz_zdjecie(inny)["plik"], "zdjecia/szkola.jpg")      # zdjęcie dworku nie trafia do innych wpisów
-        droga = self._wpis(id="92", place="Adamowizna", source_id="grodziski24", title="Remont drogi w Adamowiźnie")
-        self.assertIsNone(grafiki.wybierz_zdjecie(droga))      # szkoła nie pasuje do drogi: lepsza grafika niż obce zdjęcie
-
-    def test_zdjecie_wsi_dostaje_tylko_wpis_o_pasujacym_temacie(self):
-        grafiki.ustaw_zdjecia([self._foto("zdjecia/kosciol.jpg", "Książenice", "kultura")])
-        remiza = self._wpis(id="95", place="Książenice", kind="inw", title="Umowa na projekt rozbudowy remizy")
-        koncert = self._wpis(id="96", place="Książenice", kind="wyd", title="Koncert w Książenicach")
-        bez_tematu = self._wpis(id="97", place="Książenice", kind="inne", title="Wieści z Książenic")
-        self.assertIsNone(grafiki.wybierz_zdjecie(remiza))
-        self.assertEqual(grafiki.wybierz_zdjecie(koncert)["plik"], "zdjecia/kosciol.jpg")
-        self.assertEqual(grafiki.wybierz_zdjecie(bez_tematu)["plik"], "zdjecia/kosciol.jpg")      # temat nieznany: nie odrzucamy
-
-    def test_zdjecie_ogolne_wsi_pasuje_do_kazdego_tematu(self):
-        grafiki.ustaw_zdjecia([self._foto("zdjecia/widok.jpg", "Książenice", "ogolne")])
-        remiza = self._wpis(id="98", place="Książenice", kind="inw", title="Umowa na projekt rozbudowy remizy")
-        self.assertEqual(grafiki.wybierz_zdjecie(remiza)["plik"], "zdjecia/widok.jpg")
 
     def test_linia_ze_zrodlem_zapisuje_zdjecie_z_miejscem_i_zrodlem(self):
         strony = {"File:Dworek.jpg": {"title": "File:Dworek.jpg", "imageinfo": [{"mime": "image/jpeg", "width": 2000, "height": 1500,
@@ -2053,49 +2021,44 @@ class TerminyIDuplikaty(unittest.TestCase):
         self.assertRegex(page, r'class="termin" data-place="Szczęsne" data-kind="wyd"')
         self.assertIn('c.dataset.kind === "ost"', page)
 
-    def test_plakietka_miejsca_w_terminach_tylko_dla_innych_miejscowosci_niz_miasto(self):
+    def test_miejscowosc_w_terminach_tylko_dla_innych_miejscowosci_niz_miasto(self):
         today = date(2026, 10, 22)
         items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", place="Grodzisk Mazowiecki", title="Koncert w mieście",
                             event_iso="2026-10-24", when="24.10"),
                  self._wpis(id="2", url="https://x.pl/2", kind="wyd", place="Szczęsne", title="Piknik na wsi",
-                            event_iso="2026-10-25", when="25.10")]
+                            event_iso="2026-10-25", when="25.10, godz. 15:00")]
         page = self._strona(items, today)
         blok = page[page.index('id="terminy"'):]
         blok = blok[:blok.index("</section>")]
         wiersze = blok.split('<li class="termin"')[1:]
-        self.assertIn('<span class="mj">Grodzisk</span>', wiersze[0])      # miasto: skrót
-        self.assertIn('<span class="mj">Szczęsne</span>', wiersze[1])
+        self.assertNotIn('class="meta"', wiersze[0])      # miasto bez godziny: nie ma linijki z godziną i miejscem
+        self.assertIn('<span class="meta">15:00 · Szczęsne</span>', wiersze[1])
         self.assertNotIn('class="badge"', blok)
 
-    def test_terminy_sa_w_grupach_dni_a_cala_gmina_ma_nazwe_gminy(self):
+    def test_blok_terminow_ma_limit_na_dzien_i_na_liczbe_dni(self):
         today = date(2026, 10, 22)
-        items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", place="cała gmina", title="Pierwsze",
-                            event_iso="2026-10-24", when="24.10, godz. 9:00"),
-                 self._wpis(id="2", url="https://x.pl/2", kind="wyd", place="Kady", title="Drugie",
-                            event_iso="2026-10-24", when="24.10, godz. 18:00"),
-                 self._wpis(id="3", url="https://x.pl/3", kind="wyd", place="Kady", title="Trzecie",
-                            event_iso="2026-10-25", when="25.10")]
+        items = [self._wpis(id=str(n), url=f"https://x.pl/{n}", kind="wyd", title=f"Wydarzenie numer {n}",
+                            event_iso="2026-10-25", when="25.10") for n in range(render.TERMINY_NA_DZIEN + 4)]
+        items += [self._wpis(id=f"d{n}", url=f"https://x.pl/d{n}", kind="wyd", title=f"Inny dzień {n}",
+                             event_iso=f"2026-10-{26 + n}", when=f"{26 + n}.10") for n in range(render.TERMINY_DNI_W_BLOKU + 2)]
         page = self._strona(items, today)
         blok = page[page.index('id="terminy"'):]
         blok = blok[:blok.index("</section>")]
-        self.assertEqual(blok.count('<div class="td">'), 2)          # data raz na dzień
-        self.assertEqual(blok.count("<time"), 2)
-        pierwszy = blok.split('<li class="termin"')[1].split("</li>")[0]
-        self.assertIn('<span class="mj">Grodzisk</span>', pierwszy)  # cała gmina: nazwa gminy, każdy wiersz ma miejscowość
-        self.assertIn('class="g">9:00', pierwszy)                    # godzina tylko gdy jest
-        self.assertNotIn('class="g"', blok.split('<li class="termin"')[3])      # wpis bez godziny nie ma pustej kolumny
+        self.assertEqual(blok.count('class="dzien'), render.TERMINY_DNI_W_BLOKU)
+        pierwsza = blok.split('<div class="dzien')[1]
+        self.assertEqual(pierwsza.count('class="termin"'), render.TERMINY_NA_DZIEN)
 
-    def test_wpis_o_calej_gminie_ma_plakietke_z_nazwa_gminy_a_filtr_zna_surowe_miejsce(self):
+    def test_terminy_sa_pogrupowane_po_dniach_z_naglowkiem_dnia(self):
         today = date(2026, 10, 22)
-        page = self._strona([self._wpis(id="1", kind="inne", place="cała gmina", title="Zajęcia w szkole")], today)
-        self.assertIn('<span class="badge">Grodzisk Mazowiecki</span>', page)
-        self.assertNotIn("Cała gmina</span>", page)
-        self.assertIn('data-place="cała gmina"', page)
-
-    def test_blok_terminow_ma_limit(self):
-        today = date(2026, 10, 22)
-        items = [self._wpis(id=str(n), url=f"https://x.pl/{n}", kind="wyd", title=f"Wydarzenie numer {n}",
-                            event_iso="2026-10-25", when="25.10") for n in range(render.TERMINY_MAX + 4)]
+        items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", title="Dziś rano", event_iso="2026-10-22", when="22.10, godz. 9:00"),
+                 self._wpis(id="2", url="https://x.pl/2", kind="wyd", title="Dziś wieczorem", event_iso="2026-10-22", when="22.10, godz. 19:00"),
+                 self._wpis(id="3", url="https://x.pl/3", kind="wyd", title="W sobotę", event_iso="2026-10-24", when="24.10")]
         page = self._strona(items, today)
         blok = page[page.index('id="terminy"'):]
-        self.assertEqual(blok[:blok.index("</section>")].count('class="termin"'), render.TERMINY_MAX)
+        dni = blok.split('<div class="dzien')[1:]
+        self.assertEqual(len(dni), 2)
+        self.assertIn("dzis", dni[0].split(">")[0])
+        self.assertIn("dzisiaj", dni[0])
+        self.assertLess(dni[0].index("Dziś rano"), dni[0].index("Dziś wieczorem"))
+        self.assertIn("sob. 24.10", dni[1])
+

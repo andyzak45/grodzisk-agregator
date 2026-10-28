@@ -1,7 +1,6 @@
 """Buduje index.html z zapisanych wpisów: jeden strumień od najważniejszych i najświeższych (bez losowania). Archiwum dzieli wpisy na kategorie."""
 import html
 from datetime import date, timedelta
-from itertools import groupby
 from pathlib import Path
 
 import grafiki
@@ -40,7 +39,8 @@ MAX_W_KATEGORII = 12      # tyle najwyżej z jednej kategorii na stronie (reszta
 SHOW_DAYS = 14
 HORYZONT_ZAPOWIEDZI_DNI = 60      # wpis z terminem dalszym niż tyle dni jeszcze nie jest aktualnością: pojawi się, gdy termin się zbliży
 TERMINY_DNI = 14         # blok "Najbliższe terminy" obejmuje tyle dni do przodu
-TERMINY_MAX = 8
+TERMINY_DNI_W_BLOKU = 5   # tyle kolejnych dni z terminami pokazujemy (każdy dzień to osobna kolumna)
+TERMINY_NA_DZIEN = 4      # tyle terminów w jednym dniu
 ZAWSZE_W_MENU = {"ost", "zdr"}   # te kategorie zostają w menu nawet puste (przyciemnione, z zerem); sekcji bez wpisów i tak nie ma
 DNI_OSTRZEZEN = 3        # ostrzeżenia (pogoda, komunikaty kryzysowe) są aktualne krótko: potem idą do archiwum
 BEZ_TERMINU_DNI = 3      # zapowiedź bez terminu pokazujemy tylko tuż po pojawieniu się
@@ -48,7 +48,6 @@ BEZ_TERMINU_MAX = 3
 
 
 POKAZUJ_BEZ_NOTKI = set()       # rodzaje pokazywane nawet bez notki. Pusty zbiór = na stronie tylko wpisy z notką.
-MIASTO_UI = "Grodzisk Mazowiecki"
 TYLKO_GMINA = True              # True: tylko gmina Grodzisk Mazowiecki (bez Milanówka, Podkowy, Pruszkowa itd.); False: też okolica
 ZRODLA_OSTRZEZEN = {"kryzysowe"}  # ...ale tylko z tych lokalnych źródeł (z portali ogólnych ostrzeżenia też wymagają notki)
 
@@ -62,8 +61,6 @@ def z_notka(items):
             out.append(i)
         elif i.get("poza_okolica") or inny_region(i["title"]):
             continue                  # temat ogólnopolski albo z innego regionu
-        elif TYLKO_GMINA and i["place"] != "okolica" and not w_gminie(i["place"]):
-            continue                  # miejscowość wprost spoza gminy (np. Pruszków), nawet gdy w treści pada nazwa miejscowości z gminy
         elif TYLKO_GMINA and not w_gminie(miejsce_wpisu(i.get("source_id"), i["title"], i.get("text"), i["place"])):
             continue                  # miejscowość spoza gminy (albo nie rozpoznano miejsca)
         elif i.get("text") or (i["kind"] in POKAZUJ_BEZ_NOTKI and i.get("source_id") in ZRODLA_OSTRZEZEN):
@@ -133,33 +130,27 @@ def e(s):
     return html.escape(str(s), quote=True)
 
 
-def miejsce_widoczne(place):
-    """Miejscowość pokazywana czytelnikowi. Wpis o całej gminie dostaje nazwę gminy, żeby każda karta miała miejscowość.
-    Filtr w przeglądarce nadal korzysta z surowego miejsca (data-place), więc "cała gmina" zachowuje swoje znaczenie."""
-    return MIASTO_UI if place == "cała gmina" else miejsce_ui(place)
-
-
 def _czesci(it, today):
     """Wspólne kawałki kart: znacznik kategorii, data, miejscowość, notka, termin, źródło."""
     label, bg = KIND_UI[it["kind"]]
-    miejsce = miejsce_widoczne(it["place"])
+    miejsce = miejsce_ui(it["place"])
     termin = termin_ui(it, today)
+    when = ""
     if termin:
         godz = godzina(it.get("when"))
         when = (f'<p class="when">Kiedy: <time datetime="{e(it["event_iso"])}" data-t="{e(godz or "")}">'
                 f'{e(termin if it["event_iso"] else "")}</time></p>')
-    elif it.get("published"):      # wpis bez terminu wydarzenia: na dole zawsze data, tylko z opisem, co ona znaczy
-        when = (f'<p class="when opub">Opublikowano: <time datetime="{e(it["published"])}">'
-                f'{e(data_ui(it["published"], today))}</time></p>')
-    else:                          # źródło nie podaje daty publikacji: pokazujemy dzień dodania, z uczciwą etykietą
-        when = f'<p class="when opub">Dodano: <span>{e(dzien(it["first_seen"]))}</span></p>'
+    if it.get("published"):
+        data = (f'<time datetime="{e(it["published"])}">{e(data_ui(it["published"], today))}</time>'
+                if not termin else "")
+    else:
+        data = f'<span>{e(dzien(it["first_seen"]))}</span>' if not termin else ""
     znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
     tekst = opis(it, today)
     opis_html = f'<p class="opis">{e(tekst)}</p>' if tekst else ""
     zrodlo = e(it["source"]) + (f' <span class="also">oraz {e(", ".join(it["also"]))}</span>' if it.get("also") else "")
     tag = f'<span class="tag t-{e(it["kind"])}">{e(label)}</span>'
-    meta = (f'<div class="meta-bar">{tag}{znaczek}</div>'
-            f'<p class="meta-src"><span>{zrodlo}</span></p>')
+    meta = f'<div class="meta-bar">{tag}{znaczek}{data}<span>{zrodlo}</span></div>'
     link = f'<a href="{e(it["url"])}" target="_blank" rel="noopener" class="read-more">Zobacz źródło &rarr;</a>'
     return bg, meta, opis_html, when, link
 
@@ -169,7 +160,7 @@ def karta(it, today, kopia=False):
     bg, meta, opis_html, when, link = _czesci(it, today)
     klasa, ukryta = ("portal-card copy", " hidden") if kopia else ("portal-card", "")
     return (f'<article class="{klasa}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}"{ukryta}>'
-            f'{grafiki.ilustracja(it)}<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}<div class="card-foot">{when}{link}</div></div></article>')
+            f'{grafiki.ilustracja(it)}<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}{when}{link}</div></article>')
 
 
 def karta_glowna(it, today):
@@ -177,13 +168,13 @@ def karta_glowna(it, today):
     bg, meta, opis_html, when, link = _czesci(it, today)
     tlo, klasa = grafiki.tlo_czolowki(it)
     return (f'<article class="portal-card hero {bg}{klasa}" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
-            f'{tlo}<div class="hero-body">{meta}<h2>{e(tytul(it))}</h2>{opis_html}<div class="card-foot">{when}{link}</div></div></article>')
+            f'{tlo}<div class="hero-body">{meta}<h2>{e(tytul(it))}</h2>{opis_html}{when}{link}</div></article>')
 
 
 def karta_boczna(it, today):
     bg, meta, opis_html, when, link = _czesci(it, today)
     return (f'<article class="portal-card side" data-kind="{e(it["kind"])}" data-place="{e(it["place"])}">'
-            f'<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}<div class="card-foot">{when}{link}</div></div></article>')
+            f'<div class="card-body">{meta}<h3>{e(tytul(it))}</h3>{opis_html}{when}{link}</div></article>')
 
 
 def pasek_najnowszych(pool, today):
@@ -211,31 +202,29 @@ def pierwsza_strona(pool, today):
     return html_, [glowny] + reszta
 
 
-def _miejsce_terminu(place):
-    """Miejscowość w wierszu terminu: miasto skrótem, wieś nazwą, cała gmina bez opisu."""
-    return ", ".join("Grodzisk" if p in (MIASTO_UI, "cała gmina") else p for p in place.split("|") if p != "okolica")
-
-
 def terminy(pool, today):
-    """Najbliższe terminy: wydarzenia, nabory, zapisy. Jedna kolumna, wiersze pogrupowane dniami (data raz na dzień),
-    w każdym wierszu: godzina, tytuł, miejscowość. Minione terminy nie wchodzą (strona z wczoraj ukrywa je dodatkowo skryptem)."""
+    """Najbliższe terminy: wydarzenia, nabory, zapisy, utrudnienia, pogrupowane po dniach. Każdy dzień to kolumna z nagłówkiem
+    (Dzisiaj, Jutro, Czw. 29.10), a pod nim terminy: linijka z godziną i miejscowością oraz tytuł. Bez plakietek na końcu wiersza."""
     od, do = today.isoformat(), (today + timedelta(days=TERMINY_DNI)).isoformat()
     kand = [i for i in pool if i["kind"] != "zdr" and i.get("event_iso") and od <= i["event_iso"] <= do]
-    kand.sort(key=lambda i: (i["event_iso"], (godzina(i.get("when")) or "99:99").zfill(5), tytul(i)))      # "9:00" przed "18:00"
-    grupy = ""
-    for iso, wpisy in groupby(kand[:TERMINY_MAX], key=lambda i: i["event_iso"]):
-        wiersze = ""
-        for i in wpisy:
-            g, mj = godzina(i.get("when")), _miejsce_terminu(i["place"])
-            wiersze += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
-                        + (f'<span class="g">{e(g)}</span> ' if g else "")
-                        + f'<a href="{e(i["url"])}" target="_blank" rel="noopener">{e(tytul(i))}</a>'
-                        + (f' <span class="mj">{e(mj)}</span>' if mj else "") + '</li>')
-        grupy += (f'<div class="td"><h3><time datetime="{e(iso)}">{e(data_ui(iso, today))}</time></h3>'
-                  f'<ul>{wiersze}</ul></div>')
-    if not grupy:
+    kand.sort(key=lambda i: (i["event_iso"], (godzina(i.get("when")) or "99:99").zfill(5), tytul(i)))      # "9:00" ma być przed "19:00"
+    po_dniach = {}
+    for i in kand:
+        po_dniach.setdefault(i["event_iso"], []).append(i)
+    kolumny = ""
+    for iso in list(po_dniach)[:TERMINY_DNI_W_BLOKU]:
+        wpisy = ""
+        for i in po_dniach[iso][:TERMINY_NA_DZIEN]:
+            miejsce = "" if i["place"] == "Grodzisk Mazowiecki" else miejsce_ui(i["place"])      # samo miasto to domyślne miejsce
+            meta = " · ".join(x for x in (godzina(i.get("when")), miejsce) if x)
+            wpisy += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
+                      + (f'<span class="meta">{e(meta)}</span>' if meta else "")
+                      + f'<a href="{e(i["url"])}" target="_blank" rel="noopener">{e(tytul(i))}</a></li>')
+        kolumny += (f'<div class="dzien{" dzis" if iso == od else ""}"><h3><time datetime="{e(iso)}">{e(data_ui(iso, today))}</time></h3>'
+                    f'<ul>{wpisy}</ul></div>')
+    if not kolumny:
         return ""
-    return f'<section class="terminy" id="terminy"><h2>Najbliższe terminy</h2><div class="grupy">{grupy}</div></section>'
+    return f'<section class="terminy" id="terminy"><h2>Najbliższe terminy</h2><div class="dni">{kolumny}</div></section>'
 
 
 def filtry(items):
@@ -387,7 +376,7 @@ _ARCH_JS = """
 
 def wiersz_archiwum(it, today):
     label = KIND_UI[it["kind"]][0]
-    miejsce = miejsce_widoczne(it["place"])
+    miejsce = miejsce_ui(it["place"])
     d = date.fromisoformat(data_wpisu(it))
     tekst = opis(it, today)
     auto = ""
@@ -442,4 +431,4 @@ def build_archive(items, shown, template_path, out_path, today=None):
     Path(out_path).write_text(page, encoding="utf-8")
     return len(reszta)
 
-# wersja-kompletu: 2026-10-27-2
+# wersja-kompletu: 2026-10-25-5

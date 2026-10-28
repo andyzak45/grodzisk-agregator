@@ -39,17 +39,13 @@
         .hero > .hero-fot a { color: inherit; }
         .terminy { border-top: 3px solid var(--text-main); background: #f8fafc; padding: 0.8rem 1rem 0.9rem; margin-bottom: 1.75rem; }
         .terminy h2 { font-family: var(--cond); text-transform: uppercase; letter-spacing: 0.04em; font-size: 1.05rem; margin: 0 0 0.55rem; }
-        .terminy .grupy { columns: 2 26rem; column-gap: 2.5rem; }
-        .td { display: grid; grid-template-columns: 5.2rem minmax(0, 1fr); column-gap: 0.6rem; break-inside: avoid; border-top: 1px solid var(--rule); padding: 0.45rem 0 0.4rem; }
-        .terminy .grupy .td:first-child { border-top: 0; padding-top: 0.1rem; }
-        .td h3 { font-family: var(--cond); font-size: 0.95rem; font-weight: 700; color: #e11d48; margin: 0; line-height: 1.35; text-transform: capitalize; }
-        .td ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
-        .termin { font-size: 0.95rem; line-height: 1.35; }
-        .termin .g { font-variant-numeric: tabular-nums; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-right: 0.15rem; }
-        .termin .mj { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; margin-left: 0.3rem; }
-        .termin a { color: var(--text-main); font-weight: 600; text-decoration: none; }
+        .terminy .dni { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.1rem 1.6rem; align-items: start; }
+        .dzien h3 { margin: 0 0 0.55rem; padding-bottom: 0.25rem; border-bottom: 2px solid var(--text-main); font-family: var(--cond); font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+        .dzien.dzis h3 { color: #e11d48; border-color: #e11d48; }
+        .dzien ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; }
+        .termin .meta { display: block; margin-bottom: 0.1rem; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); }
+        .termin a { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main); font-size: 0.92rem; font-weight: 600; line-height: 1.25; text-decoration: none; }
         .termin a:hover { text-decoration: underline; }
-        @media (max-width: 600px) { .td { grid-template-columns: 1fr; row-gap: 0.15rem; } }
         .ticker { display: flex; align-items: stretch; gap: 1rem; background: #f3f4f6; margin-bottom: 1.25rem; overflow: hidden; }
         .ticker-label { background: #bbf7a0; color: #111; font-family: var(--cond); font-weight: 800; text-transform: uppercase; padding: 0.7rem 1rem; display: flex; align-items: center; flex-shrink: 0; letter-spacing: 0.04em; }
         .ticker-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 1.4rem; flex: 1; min-width: 0; padding: 0.6rem 1.25rem 0.6rem 0; }
@@ -63,7 +59,7 @@
         .hero > .hero-ilu { position: absolute; top: 0; left: 0; width: 100%; height: 62%; color: #fff; --t: transparent; opacity: 0.2; }
         .hero h2 { font-family: var(--cond); font-weight: 800; font-size: 2.3rem; line-height: 1.1; margin: 0.5rem 0 0.7rem; color: #fff; }
         .hero .opis { color: rgba(255,255,255,0.92); font-size: 1rem; }
-        .hero .meta-bar, .hero .meta-src, .hero .when { color: rgba(255,255,255,0.9); }
+        .hero .meta-bar, .hero .when { color: rgba(255,255,255,0.9); }
         .hero .badge { background: rgba(255,255,255,0.2); color: #fff; }
         .hero .read-more { color: #fff; }
         .front-side { display: flex; flex-direction: column; gap: 1.5rem; }
@@ -84,9 +80,7 @@
         .portal-card { background: transparent; display: flex; flex-direction: column; }
         .kat-grid .portal-card { border-top: 1px solid var(--rule); padding-top: 0.6rem; }
         .card-body { display: flex; flex-direction: column; flex-grow: 1; }
-        .meta-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem 0.65rem; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; }
-        .meta-src { font-size: 0.75rem; color: var(--text-muted); margin: 0 0 0.45rem; }
-        .meta-src .sep { margin: 0 0.1rem; }
+        .meta-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem 0.65rem; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.45rem; }
         .tag { font-family: var(--cond); font-weight: 800; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; padding: 0.1rem 0.45rem; background: #e2e8f0; color: #111; }
         .t-ost, .t-zdr { background: #fecaca; } .t-wyd { background: #fde68a; } .t-inw { background: #bfdbfe; } .t-spo { background: #c7d2fe; }
         .badge { color: var(--accent); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
@@ -95,9 +89,6 @@
         .kat-grid .opis { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
         @media (max-width: 600px) { .kat-grid .opis { display: block; overflow: visible; } }
         .when { color: #111827; font-size: 0.88rem; margin: 0 0 0.8rem 0; font-weight: 700; }
-        .card-foot { margin-top: auto; padding-top: 0.2rem; }
-        .card-foot .when { margin: 0 0 0.35rem; }
-        .when.opub { font-weight: 400; }
         .read-more { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 0.82rem; margin-top: auto; display: inline-flex; align-items: center; }
         .ico { width: 34px; height: 34px; color: rgba(255,255,255,0.92); flex-shrink: 0; }
         .bg-kultura { background: linear-gradient(135deg, #7c2d12 0%, #f59e0b 100%); }
@@ -133,7 +124,7 @@
         <p class="empty" id="brak" hidden>Brak aktualnych wpisów.</p>
     </main>
     <footer>
-        <p>Informacje zbierane z publicznych stron lokalnych instytucji i mediów oraz opracowywane przez redakcję. Pokazujemy fakty i link do oryginału, pełne treści czytaj u wydawców. <a href="zdjecia.html">Autorzy zdjęć i licencje</a>. Zauważyłeś błąd? Napisz do redakcji.</p>
+        <p>Informacje zbierane z publicznych stron lokalnych instytucji i mediów oraz opracowywane przez redakcję. Pokazujemy fakty i link do oryginału, pełne treści czytaj u wydawców. Grafiki i zdjęcia przy wpisach są poglądowe i nie przedstawiają opisywanych wydarzeń ani osób. Zdjęcia pochodzą z Wikimedia Commons na wolnych licencjach: <a href="zdjecia.html">autorzy i licencje</a>. Przy zdarzeniach nie podajemy danych osób. Zauważyłeś błąd? Napisz do redakcji.</p>
     </footer>
     <script>
     (function () {
@@ -157,13 +148,8 @@
             if (tick) tick.hidden = !tick.querySelector(".tick:not([hidden])");
             var term = document.querySelector(".terminy");
             if (term) {
-                var dzis = new Date(); dzis = new Date(dzis.getFullYear(), dzis.getMonth(), dzis.getDate());
-                term.querySelectorAll(".td").forEach(function (g) {
-                    var p = g.querySelector("time").getAttribute("datetime").split("-");
-                    var minal = new Date(+p[0], p[1] - 1, +p[2]) < dzis;    // strona zbudowana wcześniej niż dziś: minione terminy znikają
-                    g.querySelectorAll(".termin").forEach(function (c) { c.hidden = minal || !match(c); });
-                    g.hidden = !g.querySelector(".termin:not([hidden])");
-                });
+                term.querySelectorAll(".termin").forEach(function (c) { c.hidden = !match(c); });
+                term.querySelectorAll(".dzien").forEach(function (d) { d.hidden = !d.querySelector(".termin:not([hidden])"); });
                 term.hidden = kind !== "" || !term.querySelector(".termin:not([hidden])");
             }
             var n = 0, start = sekcja ? +sekcja.dataset.start : 0;
@@ -220,4 +206,4 @@
     </script>
 </body>
 </html>
-<!-- wersja-kompletu: 2026-10-27-2 -->
+<!-- wersja-kompletu: 2026-10-25-5 -->
