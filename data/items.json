@@ -389,6 +389,21 @@
   "tytul_proba": 2
  },
  {
+  "id": "f4a9985b09db",
+  "title": "Pożar: Pruszków",
+  "url": "https://wpr24.pl/nocny-pozar-domu-w-pruszkowie-strazacy-ewakuowali-dwie-osoby-przez-okno/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-10-28",
+  "published": "2026-10-28",
+  "kind": "zdr",
+  "place": "Pruszków",
+  "when": null,
+  "event_iso": null,
+  "tkey": "c991e074f3cd",
+  "neutral": true
+ },
+ {
   "id": "177327129d3d",
   "title": "Bezpłatne szkolenia z obrony cywilnej już w ten weekend",
   "url": "https://grodzisk.pl/2026/10/20/bezplatne-szkolenia-z-obrony-cywilnej-juz-w-ten-weekend/",
@@ -825,7 +840,7 @@
   "first_seen": "2026-10-27",
   "published": "2026-10-27",
   "kind": "ost",
-  "place": "Radonie|Adamowizna",
+  "place": "Radonie",
   "when": null,
   "event_iso": null,
   "tkey": "89f103a624e0",
