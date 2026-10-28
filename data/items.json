@@ -318,25 +318,6 @@
   "poza_okolica": true
  },
  {
-  "id": "d5de5220dc2e",
-  "title": "Planowana przerwa w dostawie wody. Utrudnienia w Radoniach i Adamowiźnie",
-  "url": "https://grodziski24.pl/20261027841563/planowana-przerwa-w-dostawie-wody-utrudnienia-w-radoniach-i-adamowiznie",
-  "source": "Grodziski24",
-  "source_id": "grodziski24",
-  "first_seen": "2026-10-27",
-  "published": "2026-10-27",
-  "kind": "ost",
-  "place": "Radonie|Adamowizna",
-  "when": null,
-  "event_iso": null,
-  "tkey": "3d11b8ec8b5d",
-  "opis_proba": "v3",
-  "text": "W dniu 28 października w godzinach od 8.00 do 15.00 nastąpi przerwa w dostawie wody na wybranych posesjach w Radoniach i Adamowiźnie. Czasowe wyłączenie wynika z prac na sieci wodociągowej prowadzonych przez grodziski Zakład Wodociągów i Kanalizacji.",
-  "opis_auto": true,
-  "tytul": "Planowane wyłączenie wody w Radoniach i Adamowiźnie 28 października",
-  "tytul_proba": 2
- },
- {
   "id": "b3379bea5032",
   "title": "Policjanci znaleźli ponad 150 gramów narkotyków",
   "url": "https://grodzisk.twoje-miasto.pl/art-na-sygnale/policjanci-znalezli-ponad-150-gramow-i1283071",
@@ -455,7 +436,7 @@
   "first_seen": "2026-10-27",
   "published": "2026-10-27",
   "kind": "ost",
-  "place": "Radonie",
+  "place": "Radonie|Adamowizna",
   "when": null,
   "event_iso": null,
   "tkey": "89f103a624e0",
@@ -463,7 +444,10 @@
   "text": "28 października 2026 roku od godziny 8:00 do 15:00 nastąpi przerwa w dopływie wody. Wyłączenie obejmie wybrane budynki przy ulicach Gogola i Centralnej w Radoniach oraz Nałkowskiej w Adamowiźnie.",
   "opis_auto": true,
   "tytul": "Planowane wyłączenie dopływu wody w Radoniach i Adamowiźnie 28 października",
-  "tytul_proba": 2
+  "tytul_proba": 2,
+  "also": [
+   "Grodziski24"
+  ]
  },
  {
   "id": "3e50392ae455",
@@ -563,21 +547,6 @@
   "opis_auto": true,
   "tytul": "Spotkanie z pisarzem Markiem Krajewskim w bibliotece w Grodzisku Mazowieckim",
   "tytul_proba": true
- },
- {
-  "id": "fc271796eda0",
-  "title": "“Igrzyska śmierci” w Młodzieżowym Klubie Książki!",
-  "url": "https://biblioteka.grodzisk.pl/igrzyska-smierci-w-mlodziezowym-klubie-ksiazki/",
-  "source": "Biblioteka",
-  "source_id": "biblioteka",
-  "first_seen": "2026-10-26",
-  "published": "2026-10-20",
-  "kind": "wyd",
-  "place": "Grodzisk Mazowiecki",
-  "when": "26.10",
-  "event_iso": "2026-10-26",
-  "tkey": "91bc4e75a586",
-  "opis_proba": "v3"
  },
  {
   "id": "00a4390eda7f",
@@ -1274,25 +1243,6 @@
   "tkey": "a2d90acee0ca"
  },
  {
-  "id": "0a6aba1a4c08",
-  "title": "Wyłączenie wody Grodzisk Mazowiecki ul. Wolframa 26-10-2026",
-  "url": "https://zwik-grodzisk.pl/aktualnosci/wylaczenie-wody-grodzisk-mazowiecki-ul-wolframa-26-10-2026.html",
-  "source": "ZWiK Grodzisk",
-  "source_id": "zwik",
-  "first_seen": "2026-10-25",
-  "published": "2026-10-23",
-  "kind": "ost",
-  "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
-  "tkey": "fbc0038adb45",
-  "opis_proba": "v3",
-  "text": "Dnia 26 października 2026 roku w godzinach od 8:00 do 15:00 zaplanowano przerwę w dostawie wody w Grodzisku Mazowieckim. Wyłączenie obejmie nieruchomości przy ulicy Wolframa pod numerami 27, 27A, 27B, 27C i 27D.",
-  "opis_auto": true,
-  "tytul": "Planowane wyłączenie dostaw wody przy ulicy Wolframa 26 października 2026 roku",
-  "tytul_proba": true
- },
- {
   "id": "9395b690e05f",
   "title": "Kanalizacja ciśnieniowa – ważne pytania i odpowiedzi",
   "url": "https://zwik-grodzisk.pl/aktualnosci/kanalizacja-cisnieniowa-wazne-pytania-i-odpowiedzi.html",
@@ -1615,25 +1565,6 @@
   "tytul_proba": true
  },
  {
-  "id": "47cb338d05dc",
-  "title": "Hejt, cyberprzemoc i wtargnięcie do szkoły. Policjant wyjaśniał granice żartu",
-  "url": "https://grodziski24.pl/20261023737804/hejt-cyberprzemoc-i-wtargniecie-do-szkoly-policjant-wyjasnial-granice-zartu",
-  "source": "Grodziski24",
-  "source_id": "grodziski24",
-  "first_seen": "2026-10-24",
-  "published": "2026-10-23",
-  "kind": "inne",
-  "place": "Grodzisk Mazowiecki",
-  "when": null,
-  "event_iso": null,
-  "tkey": "1492ca005797",
-  "opis_proba": "v3",
-  "text": "Uczniowie dwóch grodziskich szkół wzięli udział w spotkaniach z lokalnym policjantem. Podczas zajęć w Zespole Szkół nr 2 i Szkole Podstawowej nr 6 omówiono kwestie cyberprzemocy, odpowiedzialności prawnej nieletnich oraz reagowania na sytuacje kryzysowe.",
-  "opis_auto": true,
-  "tytul": "Spotkania uczniów z Grodziska Mazowieckiego z policjantem o bezpieczeństwie i prawie",
-  "tytul_proba": true
- },
- {
   "id": "ac58700bed6d",
   "title": "Mieszkańcy tej ulicy zostaną bez wody. Przerwa potrwa kilka godzin",
   "url": "https://grodziski24.pl/20261023626159/mieszkancy-tej-ulicy-zostana-bez-wody-przerwa-potrwa-kilka-godzin",
@@ -1650,7 +1581,10 @@
   "text": "W poniedziałek, 26 października, Zakład Wodociągów i Kanalizacji przeprowadzi roboty na sieci w Grodzisku Mazowieckim. W godzinach od 8.00 do 15.00 nastąpi wstrzymanie dostaw wody do budynków przy ulicy Wolframa 27, 27A, 27B, 27C oraz 27D.",
   "opis_auto": true,
   "tytul": "Planowana przerwa w dostawie wody na ulicy Wolframa 26 października",
-  "tytul_proba": true
+  "tytul_proba": true,
+  "also": [
+   "ZWiK Grodzisk"
+  ]
  },
  {
   "id": "6cfc56bbafb9",
@@ -2235,25 +2169,6 @@
   "poza_okolica": true
  },
  {
-  "id": "3e7ecda8ba3d",
-  "title": "Obcy / GRODZISKI KLUB FILMOWY",
-  "url": "https://www.centrumkultury.eu/wydarzenie/obcy-grodziski-klub-filmowy/",
-  "source": "Centrum Kultury",
-  "source_id": "centrum-kultury",
-  "first_seen": "2026-10-23",
-  "published": "2026-10-19",
-  "kind": "wyd",
-  "place": "Grodzisk Mazowiecki",
-  "when": "29.10",
-  "event_iso": "2026-10-29",
-  "tkey": "09c586a579d7",
-  "opis_proba": "v3",
-  "text": "W ramach Grodziskiego Klubu Filmowego 29 października 2026 roku w Centrum Kultury odbędzie się projekcja filmu „Obcy”. Wydarzenie zaplanowano na godzinę 20:15.",
-  "opis_auto": true,
-  "tytul": "Październikowy seans filmu Obcy w grodziskim Centrum Kultury",
-  "tytul_proba": true
- },
- {
   "id": "b519d19802ce",
   "title": "Pieśni lasu / PREMIERA OGÓLNOPOLSKA",
   "url": "https://www.centrumkultury.eu/kino-wolnosc/repertuar/",
@@ -2727,7 +2642,10 @@
   "text": "W Bibliotece Głównej w Grodzisku Mazowieckim odbędzie się bezpłatne spotkanie Młodzieżowego Klubu Książki poświęcone powieści „Igrzyska śmierci”. Wydarzenie zaplanowano na 26 października o godzinie 18:00 na drugim piętrze Mediateki przy ulicy 3 Maja.",
   "opis_auto": true,
   "tytul_proba": true,
-  "tytul": "Młodzieżowy Klub Książki omówi powieść Igrzyska śmierci w Grodzisku Mazowieckim"
+  "tytul": "Młodzieżowy Klub Książki omówi powieść Igrzyska śmierci w Grodzisku Mazowieckim",
+  "also": [
+   "Biblioteka"
+  ]
  },
  {
   "id": "e266ae73f264",
@@ -3359,7 +3277,10 @@
   "text": "W Kinie Centrum Kultury wyświetlany jest film „Upadek wieloryba” w reżyserii Briana Duffielda. Produkcja ukazuje historię nurka, który po zagłębieniu się w wody u wybrzeży Kalifornii zostaje uwięziony wewnątrz kaszalota.",
   "opis_auto": true,
   "tytul_proba": true,
-  "tytul": "Seans filmu Upadek wieloryba w grodziskim Centrum Kultury"
+  "tytul": "Seans filmu Upadek wieloryba w grodziskim Centrum Kultury",
+  "also": [
+   "Centrum Kultury"
+  ]
  },
  {
   "id": "315f006cb686",
@@ -3636,25 +3557,6 @@
   "opis_auto": true,
   "tytul_proba": true,
   "tytul": "Rozbudowa sieci kanalizacji ciśnieniowej na terenie gminy Grodzisk Mazowiecki"
- },
- {
-  "id": "b34be64fbe5e",
-  "title": "Noc Bibliotek przyniosła spotkania, koncert i filmy",
-  "url": "https://grodzisk.twoje-miasto.pl/art-kultura-sztuka/noc-bibliotek-przyniosla-spotkania-koncert-i1237176",
-  "source": "Grodzisk Twoje Miasto",
-  "source_id": "twoje-miasto",
-  "first_seen": "2026-10-20",
-  "published": "2026-10-17",
-  "kind": "wyd",
-  "place": "Grodzisk Mazowiecki",
-  "when": "16.10",
-  "event_iso": "2026-10-16",
-  "tkey": "7bc0d1a298ba",
-  "opis_proba": "v2",
-  "text": "16 października w Bibliotece Publicznej Gminy Grodzisk Mazowiecki odbyła się XII Ogólnopolska Noc Bibliotek. W programie znalazły się spotkania autorskie, pokazy filmowe, gra interaktywna oraz koncert.",
-  "opis_auto": true,
-  "tytul_proba": true,
-  "tytul": "XII edycja Ogólnopolskiej Nocy Bibliotek odbyła się w Grodzisku Mazowieckim"
  },
  {
   "id": "eb64a3cde911",
@@ -4001,24 +3903,6 @@
   "tkey": "d7bb2de90054"
  },
  {
-  "id": "c3371303b2c0",
-  "title": "XII Ogólnopolska Noc Bibliotek za nami!",
-  "url": "https://grodzisk.pl/2026/10/17/xii-ogolnopolska-noc-bibliotek-za-nami/",
-  "source": "Urząd Miejski",
-  "source_id": "um-aktualnosci",
-  "first_seen": "2026-10-19",
-  "published": "2026-10-17",
-  "kind": "wyd",
-  "place": "cała gmina",
-  "when": null,
-  "event_iso": null,
-  "opis_proba": "v2",
-  "text": "W Bibliotece Publicznej Gminy Grodzisk Mazowiecki odbyła się inauguracja XII Ogólnopolskiej Nocy Bibliotek. W programie znalazły się projekcje filmów, spotkania autorskie, gry interaktywne oraz koncert.",
-  "opis_auto": true,
-  "tytul_proba": true,
-  "tytul": "W Grodzisku Mazowieckim zorganizowano inaugurację XII Ogólnopolskiej Nocy Bibliotek"
- },
- {
   "id": "7b56b244cfdc",
   "title": "Trzy projekty dla mieszkańców z dofinansowaniem UE",
   "url": "https://grodzisk.pl/2026/10/16/trzy-projekty-dla-mieszkancow-z-dofinansowaniem-ue/",
@@ -4287,7 +4171,10 @@
   "text": "Policjant z grodziskiej komendy przeprowadził w październiku 2026 roku cykl zajęć z bezpieczeństwa ruchu drogowego dla uczniów Szkoły Podstawowej Nr 1 w Grodzisku Mazowieckim. Dzieci przypomniały sobie zasady przechodzenia przez jezdnię, jazdy rowerem oraz używania elementów odblaskowych.",
   "opis_auto": true,
   "tytul_proba": true,
-  "tytul": "Spotkania o bezpieczeństwie drogowym dla uczniów z Grodziska Mazowieckiego"
+  "tytul": "Spotkania o bezpieczeństwie drogowym dla uczniów z Grodziska Mazowieckiego",
+  "also": [
+   "Grodziski24"
+  ]
  },
  {
   "id": "efb04ad02b9f",
@@ -4860,7 +4747,11 @@
   "text": "W Grodzisku Mazowieckim odbyła się XII Noc Bibliotek pod hasłem „Biblioteka (się) sprawdza”. W programie placówki znalazły się seanse filmowe, gry literackie, spotkania autorskie oraz koncert.",
   "opis_auto": true,
   "tytul_proba": true,
-  "tytul": "W Grodzisku Mazowieckim zorganizowano dwunastą edycję Nocy Bibliotek"
+  "tytul": "W Grodzisku Mazowieckim zorganizowano dwunastą edycję Nocy Bibliotek",
+  "also": [
+   "Urząd Miejski",
+   "Grodzisk Twoje Miasto"
+  ]
  },
  {
   "id": "5b0e4a8d843f",
