@@ -1,11 +1,10 @@
 """Buduje index.html z zapisanych wpisów: jeden strumień od najważniejszych i najświeższych (bez losowania). Archiwum dzieli wpisy na kategorie."""
 import html
-import re
 from datetime import date, timedelta
 from pathlib import Path
 
 import grafiki
-from klasyfikacja import klucz_miejsca, miejsce_wpisu, norm, w_gminie
+from klasyfikacja import klucz_miejsca, miejsce_wpisu, w_gminie
 from redakcja import data_ui, dzien, godzina, inny_region, miejsce_ui, opis, termin_ui
 
 # Kolejność sekcji na stronie i w menu: najpierw to, co dzieje się w okolicy (wydarzenia), potem wiadomości.
@@ -136,14 +135,16 @@ def _czesci(it, today):
     label, bg = KIND_UI[it["kind"]]
     miejsce = miejsce_ui(it["place"])
     termin = termin_ui(it, today)
-    when = ""      # jedna data na karcie, w pasku u góry: dla wydarzeń termin (wyróżniony), dla reszty dzień publikacji
+    when = ""
     if termin:
         godz = godzina(it.get("when"))
-        data = (f'<time class="kiedy" datetime="{e(it["event_iso"])}" data-t="{e(godz or "")}">{e(termin)}</time>')
-    elif it.get("published"):
-        data = f'<time datetime="{e(it["published"])}">{e(data_ui(it["published"], today))}</time>'
+        when = (f'<p class="when">Kiedy: <time datetime="{e(it["event_iso"])}" data-t="{e(godz or "")}">'
+                f'{e(termin if it["event_iso"] else "")}</time></p>')
+    if it.get("published"):
+        data = (f'<time datetime="{e(it["published"])}">{e(data_ui(it["published"], today))}</time>'
+                if not termin else "")
     else:
-        data = f'<span>{e(dzien(it["first_seen"]))}</span>'
+        data = f'<span>{e(dzien(it["first_seen"]))}</span>' if not termin else ""
     znaczek = f'<span class="badge">{e(miejsce)}</span>' if miejsce else ""
     tekst = opis(it, today)
     opis_html = f'<p class="opis">{e(tekst)}</p>' if tekst else ""
@@ -201,36 +202,9 @@ def pierwsza_strona(pool, today):
     return html_, [glowny] + reszta
 
 
-# Rodzaj terminu do krótkiej etykiety przed tytułem. Sam tytuł filmu ("Rozważna i romantyczna") nic nie mówi, więc etykieta dopowiada, co to jest.
-# Wzorzec na tytule i tytule roboczym; dla kina także w notce, bo tam stoi "wyświetlany będzie film". Etykiety nie dublujemy, gdy tytuł sam już mówi, o co chodzi.
-_RODZAJE_TERMINOW = [
-    ("Kino", r"\b(film\w*|seans\w*|kino|projekcj\w*)", r"(wyswietlan\w* (?:b[eę]dzie )?film|obejrzec film|projekcj\w* film|seans\w* film)"),
-    ("Warsztaty", r"\b(warsztat\w*|zajeci\w*)", None),
-    ("Spotkanie", r"\b(spotkani\w*|klub\w* ksiazki|dyskusyjn\w*)", None),
-    ("Wycieczka", r"\bwycieczk\w*", None),
-    ("Koncert", r"\bkoncert\w*", None),
-    ("Spektakl", r"\b(spektakl\w*|teatr\w*|stand.?up)", None),
-    ("Wystawa", r"\bwystaw\w*", None),
-]
-
-
-def rodzaj_terminu(it):
-    """Krótka etykieta rodzaju terminu (Kino, Warsztaty...) albo "", gdy nie wiadomo lub tytuł sam to mówi."""
-    wyswietlany = norm(tytul(it))
-    glowa = norm(f'{it.get("title", "")} {it.get("tytul") or ""}')
-    notka = norm(it.get("text") or "")
-    for nazwa, w_tytule, w_notce in _RODZAJE_TERMINOW:
-        if re.search(w_tytule, wyswietlany):
-            return ""      # tytuł już mówi, co to jest
-        if re.search(w_tytule, glowa) or (w_notce and re.search(w_notce, notka)):
-            return nazwa
-    return ""
-
-
 def terminy(pool, today):
-    """Najbliższe terminy: wydarzenia, nabory, zapisy, utrudnienia, pogrupowane po dniach. Każdy dzień to wiersz: po lewej data
-    (Dzisiaj, Jutro, Pt. 30.10), po prawej terminy tego dnia. Przed tytułem jest etykieta rodzaju (Kino, Warsztaty), a godzina i
-    miejscowość (poza samym miastem) stoją w osobnej linijce. Bez plakietek na końcu wiersza."""
+    """Najbliższe terminy: wydarzenia, nabory, zapisy, utrudnienia, pogrupowane po dniach. Każdy dzień to kolumna z nagłówkiem
+    (Dzisiaj, Jutro, Czw. 29.10), a pod nim terminy: linijka z godziną i miejscowością oraz tytuł. Bez plakietek na końcu wiersza."""
     od, do = today.isoformat(), (today + timedelta(days=TERMINY_DNI)).isoformat()
     kand = [i for i in pool if i["kind"] != "zdr" and i.get("event_iso") and od <= i["event_iso"] <= do]
     kand.sort(key=lambda i: (i["event_iso"], (godzina(i.get("when")) or "99:99").zfill(5), tytul(i)))      # "9:00" ma być przed "19:00"
@@ -243,10 +217,8 @@ def terminy(pool, today):
         for i in po_dniach[iso][:TERMINY_NA_DZIEN]:
             miejsce = "" if i["place"] == "Grodzisk Mazowiecki" else miejsce_ui(i["place"])      # samo miasto to domyślne miejsce
             meta = " · ".join(x for x in (godzina(i.get("when")), miejsce) if x)
-            rodzaj = rodzaj_terminu(i)
             wpisy += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
                       + (f'<span class="meta">{e(meta)}</span>' if meta else "")
-                      + (f'<span class="rodz">{e(rodzaj)}</span>' if rodzaj else "")
                       + f'<a href="{e(i["url"])}" target="_blank" rel="noopener">{e(tytul(i))}</a></li>')
         kolumny += (f'<div class="dzien{" dzis" if iso == od else ""}"><h3><time datetime="{e(iso)}">{e(data_ui(iso, today))}</time></h3>'
                     f'<ul>{wpisy}</ul></div>')
@@ -459,4 +431,4 @@ def build_archive(items, shown, template_path, out_path, today=None):
     Path(out_path).write_text(page, encoding="utf-8")
     return len(reszta)
 
-# wersja-kompletu: 2026-10-28-1
+# wersja-kompletu: 2026-10-25-5

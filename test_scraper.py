@@ -156,9 +156,7 @@ class Strona(unittest.TestCase):
         self.assertNotIn("<script>alert", page)
         self.assertIn("&lt;script&gt;", page)
         self.assertNotIn("Wczorajszy koncert", page)
-        self.assertIn('class="kiedy"', page)
-        self.assertNotIn("Kiedy:", page)
-        self.assertNotIn("Opublikowano", page)
+        self.assertIn("Kiedy: <time", page)
         self.assertIn("niedz. 25.10", page)
         self.assertIn('data-place="Władków"', page)
         self.assertNotIn("PLACEHOLDER", page)
@@ -288,45 +286,6 @@ class Zdarzenia(unittest.TestCase):
                                    "url": "https://tm.pl/1", "published": None, "desc": ""}], b, TODAY)
         self.assertEqual((n, len(store)), (0, 1))
         self.assertEqual(next(iter(store.values()))["also"], ["Twoje Miasto"])
-
-    def test_przerwa_w_dostawie_wody_ze_zwik_i_z_portalu_to_jeden_wpis(self):
-        zwik = {"id": "zwik", "name": "ZWiK Grodzisk", "kind": "ost", "place": "cała gmina"}
-        portal = {"id": "grodziski24", "name": "Grodziski24", "kind": "inne", "place": "cała gmina"}
-        for kolejnosc in ((zwik, portal), (portal, zwik)):
-            store = {}
-            tytuly = {"zwik": "Wyłączenie wody Radonie ul. Gogola 28-10-2026",
-                      "grodziski24": "Planowane wyłączenie wody w Radoniach i Adamowiźnie 28 października"}
-            for i, src in enumerate(kolejnosc):
-                scraper.dodaj(store, [{"title": tytuly[src["id"]], "url": f"https://x.pl/{i}", "published": None, "desc": ""}], src, TODAY)
-            self.assertEqual(len(store), 1)
-
-    def test_scal_duplikaty_laczy_stare_wpisy_bez_zapisanej_daty(self):
-        def w(i, src, tytul):
-            return {"id": i, "title": tytul, "url": f"https://x.pl/{i}", "source": src, "source_id": src, "first_seen": TODAY.isoformat(),
-                    "published": None, "kind": "ost", "place": "Radonie", "when": None, "event_iso": None, "tkey": i}
-        store = {"a": w("a", "zwik", "Wyłączenie wody Radonie ul. Gogola 28-10-2026"),
-                 "b": w("b", "g24", "Planowane wyłączenie wody w Radoniach i Adamowiźnie 28 października")}
-        self.assertEqual(scraper.scal_duplikaty(store), 1)
-        self.assertEqual(len(store), 1)
-
-    def test_scal_duplikaty_laczy_wpisy_o_roznych_oryginalnych_tytulach_gdy_notki_daja_podobne_tytuly(self):
-        def w(i, src, tytul, roboczy):
-            return {"id": i, "title": tytul, "tytul": roboczy, "url": f"https://x.pl/{i}", "source": src, "source_id": src, "first_seen": TODAY.isoformat(),
-                    "published": None, "kind": "ost", "place": "Radonie", "when": None, "event_iso": None, "tkey": i}
-        store = {"a": w("a", "g24", "Planowana przerwa w dostawie wody. Utrudnienia w Radoniach i Adamowiźnie",
-                        "Planowane wyłączenie wody w Radoniach i Adamowiźnie 28 października"),
-                 "b": w("b", "zwik", "Wyłączenie wody Radonie ul. Gogola 28-10-2026",
-                        "Planowane wyłączenie dopływu wody w Radoniach i Adamowiźnie 28 października")}
-        self.assertEqual(scraper.scal_duplikaty(store), 1)
-        self.assertEqual(len(store), 1)
-
-    def test_rozne_dni_tej_samej_przerwy_nie_sa_scalane(self):
-        zwik = {"id": "zwik", "name": "ZWiK Grodzisk", "kind": "ost", "place": "cała gmina"}
-        portal = {"id": "grodziski24", "name": "Grodziski24", "kind": "inne", "place": "cała gmina"}
-        store = {}
-        scraper.dodaj(store, [{"title": "Wyłączenie wody Radonie ul. Gogola 29-10-2026", "url": "https://x.pl/1", "published": None, "desc": ""}], zwik, TODAY)
-        scraper.dodaj(store, [{"title": "Planowane wyłączenie wody w Radoniach i Adamowiźnie 28 października", "url": "https://x.pl/2", "published": None, "desc": ""}], portal, TODAY)
-        self.assertEqual(len(store), 2)
 
 
 class Szczegoly(unittest.TestCase):
@@ -932,9 +891,9 @@ class GeminiMartweModele(unittest.TestCase):
 
 class AKomplet(unittest.TestCase):
     """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
-    WERSJE = {"grafiki.py": "2026-10-28-1", "render.py": "2026-10-28-1", "scraper.py": "2026-10-25-2", "streszczenia.py": "2026-10-27-2",
-              "klasyfikacja.py": "2026-10-28-1", "redakcja.py": "2026-10-25-2", "zdjecia_commons.py": "2026-10-25-4",
-              "zdjecia_pobierz.py": "2026-10-25-4", "template.html": "2026-10-28-1"}
+    WERSJE = {"grafiki.py": "2026-10-25-4", "render.py": "2026-10-25-5", "scraper.py": "2026-10-25-2", "streszczenia.py": "2026-10-25-2",
+              "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-2", "zdjecia_commons.py": "2026-10-25-4",
+              "zdjecia_pobierz.py": "2026-10-25-4", "template.html": "2026-10-25-5"}
 
     def test_wszystkie_pliki_maja_wymagana_wersje(self):
         stare = []
@@ -1609,27 +1568,9 @@ class ZdjeciaNaStronie(unittest.TestCase):
         dworek = dict(self._foto("zdjecia/dworek.jpg", "Adamowizna", "kultura"), zrodla=["dworek-chelmonskiego"])
         grafiki.ustaw_zdjecia([dworek, self._foto("zdjecia/szkola.jpg", "Adamowizna", "szkola")])
         z_dworku = self._wpis(id="90", place="Adamowizna", source_id="dworek-chelmonskiego", title="Wydarzenie plenerowe z okazji tradycji Dziadów")
-        inny = self._wpis(id="91", place="Adamowizna", source_id="grodziski24", title="Wieści z Adamowizny")
+        inny = self._wpis(id="91", place="Adamowizna", source_id="grodziski24", title="Remont drogi w Adamowiźnie")
         self.assertEqual(grafiki.wybierz_zdjecie(z_dworku)["plik"], "zdjecia/dworek.jpg")
         self.assertEqual(grafiki.wybierz_zdjecie(inny)["plik"], "zdjecia/szkola.jpg")      # zdjęcie dworku nie trafia do innych wpisów
-
-    def test_wyrazny_temat_wygrywa_ze_zdjeciem_wsi(self):
-        grafiki.ustaw_zdjecia([self._foto("zdjecia/pomidor.jpg", "Radonie", "ogolne"), self._foto("zdjecia/szkola.jpg", "Radonie", "szkola"),
-                               self._foto("zdjecia/woda.jpg", "", "woda")])
-        woda = self._wpis(id="95", place="Radonie|Adamowizna", title="Planowane wyłączenie wody w Radoniach i Adamowiźnie")
-        self.assertEqual(grafiki.wybierz_zdjecie(woda)["plik"], "zdjecia/woda.jpg")      # temat woda, a nie widok wsi
-        bez_tematu = self._wpis(id="96", place="Radonie", title="Wieści z Radoń")
-        self.assertEqual(grafiki.wybierz_zdjecie(bez_tematu)["plik"], "zdjecia/pomidor.jpg")      # bez tematu zostaje zdjęcie wsi
-
-    def test_zdjecie_wsi_z_tym_samym_tematem_wygrywa_z_ogolnym_zdjeciem_tematu(self):
-        grafiki.ustaw_zdjecia([self._foto("zdjecia/wies-woda.jpg", "Radonie", "woda"), self._foto("zdjecia/woda.jpg", "", "woda")])
-        woda = self._wpis(id="97", place="Radonie", title="Awaria wodociągu")
-        self.assertEqual(grafiki.wybierz_zdjecie(woda)["plik"], "zdjecia/wies-woda.jpg")
-
-    def test_brak_zdjecia_do_tematu_zostawia_zdjecie_wsi(self):
-        grafiki.ustaw_zdjecia([self._foto("zdjecia/wies.jpg", "Radonie", "ogolne")])
-        woda = self._wpis(id="98", place="Radonie", title="Awaria wodociągu")
-        self.assertEqual(grafiki.wybierz_zdjecie(woda)["plik"], "zdjecia/wies.jpg")
 
     def test_linia_ze_zrodlem_zapisuje_zdjecie_z_miejscem_i_zrodlem(self):
         strony = {"File:Dworek.jpg": {"title": "File:Dworek.jpg", "imageinfo": [{"mime": "image/jpeg", "width": 2000, "height": 1500,
@@ -2106,22 +2047,6 @@ class TerminyIDuplikaty(unittest.TestCase):
         self.assertEqual(blok.count('class="dzien'), render.TERMINY_DNI_W_BLOKU)
         pierwsza = blok.split('<div class="dzien')[1]
         self.assertEqual(pierwsza.count('class="termin"'), render.TERMINY_NA_DZIEN)
-
-    def test_film_w_terminach_ma_etykiete_kina_a_tytul_z_rodzajem_jej_nie_dubluje(self):
-        today = date(2026, 10, 22)
-        items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", title="Rozważna i romantyczna", event_iso="2026-10-30", when="30.10",
-                            text="Od 30 października do 5 listopada w Centrum Kultury wyświetlany będzie film „Rozważna i romantyczna”."),
-                 self._wpis(id="2", url="https://x.pl/2", kind="wyd", title="Bezpłatne warsztaty z robotyki", event_iso="2026-10-30", when="30.10",
-                            text="Od 30 października zajęcia z robotyki."),
-                 self._wpis(id="3", url="https://x.pl/3", kind="wyd", title="Stand Up Mama na obrotach", event_iso="2026-10-31", when="31.10"),
-                 self._wpis(id="4", url="https://x.pl/4", kind="wyd", title="Pokaz bez opisu", event_iso="2026-10-31", when="31.10")]
-        blok = self._strona(items, today)
-        blok = blok[blok.index('id="terminy"'):]
-        blok = blok[:blok.index("</section>")]
-        self.assertIn('<span class="rodz">Kino</span><a href="https://x.pl/1"', blok)
-        self.assertNotIn('class="rodz"', blok.split('href="https://x.pl/2"')[0].split('<li class="termin"')[-1])      # tytuł mówi "warsztaty"
-        self.assertNotIn('<span class="rodz">', blok.split('href="https://x.pl/3"')[0].split('<li class="termin"')[-1])      # tytuł mówi "stand up"
-        self.assertNotIn('<span class="rodz">', blok.split('href="https://x.pl/4"')[0].split('<li class="termin"')[-1])      # nie zgadujemy
 
     def test_terminy_sa_pogrupowane_po_dniach_z_naglowkiem_dnia(self):
         today = date(2026, 10, 22)
