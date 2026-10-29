@@ -1,10 +1,33 @@
 {
- "run": "2026-10-28T18:39:13+01:00",
+ "run": "2026-10-29T06:37:12+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
-   "found": 9,
-   "new": 0
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12014,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "kryzysowe": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12038,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
   },
   "policja": {
    "ok": true,
@@ -14,17 +37,22 @@
   "grodziski24": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 1
   },
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 7
+   "new": 3
+  },
+  "przeglad-regionalny": {
+   "ok": true,
+   "found": 15,
+   "new": 3
   },
   "grodziskinfo": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 1
   },
   "wpr24": {
    "ok": true,
@@ -33,18 +61,69 @@
   },
   "centrum-kultury": {
    "ok": true,
-   "found": 15,
-   "new": 0
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12036,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "mediateka": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12032,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
   },
   "bogoria": {
    "ok": true,
    "found": 10,
    "new": 0
   },
+  "budo": {
+   "ok": true,
+   "found": 8,
+   "new": 0
+  },
+  "muay-thai": {
+   "ok": false,
+   "error": "URLError: <urlopen error timed out>"
+  },
   "strefa-ruchu": {
    "ok": true,
    "found": 4,
    "new": 0
+  },
+  "tenis-kozerki": {
+   "ok": true,
+   "found": 6,
+   "new": 0
+  },
+  "ngo": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12066,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
   },
   "bip": {
    "ok": true,
@@ -62,8 +141,17 @@
   },
   "solectwa": {
    "ok": true,
-   "found": 8,
-   "new": 0
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12033,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
   },
   "geoportal": {
    "ok": true,
@@ -71,12 +159,40 @@
    "new": 0,
    "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
    "diag": {
-    "bajty": 64902,
+    "bajty": 64901,
     "article": 3,
     "naglowki": 23,
     "feed": false,
     "tytul": "Aktualności Grodziska Mazowieckiego - Najświeższe wiadomości z gminy Grodzisk Ma",
     "tekst": "Aktualności Grodziska Mazowieckiego - Najświeższe wiadomości z gminy Grodzisk Mazowiecki Geoportal Grodzisk Mazowiecki Na Mapie Pomoc Tematy dla Grodziska Mazow"
+   }
+  },
+  "palac-ojrzanow": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 158043,
+    "article": 0,
+    "naglowki": 10,
+    "feed": true,
+    "tytul": "GlownaPR - Pałac Ojrzanów",
+    "tekst": "GlownaPR - Pałac Ojrzanów Toggle navigation O PAŁACU LOFT GALERIA OFERTA Pokoje Restauracja Komunie Chrzciny Konferencje KONTAKT GlownaPR Pałac & Loft Ojrzanów "
+   }
+  },
+  "palacyk-otrebusy": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 211499,
+    "article": 1,
+    "naglowki": 6,
+    "feed": false,
+    "tytul": "Pałacyk Otrębusy - Hotel / SPA / Sale Weselne Warszawa / Konferencje",
+    "tekst": "Pałacyk Otrębusy - Hotel / SPA / Sale Weselne Warszawa / Konferencje home O pałacyku Pokoje Kulinaria BIZNES Wesela Przyjęcia Basen & SPA Galeria kontakt Menu P"
    }
   },
   "zwik": {
@@ -88,6 +204,48 @@
    "ok": true,
    "found": 1,
    "new": 0
+  },
+  "pumptrack": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 53272,
+    "article": 0,
+    "naglowki": 10,
+    "feed": false,
+    "tytul": "Grupa Techramps- skateparki, pumptracki oraz inne obiekty sportowe",
+    "tekst": "Grupa Techramps- skateparki, pumptracki oraz inne obiekty sportowe Obiekty sportowe XXI wieku Pumptracki Flowparki Wakeparki Skateparki Skateparki Betonowe Skat"
+   }
+  },
+  "parafia-mbnp": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "parafia-przemienienia": {
+   "ok": true,
+   "found": 14,
+   "new": 0
+  },
+  "parafia-mb": {
+   "ok": false,
+   "error": "URLError: <urlopen error timed out>"
+  },
+  "dworek-chelmonskiego": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12018,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
   }
  }
 }
