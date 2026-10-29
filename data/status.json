@@ -1,58 +1,40 @@
 {
- "run": "2026-10-29T06:37:12+01:00",
+ "run": "2026-10-29T08:31:24+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 12014,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 9,
+   "new": 0
   },
   "kryzysowe": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 12038,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 5,
+   "new": 0
   },
   "policja": {
    "ok": true,
    "found": 12,
-   "new": 0
+   "new": 1
   },
   "grodziski24": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 0
   },
   "przeglad-regionalny": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 1
   },
   "grodziskinfo": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "wpr24": {
    "ok": true,
@@ -61,36 +43,18 @@
   },
   "centrum-kultury": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 12036,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 15,
+   "new": 0
   },
   "mediateka": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 12032,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 15,
+   "new": 0
   },
   "bogoria": {
    "ok": true,
    "found": 10,
-   "new": 0
+   "new": 1
   },
   "budo": {
    "ok": true,
@@ -98,8 +62,18 @@
    "new": 0
   },
   "muay-thai": {
-   "ok": false,
-   "error": "URLError: <urlopen error timed out>"
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 596976,
+    "article": 1,
+    "naglowki": 7,
+    "feed": true,
+    "tytul": "Muay Thai Grodzisk Mazowiecki",
+    "tekst": "Muay Thai Grodzisk Mazowiecki Przejdź do treści Klub Nasi Trenerzy Galeria Plan Tygodnia Kontakt Zasady Bezpieczeństwa Cennik Statut Klubu Main Menu Klub Nasi T"
+   }
   },
   "strefa-ruchu": {
    "ok": true,
@@ -113,17 +87,8 @@
   },
   "ngo": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 12066,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 10,
+   "new": 0
   },
   "bip": {
    "ok": true,
@@ -141,17 +106,8 @@
   },
   "solectwa": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 12033,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 8,
+   "new": 0
   },
   "geoportal": {
    "ok": true,
@@ -173,7 +129,7 @@
    "new": 0,
    "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
    "diag": {
-    "bajty": 158043,
+    "bajty": 158067,
     "article": 0,
     "naglowki": 10,
     "feed": true,
@@ -230,22 +186,14 @@
    "new": 0
   },
   "parafia-mb": {
-   "ok": false,
-   "error": "URLError: <urlopen error timed out>"
+   "ok": true,
+   "found": 1,
+   "new": 0
   },
   "dworek-chelmonskiego": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 12018,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 6,
+   "new": 0
   }
  }
 }
