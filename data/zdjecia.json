@@ -930,36 +930,6 @@
   "temat": "kultura"
  },
  {
-  "plik": "zdjecia/edyton-w-kadzidle-4-06bc.jpg",
-  "tytul": "File:Edyton w Kadzidle 4.jpg",
-  "strona": "https://commons.wikimedia.org/wiki/File%3AEdyton_w_Kadzidle_4.jpg",
-  "autor": "Amudena Rutkowska",
-  "licencja": "CC BY-SA 4.0",
-  "licencja_url": "https://creativecommons.org/licenses/by-sa/4.0",
-  "miejsce": "",
-  "temat": "kultura"
- },
- {
-  "plik": "zdjecia/biblioteka-rakoniewice-3ef1.jpg",
-  "tytul": "File:Biblioteka Rakoniewice.jpg",
-  "strona": "https://commons.wikimedia.org/wiki/File%3ABiblioteka_Rakoniewice.jpg",
-  "autor": "Biblioteka Publiczna",
-  "licencja": "CC BY-SA 4.0",
-  "licencja_url": "https://creativecommons.org/licenses/by-sa/4.0",
-  "miejsce": "",
-  "temat": "kultura"
- },
- {
-  "plik": "zdjecia/chbp-w-chelmie-ba76.jpg",
-  "tytul": "File:ChBP w Chełmie.jpg",
-  "strona": "https://commons.wikimedia.org/wiki/File%3AChBP_w_Che%C5%82mie.jpg",
-  "autor": "Alicja9",
-  "licencja": "CC BY 3.0",
-  "licencja_url": "https://creativecommons.org/licenses/by/3.0",
-  "miejsce": "",
-  "temat": "kultura"
- },
- {
   "plik": "zdjecia/park-brwinow-09-ef11.jpg",
   "tytul": "File:Park - Brwinów 09.jpg",
   "strona": "https://commons.wikimedia.org/wiki/File%3APark_-_Brwin%C3%B3w_09.jpg",
@@ -1210,6 +1180,85 @@
   "temat": "ogolne"
  },
  {
+  "plik": "zdjecia/mediateka-grodzisk-mazowiecki-1-597d.jpg",
+  "tytul": "File:Mediateka Grodzisk Mazowiecki 1.jpg",
+  "strona": "https://commons.wikimedia.org/wiki/File%3AMediateka_Grodzisk_Mazowiecki_1.jpg",
+  "autor": "Karol Szejner",
+  "licencja": "CC BY-SA 4.0",
+  "licencja_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "miejsce": "Grodzisk Mazowiecki",
+  "temat": "kultura",
+  "slowa": [
+   "mediate"
+  ]
+ },
+ {
+  "plik": "zdjecia/grodzisk-mazowiecki-2021-10-ce35.jpg",
+  "tytul": "File:Grodzisk Mazowiecki 2021 (10).jpg",
+  "strona": "https://commons.wikimedia.org/wiki/File%3AGrodzisk_Mazowiecki_2021_%2810%29.jpg",
+  "autor": "MOs810",
+  "licencja": "CC BY-SA 4.0",
+  "licencja_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "miejsce": "Grodzisk Mazowiecki",
+  "temat": "pociag",
+  "slowa": [
+   "dworc",
+   "stacj kolejow"
+  ]
+ },
+ {
+  "plik": "zdjecia/dworek-dr-chelmonskiego-w-adamowiznie-1b94.jpg",
+  "tytul": "File:Dworek dr. Chełmońskiego w Adamowiźnie.JPG",
+  "strona": "https://commons.wikimedia.org/wiki/File%3ADworek_dr._Che%C5%82mo%C5%84skiego_w_Adamowi%C5%BAnie.JPG",
+  "autor": "BartPL",
+  "licencja": "CC BY-SA 3.0 pl",
+  "licencja_url": "https://creativecommons.org/licenses/by-sa/3.0/pl/deed.en",
+  "miejsce": "Adamowizna",
+  "temat": "kultura",
+  "zrodla": [
+   "dworek-chelmonskiego"
+  ]
+ },
+ {
+  "plik": "zdjecia/dworek-dr-adama-chelmonskiego-w-adamowiznie-f07a.jpg",
+  "tytul": "File:Dworek dr. Adama Chełmońskiego w Adamowiźnie.jpg",
+  "strona": "https://commons.wikimedia.org/wiki/File%3ADworek_dr._Adama_Che%C5%82mo%C5%84skiego_w_Adamowi%C5%BAnie.jpg",
+  "autor": "BartPL",
+  "licencja": "CC BY-SA 3.0 pl",
+  "licencja_url": "https://creativecommons.org/licenses/by-sa/3.0/pl/deed.en",
+  "miejsce": "Adamowizna",
+  "temat": "kultura",
+  "zrodla": [
+   "dworek-chelmonskiego"
+  ]
+ },
+ {
+  "plik": "zdjecia/id620857-adamowizna-dworekchelmonskiego3-klorant-62aa.jpg",
+  "tytul": "File:ID620857-Adamowizna-dworekChelmonskiego3-KLorant.jpg",
+  "strona": "https://commons.wikimedia.org/wiki/File%3AID620857-Adamowizna-dworekChelmonskiego3-KLorant.jpg",
+  "autor": "Krzysztof Lorant",
+  "licencja": "CC BY-SA 3.0 pl",
+  "licencja_url": "https://creativecommons.org/licenses/by-sa/3.0/pl/deed.en",
+  "miejsce": "Adamowizna",
+  "temat": "kultura",
+  "zrodla": [
+   "dworek-chelmonskiego"
+  ]
+ },
+ {
+  "plik": "zdjecia/id620857-adamowizna-dworekchelmonskiego2-klorant-bb2f.jpg",
+  "tytul": "File:ID620857-Adamowizna-dworekChelmonskiego2-KLorant.jpg",
+  "strona": "https://commons.wikimedia.org/wiki/File%3AID620857-Adamowizna-dworekChelmonskiego2-KLorant.jpg",
+  "autor": "Krzysztof Lorant",
+  "licencja": "CC BY-SA 3.0 pl",
+  "licencja_url": "https://creativecommons.org/licenses/by-sa/3.0/pl/deed.en",
+  "miejsce": "Adamowizna",
+  "temat": "kultura",
+  "zrodla": [
+   "dworek-chelmonskiego"
+  ]
+ },
+ {
   "plik": "zdjecia/ksiazenice-16a8.jpg",
   "tytul": "File:Książenice.jpg",
   "strona": "https://commons.wikimedia.org/wiki/File%3AKsi%C4%85%C5%BCenice.jpg",
@@ -1297,26 +1346,6 @@
   "licencja": "CC BY-SA 4.0",
   "licencja_url": "https://creativecommons.org/licenses/by-sa/4.0",
   "miejsce": "Czarny Las",
-  "temat": "ogolne"
- },
- {
-  "plik": "zdjecia/gmina-grodzisk-mazowiecki-poland-panoramio-arek-n--0206.jpg",
-  "tytul": "File:Gmina Grodzisk Mazowiecki, Poland - panoramio - Arek N. (16).jpg",
-  "strona": "https://commons.wikimedia.org/wiki/File%3AGmina_Grodzisk_Mazowiecki%2C_Poland_-_panoramio_-_Arek_N._%2816%29.jpg",
-  "autor": "Arek N.",
-  "licencja": "CC BY-SA 3.0",
-  "licencja_url": "https://creativecommons.org/licenses/by-sa/3.0",
-  "miejsce": "Radonie",
-  "temat": "ogolne"
- },
- {
-  "plik": "zdjecia/radonie-panoramio-12-917d.jpg",
-  "tytul": "File:Radonie - panoramio (12).jpg",
-  "strona": "https://commons.wikimedia.org/wiki/File%3ARadonie_-_panoramio_%2812%29.jpg",
-  "autor": "Arek N.",
-  "licencja": "CC BY-SA 3.0",
-  "licencja_url": "https://creativecommons.org/licenses/by-sa/3.0",
-  "miejsce": "Radonie",
   "temat": "ogolne"
  },
  {
