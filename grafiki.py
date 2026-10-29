@@ -133,13 +133,6 @@ def temat_zdjecia(it):
     return next((nazwa for nazwa, wzorzec in TEMATY_ZDJEC_MIASTA if re.search(wzorzec, t)), None)
 
 
-def pasuje_tematem(z, it):
-    """Zdjęcie wsi pasuje do wpisu, gdy ma ten sam temat (kościół do kultury, szkoła do szkoły), albo gdy któraś strona jest ogólna:
-    widok wsi pasuje do wszystkiego, a wpis bez rozpoznanego tematu nie przeczy żadnemu zdjęciu."""
-    tz, tw = z.get("temat") or "ogolne", temat(it)
-    return "ogolne" in (tz, tw) or tz == tw
-
-
 def wybierz_zdjecie(it):
     """Zdjęcie dla wpisu albo None. Wpis o wsi dostaje zdjęcie tej wsi, wpis o mieście lub gminie tylko zdjęcie pasujące
     do tematu (kolej, urząd). Wybór jest stały dla wpisu, a zdjęcia rotują, żeby to samo nie wisiało przy każdym wpisie."""
@@ -156,12 +149,7 @@ def wybierz_zdjecie(it):
         t = temat_zdjecia(it)
         kand = [z for z in ZDJECIA if z["miejsce"] == MIASTO and z["temat"] == t and not z.get("slowa") and not z.get("zrodla")] if t else []
     else:
-        kand = [z for z in ZDJECIA if z["miejsce"] == miejsce and not z.get("slowa") and not z.get("zrodla") and pasuje_tematem(z, it)]
-        t = temat_ze_slow(it)
-        if t and t != "ogolne" and it["kind"] != "zdr":      # wyraźny temat (woda, drogi...) jest ważniejszy niż miejscowość: zdjęcie wsi tylko z tym samym tematem, inaczej zdjęcie tematu
-            kand = ([z for z in kand if z.get("temat") == t]
-                    or [z for z in ZDJECIA if not z["miejsce"] and z["temat"] == t and not z.get("slowa") and not z.get("zrodla")]
-                    or kand)      # brak zdjęcia do tematu: zostaje zdjęcie wsi
+        kand = [z for z in ZDJECIA if z["miejsce"] == miejsce and not z.get("slowa") and not z.get("zrodla")]
     if not kand and it["kind"] != "zdr":      # zapas: zdjęcie ogólne do tematu (nie przy zdarzeniach policji, by nie sugerować miejsca)
         t = temat_ze_slow(it) or "ogolne"
         kand = ([z for z in ZDJECIA if not z["miejsce"] and z["temat"] == t]
@@ -226,4 +214,4 @@ def tlo_czolowki(it):
     return (f'<svg class="hero-ilu" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
             f'<use href="#ilu-{temat(it)}"/></svg>'), ""
 
-# wersja-kompletu: 2026-10-28-1
+# wersja-kompletu: 2026-10-25-4
