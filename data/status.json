@@ -1,15 +1,92 @@
 {
- "run": "2026-10-30T12:29:59+01:00",
+ "run": "2026-10-30T18:34:54+01:00",
  "sources": {
+  "um-aktualnosci": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12029,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
   "policja": {
    "ok": true,
    "found": 10,
    "new": 0
   },
+  "grodziski24": {
+   "ok": true,
+   "found": 15,
+   "new": 4
+  },
+  "twoje-miasto": {
+   "ok": true,
+   "found": 15,
+   "new": 5
+  },
+  "grodziskinfo": {
+   "ok": true,
+   "found": 15,
+   "new": 0
+  },
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 2
+   "new": 1
+  },
+  "centrum-kultury": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11929,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "bogoria": {
+   "ok": true,
+   "found": 10,
+   "new": 0
+  },
+  "strefa-ruchu": {
+   "ok": true,
+   "found": 4,
+   "new": 0
+  },
+  "solectwa": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11951,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "zwik": {
+   "ok": true,
+   "found": 15,
+   "new": 1
+  },
+  "okinawa": {
+   "ok": true,
+   "found": 1,
+   "new": 0
   }
  }
 }
