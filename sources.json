@@ -210,8 +210,9 @@
   "freq": "daily",
   "kind": "spo",
   "place": "Grodzisk Mazowiecki",
-  "enabled": true,
-  "razy": 1
+  "enabled": false,
+  "razy": 1,
+  "note": "Strona klubu bez listy aktualności (parser nie znajduje wpisów). Aktualności są tylko na Facebooku."
  },
  {
   "id": "strefa-ruchu",
@@ -252,8 +253,9 @@
   "freq": "daily",
   "kind": "inw",
   "place": "cała gmina",
-  "enabled": true,
-  "razy": 2
+  "enabled": false,
+  "razy": 2,
+  "note": "Adres główny zwraca pustą stronę (4 KB, brak wpisów). Potrzebny adres podstrony z aktualnościami lub ogłoszeniami BIP."
  },
  {
   "id": "solectwa",
@@ -273,8 +275,8 @@
   "freq": "daily",
   "kind": "inw",
   "place": "cała gmina",
-  "enabled": true,
-  "note": "Lustro aktualności urzędu; powtórki z Urzędem Miejskim scala bot (wpis dostaje dopisek 'oraz').",
+  "enabled": false,
+  "note": "Parser nie znajduje wpisów (wymaga selektora), a treści i tak powtarzają Urząd Miejski, który działa.",
   "razy": 2
  },
  {
@@ -293,8 +295,9 @@
   "freq": "daily",
   "kind": "wyd",
   "place": "okolica",
-  "enabled": true,
-  "razy": 1
+  "enabled": false,
+  "razy": 1,
+  "note": "Strona hotelu bez listy aktualności (parser nie znajduje wpisów). Aktualności są tylko na Facebooku."
  },
  {
   "id": "palacyk-otrebusy",
@@ -303,8 +306,9 @@
   "freq": "daily",
   "kind": "wyd",
   "place": "okolica",
-  "enabled": true,
-  "razy": 1
+  "enabled": false,
+  "razy": 1,
+  "note": "Strona hotelu bez listy aktualności (parser nie znajduje wpisów). Aktualności są tylko na Facebooku."
  },
  {
   "id": "oswk",
@@ -399,7 +403,8 @@
   "razy": 1,
   "kind": "spo",
   "place": "Grodzisk Mazowiecki",
-  "enabled": true
+  "enabled": false,
+  "note": "Strona firmy bez listy aktualności (parser nie znajduje wpisów)."
  },
  {
   "id": "parafia-mbnp",
