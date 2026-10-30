@@ -258,6 +258,34 @@
   "tytul_proba": true
  },
  {
+  "id": "ccb9bc87a593",
+  "title": "Wyjątkowa mozaika odsłonięta przy pałacu Teichfelda",
+  "url": "https://wpr24.pl/wyjatkowa-mozaika-odslonieta-przy-palacu-teichfelda/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-10-30",
+  "published": "2026-10-30",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "d8abb5007f99"
+ },
+ {
+  "id": "61f8a52682bb",
+  "title": "Legendy wyścigów samochodowych w Centrum Janki. Wyjątkowa wystawa na 125-lecie Škoda Motorsport",
+  "url": "https://wpr24.pl/legendy-wyscigow-samochodowych-w-centrum-janki-wyjatkowa-wystawa-na-125-lecie-skoda-motorsport/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-10-30",
+  "published": "2026-10-29",
+  "kind": "wyd",
+  "place": "Janki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "65b63dd5e0da"
+ },
+ {
   "id": "228f767a888d",
   "title": "Aktualizacja może utrudnić płatności online w portalu eUsługi Podkowy Leśnej",
   "url": "https://grodziski24.pl/20261028453370/aktualizacja-moze-utrudnic-platnosci-online-w-portalu-euslugi-podkowy-lesnej",

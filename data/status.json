@@ -1,115 +1,15 @@
 {
- "run": "2026-10-30T08:37:13+01:00",
+ "run": "2026-10-30T12:29:59+01:00",
  "sources": {
-  "um-aktualnosci": {
-   "ok": true,
-   "found": 10,
-   "new": 0
-  },
-  "kryzysowe": {
-   "ok": true,
-   "found": 5,
-   "new": 0
-  },
   "policja": {
    "ok": true,
    "found": 10,
    "new": 0
   },
-  "grodziski24": {
-   "ok": true,
-   "found": 15,
-   "new": 0
-  },
-  "twoje-miasto": {
-   "ok": true,
-   "found": 15,
-   "new": 1
-  },
-  "przeglad-regionalny": {
-   "ok": true,
-   "found": 15,
-   "new": 1
-  },
-  "grodziskinfo": {
-   "ok": true,
-   "found": 15,
-   "new": 0
-  },
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 1
-  },
-  "centrum-kultury": {
-   "ok": true,
-   "found": 15,
-   "new": 0
-  },
-  "mediateka": {
-   "ok": true,
-   "found": 15,
-   "new": 0
-  },
-  "bogoria": {
-   "ok": true,
-   "found": 10,
-   "new": 1
-  },
-  "budo": {
-   "ok": true,
-   "found": 8,
-   "new": 0
-  },
-  "strefa-ruchu": {
-   "ok": true,
-   "found": 4,
-   "new": 0
-  },
-  "tenis-kozerki": {
-   "ok": true,
-   "found": 6,
-   "new": 0
-  },
-  "ngo": {
-   "ok": true,
-   "found": 10,
-   "new": 0
-  },
-  "solectwa": {
-   "ok": true,
-   "found": 8,
-   "new": 0
-  },
-  "zwik": {
-   "ok": true,
-   "found": 15,
-   "new": 0
-  },
-  "okinawa": {
-   "ok": true,
-   "found": 1,
-   "new": 0
-  },
-  "parafia-mbnp": {
-   "ok": true,
-   "found": 1,
-   "new": 0
-  },
-  "parafia-przemienienia": {
-   "ok": true,
-   "found": 14,
-   "new": 0
-  },
-  "parafia-mb": {
-   "ok": true,
-   "found": 1,
-   "new": 0
-  },
-  "dworek-chelmonskiego": {
-   "ok": true,
-   "found": 6,
-   "new": 0
+   "new": 2
   }
  }
 }
