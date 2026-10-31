@@ -4,11 +4,12 @@ on:
   workflow_dispatch:       # tylko ręcznie: przycisk "Run workflow"
     inputs:
       tryb:
-        description: 'pobierz = pobranie zdjęć z data/zdjecia_wybor.txt i przebudowa strony; wsie = automatyczny wybór po 3 zdjęcia dla każdej miejscowości gminy, pobranie i przebudowa; tematy = arkusz tylko ze zdjęciami ogólnymi do tematów; szukaj = arkusz z wyników wyszukiwania Commons o Grodzisku; kandydaci = pełny arkusz (miejsca i tematy)'
+        description: 'pobierz = pobranie zdjęć z data/zdjecia_wybor.txt i przebudowa strony; wsie = automatyczny wybór po 3 zdjęcia dla każdej miejscowości gminy, pobranie i przebudowa; tematy-auto = automatyczne uzupełnienie zdjęć ogólnych do 8 na temat, pobranie i przebudowa; tematy = arkusz tylko ze zdjęciami ogólnymi do tematów; szukaj = arkusz z wyników wyszukiwania Commons o Grodzisku; kandydaci = pełny arkusz (miejsca i tematy)'
         type: choice
         options:
           - pobierz
           - wsie
+          - tematy-auto
           - tematy
           - szukaj
           - kandydaci
@@ -40,15 +41,15 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Kandydaci na zdjęcia (arkusz do wyboru)
-        if: ${{ inputs.tryb == 'kandydaci' || inputs.tryb == 'tematy' || inputs.tryb == 'szukaj' || inputs.tryb == 'wsie' }}
+        if: ${{ inputs.tryb == 'kandydaci' || inputs.tryb == 'tematy' || inputs.tryb == 'szukaj' || inputs.tryb == 'wsie' || inputs.tryb == 'tematy-auto' }}
         env:
           PYTHONUNBUFFERED: "1"
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
           FRAZA: ${{ inputs.fraza }}
-        run: python zdjecia_commons.py ${{ inputs.tryb == 'tematy' && '--tematy' || inputs.tryb == 'szukaj' && '--szukaj' || inputs.tryb == 'wsie' && '--wsie' || '' }}
+        run: python zdjecia_commons.py ${{ inputs.tryb == 'tematy' && '--tematy' || inputs.tryb == 'szukaj' && '--szukaj' || inputs.tryb == 'wsie' && '--wsie' || inputs.tryb == 'tematy-auto' && '--tematy-auto' || '' }}
 
       - name: Pobranie wybranych zdjęć i przebudowa strony
-        if: ${{ inputs.tryb == 'pobierz' || inputs.tryb == 'wsie' }}
+        if: ${{ inputs.tryb == 'pobierz' || inputs.tryb == 'wsie' || inputs.tryb == 'tematy-auto' }}
         env:
           PYTHONUNBUFFERED: "1"
           BOT_CONTACT: ${{ vars.BOT_CONTACT }}
@@ -62,6 +63,6 @@ jobs:
           git config user.email "bot@users.noreply.github.com"
           git add data
           if [ -d zdjecia ]; then git add zdjecia; fi
-          git add index.html archiwum.html zdjecia.html 2>/dev/null || true
+          git add index.html archiwum.html 2>/dev/null || true
           git diff --cached --quiet || git commit -m "Zdjęcia z Commons ($(date -u +%F))"
           git push
