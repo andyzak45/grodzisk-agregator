@@ -891,9 +891,9 @@ class GeminiMartweModele(unittest.TestCase):
 
 class AKomplet(unittest.TestCase):
     """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
-    WERSJE = {"grafiki.py": "2026-10-25-4", "render.py": "2026-10-25-5", "scraper.py": "2026-10-25-2", "streszczenia.py": "2026-10-25-2",
-              "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-2", "zdjecia_commons.py": "2026-10-25-4",
-              "zdjecia_pobierz.py": "2026-10-25-4", "template.html": "2026-10-25-5"}
+    WERSJE = {"grafiki.py": "2026-10-25-6", "render.py": "2026-10-25-6", "scraper.py": "2026-10-25-6", "streszczenia.py": "2026-10-25-2",
+              "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-6", "zdjecia_commons.py": "2026-10-25-6",
+              "zdjecia_pobierz.py": "2026-10-25-6", "template.html": "2026-10-25-6"}
 
     def test_wszystkie_pliki_maja_wymagana_wersje(self):
         stare = []
@@ -970,6 +970,16 @@ class ScalanieDuplikatow(unittest.TestCase):
         store = {"i1": a, "i2": b}
         self.assertEqual(scraper.scal_duplikaty(store), 1)
         self.assertEqual(list(store), ["i1"])
+
+    def test_ta_sama_przerwa_w_dostawie_wody_z_dwoch_zrodel_jest_scalana(self):
+        a = {"title": "Planowana przerwa w dostawie wody. Utrudnienia w Radoniach i Adamowiźnie", "source_id": "grodziski24", "kind": "ost",
+             "event_iso": "2026-10-28", "place": "Radonie|Adamowizna"}
+        b = {"title": "Planowane wyłączenie dopływu wody w Radoniach i Adamowiźnie 28 października", "source_id": "zwik", "kind": "ost",
+             "event_iso": "2026-10-28", "place": "Radonie|Adamowizna"}
+        self.assertTrue(scraper.ten_sam_temat(a, b))
+        self.assertFalse(scraper.ten_sam_temat(a, dict(b, place="Kady")))      # inne miejsce: nie scalamy
+        self.assertFalse(scraper.ten_sam_temat(a, dict(b, event_iso="2026-10-29")))      # inny dzień: nie scalamy
+        self.assertFalse(scraper.ten_sam_temat(a, dict(b, source_id="grodziski24")))      # to samo źródło: nie z tej reguły
 
     def test_wydarzenia_z_roznymi_datami_zostaja_osobno(self):
         a = self._w(1, "Festiwal Nauki i Pasji – DZIEŃ EGIPTU", kind="wyd", event_iso="2026-10-25")
@@ -1457,6 +1467,38 @@ class ZdjeciaCommons(unittest.TestCase):
             zapis = {z["tytul"]: z["miejsce"] for z in json.loads((korzen / "data" / "zdjecia.json").read_text(encoding="utf-8"))}
         self.assertEqual(zapis, {"File:Reczne.jpg": "Kozery", "File:Wies.jpg": "Kady"})      # wybór ręczny ma pierwszeństwo
 
+    def test_wybor_dla_tematu_pomija_ludzi_szyldy_i_ogranicza_autorow(self):
+        def k(tytul, autor="A", szer=2000, wys=1200, opis="", uwagi=()):
+            return {"tytul": tytul, "opis": opis, "szerokosc": szer, "wysokosc": wys, "uwagi": list(uwagi), "autor": autor, "kategorie": []}
+        kand = [k("File:Sala widowiskowa 1.jpg", autor="Ala"), k("File:Sala widowiskowa 2.jpg", autor="Ala"), k("File:Sala widowiskowa 3.jpg", autor="Ala"),
+                k("File:Biblioteka Miejska.jpg", autor="Bob"), k("File:Teatr w Łodzi.jpg", autor="Cy"), k("File:Dzieci na koncercie.jpg", autor="Dan"),
+                k("File:Scena.jpg", autor="Ewa", uwagi=["prawdopodobnie ludzie"]), k("File:Scena pionowa.jpg", autor="Fil", szer=900, wys=1600),
+                k("File:Estrada.jpg", autor="Gus", szer=1500, wys=1000)]
+        wybrane = [x["tytul"] for x in zc.wybierz_dla_tematu(kand, "kultura", 5)]
+        self.assertEqual(wybrane, ["File:Sala widowiskowa 1.jpg", "File:Sala widowiskowa 2.jpg", "File:Estrada.jpg", "File:Scena pionowa.jpg"])
+        self.assertNotIn("File:Sala widowiskowa 3.jpg", wybrane)      # trzecie zdjęcie tego samego autora odpada
+        self.assertEqual([x["tytul"] for x in zc.wybierz_dla_tematu([k("File:Ratusz.jpg")], "urzad", 3)], ["File:Ratusz.jpg"])
+
+    def test_tematy_auto_uzupelniaja_do_celu_i_zapisuja_liste(self):
+        def strona(t):
+            s = self._strona(t)
+            s["imageinfo"][0]["extmetadata"]["Artist"] = {"value": f"Autor {t}"}      # różni autorzy, żeby limit na autora nie przeszkadzał
+            return s
+        def fetch(par):
+            if par.get("list") == "search":
+                return {"query": {"search": [{"title": "Category:Concerts in Poland"}]}} if par["srsearch"] == "Concerts in Poland" else {}
+            if par.get("list") == "categorymembers":
+                return {"query": {"categorymembers": [{"title": f"File:Estrada {i}.jpg"} for i in range(1, 13)]}}
+            return {"query": {"pages": [strona(t) for t in par["titles"].split("|")]}}
+        with tempfile.TemporaryDirectory() as d:
+            katalog = Path(d)
+            (katalog / "zdjecia_wybor.txt").write_text("File:Estrada 1.jpg | kultura\nFile:Inne.jpg | kultura\n", encoding="utf-8")
+            self.assertEqual(zc.main_tematy_auto(fetch, katalog), 0)
+            linie = (katalog / "zdjecia_tematy.txt").read_text(encoding="utf-8").splitlines()
+        self.assertEqual(len(linie), zc.TARGET_NA_TEMAT - 2)      # dwa zdjęcia kultury są już wybrane ręcznie
+        self.assertNotIn("File:Estrada 1.jpg | kultura", linie)
+        self.assertTrue(all(l.endswith("| kultura") for l in linie))
+
     def test_tryb_szukaj_bez_wynikow_to_blad(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(zc.main_szukaj(lambda par: {}, Path(d)), 1)
@@ -1583,6 +1625,11 @@ class ZdjeciaNaStronie(unittest.TestCase):
             z = json.loads((korzen / "data" / "zdjecia.json").read_text(encoding="utf-8"))[0]
         self.assertEqual((z["miejsce"], z["temat"], z["zrodla"]), ("Adamowizna", "kultura", ["dworek-chelmonskiego", "inne"]))
         self.assertNotIn("slowa", z)
+
+    def test_wybor_automatyczny_tematow_jest_widoczny_na_liscie_dozwolonych(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "zdjecia_tematy.txt").write_text("File:Auto.jpg | kultura\n", encoding="utf-8")
+            self.assertEqual(grafiki.dozwolone_tytuly(Path(d)), {"File:Auto.jpg"})
 
     def test_zdjecie_nazwanego_miejsca_ma_pierwszenstwo_przed_ogolnym(self):
         mediateka = dict(self._foto("zdjecia/mediateka.jpg", "Grodzisk Mazowiecki", "kultura", autor="Anna", licencja="zdjęcie własne"),
@@ -2047,6 +2094,16 @@ class TerminyIDuplikaty(unittest.TestCase):
         self.assertEqual(blok.count('class="dzien'), render.TERMINY_DNI_W_BLOKU)
         pierwsza = blok.split('<div class="dzien')[1]
         self.assertEqual(pierwsza.count('class="termin"'), render.TERMINY_NA_DZIEN)
+
+    def test_kolumny_dni_nie_uzywaja_klasy_z_naglowka_strony(self):
+        """Klasa .dzien jest już użyta w nagłówku (data nad menu) i ma tam styl wielkich liter, więc kolumny muszą mieć własną nazwę."""
+        today = date(2026, 10, 22)
+        page = self._strona([self._wpis(id="1", url="https://x.pl/1", kind="wyd", title="Termin", event_iso="2026-10-22", when="22.10")], today)
+        blok = page[page.index('id="terminy"'):]
+        self.assertNotIn('class="dzien"', blok)
+        self.assertNotIn('class="dzien ', blok)
+        self.assertIn('class="dzien-kol dzis"', blok)
+        self.assertNotRegex(page[:page.index("<body>")], r"\.dzien\s+(h3|ul)")      # style kolumn nie przepisują stylu nagłówka
 
     def test_terminy_sa_pogrupowane_po_dniach_z_naglowkiem_dnia(self):
         today = date(2026, 10, 22)

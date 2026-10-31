@@ -5,7 +5,8 @@ Uruchamiany ręcznie (workflow "Zbieranie zdjęć z Wikimedia Commons"). Niczego
   data/zdjecia_kandydaci.html  (arkusz przeglądowy z miniaturami; zaznaczasz zdjęcia, które nam pasują)
 Zdjęcia wybiera człowiek: skrypt tylko odsiewa to, czego na pewno nie wolno użyć (licencje z NC, ND, brak licencji,
 zbyt małe pliki, formaty inne niż JPEG i PNG) i oznacza ostrzeżenia (znaki towarowe, prawa osobiste).
-Użycie: python zdjecia_commons.py [--tematy | --szukaj | --wsie]
+Użycie: python zdjecia_commons.py [--tematy | --szukaj | --wsie | --tematy-auto]
+  --tematy-auto: automatyczny wybór zdjęć ogólnych do 8 na temat (data/zdjecia_tematy.txt);
   --wsie: automatyczny wybór po 3 zdjęcia dla każdej miejscowości gminy (data/zdjecia_wsie.txt);
   --tematy: tylko zdjęcia ogólne do tematów;  --szukaj: pliki znalezione wyszukiwarką Commons po frazach o Grodzisku
 """
@@ -285,6 +286,60 @@ def wybierz_dla_wsi(kandydaci, wies, ile):
     return sorted(dobre, key=klucz, reverse=True)[:ile]
 
 
+TARGET_NA_TEMAT = 8        # tyle zdjęć ogólnych chcemy mieć na temat (liczymy też wybrane ręcznie)
+MAX_Z_AUTORA = 2           # nie więcej zdjęć jednego autora na temat (żeby nie wyszła seria z jednego spaceru)
+# budynki z napisami (biblioteka, muzeum, teatr) wprowadzają w błąd przy wpisach o innych miejscach; urząd jest wyjątkiem, bo to nasz ratusz
+SZYLDY = re.compile(r"bibliotek|library|muzeum|museum|teatr|theatre|theater|ratusz|town hall", re.I)
+
+
+def wybierz_dla_tematu(kandydaci, temat, ile):
+    """Najlepsze zdjęcia ogólne do tematu: bez ludzi, bez budynków z napisami, poziome, duże i od różnych autorów."""
+    def ok(k):
+        tekst = f'{k["tytul"]} {k["opis"]}'
+        return not k["uwagi"] and not NIEPOTRZEBNE.search(tekst) and (temat == "urzad" or not SZYLDY.search(tekst))
+    def klucz(k):
+        return (1.2 <= (k["szerokosc"] or 1) / (k["wysokosc"] or 1) <= 2.4, k["szerokosc"] or 0)
+    wybrane, autorzy = [], {}
+    for k in sorted(filter(ok, kandydaci), key=klucz, reverse=True):
+        if autorzy.get(k["autor"], 0) >= MAX_Z_AUTORA:
+            continue
+        autorzy[k["autor"]] = autorzy.get(k["autor"], 0) + 1
+        wybrane.append(k)
+        if len(wybrane) >= ile:
+            break
+    return wybrane
+
+
+def main_tematy_auto(fetch=pobierz, katalog=ROOT / "data"):
+    """Uzupełnia zdjęcia ogólne do każdego tematu automatycznie do TARGET_NA_TEMAT. Zapisuje data/zdjecia_tematy.txt (gotowe do pobrania)
+    i podgląd data/zdjecia_tematy.html. Zdjęcia wybrane ręcznie w zdjecia_wybor.txt liczą się do celu i mają pierwszeństwo."""
+    import zdjecia_pobierz as zp
+    wybrane = zp.wczytaj_wybor(katalog / "zdjecia_wybor.txt")
+    juz = {w[0] for w in wybrane}
+    mamy = {}
+    for t, temat, slowa, mj, zrodla in wybrane:
+        if temat and not slowa and not zrodla and not mj:
+            mamy[temat] = mamy.get(temat, 0) + 1
+    kategorie = znajdz_kategorie_tematow(fetch)
+    linie, podglad = [], []
+    for temat, kat in kategorie.items():
+        brak = TARGET_NA_TEMAT - mamy.get(temat, 0)
+        if brak <= 0 or not kat:
+            continue
+        kand = [k for k in szczegoly(fetch, [t for t in zbierz_pliki(fetch, kat, MAX_NA_TEMAT, 30, GLEBOKOSC_TEMATOW) if t not in juz])]
+        wybor = wybierz_dla_tematu(kand, temat, brak)
+        print(f"  {temat}: kandydatów {len(kand)}, wybrano {len(wybor)}")
+        for k in wybor:
+            juz.add(k["tytul"])
+            linie.append(f'{k["tytul"]} | {temat}')
+            podglad.append({**k, "temat_szukany": temat})
+    katalog.mkdir(exist_ok=True)
+    (katalog / "zdjecia_tematy.txt").write_text("\n".join(linie) + ("\n" if linie else ""), encoding="utf-8")
+    (katalog / "zdjecia_tematy.html").write_text(arkusz(podglad), encoding="utf-8")
+    print(f"Wybrano automatycznie {len(linie)} zdjęć ogólnych: data/zdjecia_tematy.txt")
+    return 0
+
+
 def main_wsie(fetch=pobierz, katalog=ROOT / "data"):
     """Dla każdej miejscowości gminy szuka zdjęć na Commons (nazwa wsi i Grodzisk Mazowiecki w tekście pliku) i wybiera automatycznie
     brakujące do TARGET_NA_WIES. Zapisuje data/zdjecia_wsie.txt (gotowe do pobrania) oraz arkusz podglądowy data/zdjecia_wsie.html."""
@@ -370,6 +425,8 @@ def main(fetch=pobierz, katalog=ROOT / "data", miejsca=True):
 
 
 if __name__ == "__main__":
+    if "--tematy-auto" in sys.argv:
+        sys.exit(main_tematy_auto())
     if "--wsie" in sys.argv:
         sys.exit(main_wsie())
     if "--szukaj" in sys.argv:
@@ -377,4 +434,4 @@ if __name__ == "__main__":
         sys.exit(main_szukaj(frazy=[f.strip() for f in os.environ.get("FRAZA", "").split(";") if f.strip()] or None))
     sys.exit(main(miejsca="--tematy" not in sys.argv))
 
-# wersja-kompletu: 2026-10-25-4
+# wersja-kompletu: 2026-10-25-6

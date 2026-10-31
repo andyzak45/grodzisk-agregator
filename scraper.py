@@ -32,7 +32,7 @@ import render
 import reczne
 import streszczenia
 from klasyfikacja import klasyfikuj_rodzaj, norm, wyciagnij_termin, znajdz_miejsca
-from redakcja import inny_region, neutralny_tytul, podobne, podobne_luzno
+from redakcja import inny_region, neutralny_tytul, podobne, podobne_luzno, wspolne_rdzenie
 
 ROOT = Path(__file__).parent
 STORE = ROOT / "data" / "items.json"
@@ -388,7 +388,7 @@ def dodaj(store, items, src, today):
                                and o["first_seen"] == today.isoformat() and o["place"] == place)
                               or (not neutral and not o.get("neutral")
                                   and ten_sam_temat(o, {"title": title, "event_iso": event_iso,
-                                                        "kind": kind, "source_id": src["id"]})))), None)
+                                                        "kind": kind, "source_id": src["id"], "place": place})))), None)
         klucze.add(klucz)
         if powtorka:
             also = powtorka.setdefault("also", [])
@@ -405,28 +405,13 @@ def dodaj(store, items, src, today):
     return nowe
 
 
-def _data_wpisu(it):
-    """Data zdarzenia z pola event_iso albo (dla starszych wpisów) odczytana z tytułu."""
-    if it.get("event_iso"):
-        return it["event_iso"]
-    try:
-        return wyciagnij_termin(it["title"], date.fromisoformat(it["first_seen"]) if it.get("first_seen") else None)[1]
-    except ValueError:
-        return None
-
-
-def _ta_sama_data(a, b):
-    """Dwa wpisy o tym samym dniu zdarzenia (np. przerwa w dostawie wody): pozwala na luźniejsze porównanie tytułów."""
-    da, db = _data_wpisu(a), _data_wpisu(b)
-    return bool(da) and da == db
-
-
 def ten_sam_temat(a, b):
     """Podobne tytuły to za mało: dwa wydarzenia z różnymi datami albo kolejne dni cyklu z jednego źródła to osobne wpisy."""
+    ten_sam_dzien_i_miejsce = (a["source_id"] != b["source_id"] and a.get("event_iso") and a.get("event_iso") == b.get("event_iso")
+                               and a.get("place") and a.get("place") == b.get("place"))      # np. ta sama przerwa w dostawie wody z dwóch źródeł
     if not (podobne(a["title"], b["title"])
             or (a["source_id"] != b["source_id"] and podobne_luzno(a["title"], b["title"]))
-            or (a["source_id"] != b["source_id"] and _ta_sama_data(a, b) and podobne_luzno(a["title"], b["title"], prog=0.5))
-            or (a["source_id"] != b["source_id"] and a.get("tytul") and b.get("tytul") and podobne(a["tytul"], b["tytul"]))):      # robocze tytuły z notek: różne źródła piszą oryginał inaczej, a po streszczeniu tytuły są niemal takie same
+            or (ten_sam_dzien_i_miejsce and wspolne_rdzenie(a["title"], b["title"]) >= 3)):
         return False
     if a.get("event_iso") and b.get("event_iso") and a["event_iso"] != b["event_iso"]:
         return False
@@ -478,9 +463,6 @@ def scal_duplikaty(store):
             continue
         if not a.get("text") and b.get("text"):      # nie gubimy notki, jeśli miał ją tylko nowszy duplikat
             a["text"], a["opis_auto"] = b["text"], b.get("opis_auto", True)
-        pa, pb = a.get("place", "cała gmina"), b.get("place", "cała gmina")
-        if pa not in ("cała gmina", "okolica"):
-            a["place"] = "|".join(pa.split("|") + [m for m in pb.split("|") if m not in pa.split("|") and m not in ("cała gmina", "okolica")])      # wpis o dwóch wsiach nie traci drugiej po scaleniu z wpisem o jednej
         also = a.setdefault("also", [])
         for nazwa in [b["source"]] + b.get("also", []):
             if nazwa != a["source"] and nazwa not in also:
@@ -572,9 +554,6 @@ def main():
         n = streszczenia.dopisz(store, zrodla, fetcher, today, MAX_NOTEK)
         print(f"Dopisano {n} notek pod tytułami")
         streszczenia.dopisz_tytuly(store, today)
-        scalone = scal_duplikaty(store)      # dopiero po notkach i tytułach widać, że dwa źródła piszą o tym samym
-        if scalone:
-            print(f"Scalono {scalone} podobnych wpisów po dopisaniu tytułów")
     r = streszczenia.zastosuj_reczne(store, ROOT / "data" / "opisy.json")
     if r:
         print(f"Zastosowano {r} notek z data/opisy.json")
@@ -592,4 +571,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# wersja-kompletu: 2026-10-25-2
+# wersja-kompletu: 2026-10-25-6

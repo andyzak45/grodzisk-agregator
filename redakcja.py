@@ -115,6 +115,11 @@ def podobne(a, b, prog=0.55):
 _OGOLNE_RDZENIE = {"kons", "prog", "wspo", "spot", "zapr", "mies", "gmin", "powi", "info", "ogło", "ogl"}   # słowa z każdego komunikatu urzędu
 
 
+def wspolne_rdzenie(a, b):
+    """Liczba wspólnych znaczących słów (rdzeni) dwóch tytułów, bez ogólnych słów urzędowych."""
+    return len((_rdzenie(a) & _rdzenie(b)) - _OGOLNE_RDZENIE)
+
+
 def podobne_luzno(a, b, prog=0.75):
     """Dwa tytuły o tym samym temacie, gdy jeden jest dłuższy: wspólne rdzenie to większość krótszego tytułu.
     Stosujemy tylko między różnymi źródłami. Ogólne słowa urzędowe (konsultacje, program, współpraca) nie liczą się
@@ -133,4 +138,4 @@ def inny_region(title):
     """Tytuł mówi wprost o innym województwie (np. 'alert RCB dla woj. lubelskiego'): to nie jest wiadomość lokalna."""
     return bool(_INNY_REGION.search(title or ""))
 
-# wersja-kompletu: 2026-10-25-2
+# wersja-kompletu: 2026-10-25-6

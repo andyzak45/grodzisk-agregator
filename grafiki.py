@@ -98,9 +98,9 @@ _WYBOR = {}
 
 
 def dozwolone_tytuly(katalog_data):
-    """Tytuły plików z data/zdjecia_wybor.txt i data/zdjecia_wsie.txt albo None, gdy żadnego z tych plików nie ma (wtedy bez filtra)."""
+    """Tytuły plików z data/zdjecia_wybor.txt, zdjecia_wsie.txt i zdjecia_tematy.txt albo None, gdy żadnego z tych plików nie ma (wtedy bez filtra)."""
     wynik, jest = set(), False
-    for nazwa in ("zdjecia_wybor.txt", "zdjecia_wsie.txt"):
+    for nazwa in ("zdjecia_wybor.txt", "zdjecia_wsie.txt", "zdjecia_tematy.txt"):
         sciezka = Path(katalog_data) / nazwa
         if sciezka.exists():
             jest = True
@@ -214,4 +214,4 @@ def tlo_czolowki(it):
     return (f'<svg class="hero-ilu" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
             f'<use href="#ilu-{temat(it)}"/></svg>'), ""
 
-# wersja-kompletu: 2026-10-25-4
+# wersja-kompletu: 2026-10-25-6

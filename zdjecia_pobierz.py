@@ -95,7 +95,9 @@ def wczytaj_wybor(sciezka):
 def main(fetch=zc.pobierz, pobierz=pobierz_plik, katalog=ROOT):
     wybor = wczytaj_wybor(katalog / "data" / "zdjecia_wybor.txt")
     znane = {w[0] for w in wybor}
-    wybor += [w for w in wczytaj_wybor(katalog / "data" / "zdjecia_wsie.txt") if w[0] not in znane]      # automatyczny wybór dla wsi
+    for automat in ("zdjecia_wsie.txt", "zdjecia_tematy.txt"):      # automatyczny wybór dla wsi i dla tematów; ręczny ma pierwszeństwo
+        wybor += [w for w in wczytaj_wybor(katalog / "data" / automat) if w[0] not in znane]
+        znane = {w[0] for w in wybor}
     tematy_wyboru = {t: (tm, sl, mj, zr) for t, tm, sl, mj, zr in wybor}
     tytuly = [w[0] for w in wybor]
     if not tytuly:
@@ -163,4 +165,4 @@ def main(fetch=zc.pobierz, pobierz=pobierz_plik, katalog=ROOT):
 if __name__ == "__main__":
     sys.exit(main())
 
-# wersja-kompletu: 2026-10-25-4
+# wersja-kompletu: 2026-10-25-6
