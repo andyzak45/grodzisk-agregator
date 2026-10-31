@@ -4253,22 +4253,6 @@
   "poza_okolica": true
  },
  {
-  "id": "8dd651509042",
-  "title": "Rusza budowa ul. Cicheckiego. Prace potrwają do czerwca 2027 roku",
-  "url": "https://www.przegladregionalny.pl/artykul/11389,rusza-budowa-ul-cicheckiego-prace-potrwaja-do-czerwca-2027-roku",
-  "source": "Przegląd Regionalny",
-  "source_id": "przeglad-regionalny",
-  "first_seen": "2026-10-22",
-  "published": "2026-10-22",
-  "kind": "inw",
-  "place": "okolica",
-  "when": "26.10",
-  "event_iso": "2026-10-26",
-  "tkey": "d033e1af5aa7",
-  "opis_proba": "v3",
-  "poza_okolica": true
- },
- {
   "id": "22c9cdcd23b3",
   "title": "Duża inwestycja drogowa w mieście. Budowa ul. Cicheckiego ruszy 26 października",
   "url": "https://wpr24.pl/duza-inwestycja-drogowa-w-miescie-budowa-ul-cicheckiego-ruszy-26-pazdziernika/",
@@ -4280,7 +4264,10 @@
   "place": "okolica",
   "when": "26.10",
   "event_iso": "2026-10-26",
-  "tkey": "eab42ede21e3"
+  "tkey": "eab42ede21e3",
+  "also": [
+   "Przegląd Regionalny"
+  ]
  },
  {
   "id": "6375f76d7386",
