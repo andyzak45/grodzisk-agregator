@@ -45,7 +45,7 @@ TEMATY_OGOLNE = {
     "zdrowie": ["Hospitals in Poland", "Ambulances in Poland"],
     "szkola": ["Schools in Poland", "Primary schools in Poland"],
     "sport": ["Football pitches in Poland", "Sports halls in Poland", "Swimming pools in Poland", "Stadiums in Poland", "Orlik"],
-    "kultura": ["Libraries in Poland", "Concerts in Poland", "Cultural centres in Poland"],
+    "kultura": ["Libraries in Poland", "Concerts in Poland", "Cultural centres in Poland", "Auditoriums in Poland", "Concert halls in Poland", "Exhibitions in Poland"],
     "srodowisko": ["Parks in Poland", "Waste containers in Poland"],
     "inwestycje": ["Construction sites in Poland", "Cranes in Poland"],
     "urzad": ["Town halls in Poland", "Municipal offices in Poland"],
@@ -286,6 +286,7 @@ def wybierz_dla_wsi(kandydaci, wies, ile):
     return sorted(dobre, key=klucz, reverse=True)[:ile]
 
 
+TEMATY_BEZ_AUTOMATU = {"urzad"}      # urząd ilustrują nasze własne zdjęcia (ratusz, starostwo); ratusze innych miast wprowadzałyby w błąd
 TARGET_NA_TEMAT = 8        # tyle zdjęć ogólnych chcemy mieć na temat (liczymy też wybrane ręcznie)
 MAX_Z_AUTORA = 2           # nie więcej zdjęć jednego autora na temat (żeby nie wyszła seria z jednego spaceru)
 # budynki z napisami (biblioteka, muzeum, teatr) wprowadzają w błąd przy wpisach o innych miejscach; urząd jest wyjątkiem, bo to nasz ratusz
@@ -324,7 +325,7 @@ def main_tematy_auto(fetch=pobierz, katalog=ROOT / "data"):
     linie, podglad = [], []
     for temat, kat in kategorie.items():
         brak = TARGET_NA_TEMAT - mamy.get(temat, 0)
-        if brak <= 0 or not kat:
+        if brak <= 0 or not kat or temat in TEMATY_BEZ_AUTOMATU:
             continue
         kand = [k for k in szczegoly(fetch, [t for t in zbierz_pliki(fetch, kat, MAX_NA_TEMAT, 30, GLEBOKOSC_TEMATOW) if t not in juz])]
         wybor = wybierz_dla_tematu(kand, temat, brak)
@@ -434,4 +435,4 @@ if __name__ == "__main__":
         sys.exit(main_szukaj(frazy=[f.strip() for f in os.environ.get("FRAZA", "").split(";") if f.strip()] or None))
     sys.exit(main(miejsca="--tematy" not in sys.argv))
 
-# wersja-kompletu: 2026-10-25-6
+# wersja-kompletu: 2026-10-25-7

@@ -892,7 +892,7 @@ class GeminiMartweModele(unittest.TestCase):
 class AKomplet(unittest.TestCase):
     """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
     WERSJE = {"grafiki.py": "2026-10-25-6", "render.py": "2026-10-25-6", "scraper.py": "2026-10-25-6", "streszczenia.py": "2026-10-25-2",
-              "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-6", "zdjecia_commons.py": "2026-10-25-6",
+              "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-6", "zdjecia_commons.py": "2026-10-25-7",
               "zdjecia_pobierz.py": "2026-10-25-6", "template.html": "2026-10-25-6"}
 
     def test_wszystkie_pliki_maja_wymagana_wersje(self):
@@ -1498,6 +1498,19 @@ class ZdjeciaCommons(unittest.TestCase):
         self.assertEqual(len(linie), zc.TARGET_NA_TEMAT - 2)      # dwa zdjęcia kultury są już wybrane ręcznie
         self.assertNotIn("File:Estrada 1.jpg | kultura", linie)
         self.assertTrue(all(l.endswith("| kultura") for l in linie))
+
+    def test_tematy_auto_pomijaja_urzad_bo_mamy_wlasne_zdjecia(self):
+        zapytania = []
+        def fetch(par):
+            zapytania.append(par)
+            if par.get("list") == "search":
+                return {"query": {"search": [{"title": "Category:Town halls in Poland"}]}} if par["srsearch"] == "Town halls in Poland" else {}
+            return {"query": {"categorymembers": [{"title": "File:Ratusz.jpg"}]}}
+        with tempfile.TemporaryDirectory() as d:
+            katalog = Path(d)
+            self.assertEqual(zc.main_tematy_auto(fetch, katalog), 0)
+            self.assertEqual((katalog / "zdjecia_tematy.txt").read_text(encoding="utf-8"), "")
+        self.assertFalse(any(z.get("cmtitle") == "Category:Town halls in Poland" for z in zapytania))      # w ogóle nie przeglądamy tej kategorii
 
     def test_tryb_szukaj_bez_wynikow_to_blad(self):
         with tempfile.TemporaryDirectory() as d:
