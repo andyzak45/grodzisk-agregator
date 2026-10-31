@@ -1,19 +1,15 @@
 {
- "run": "2026-10-30T18:34:54+01:00",
+ "run": "2026-10-31T06:31:55+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 12029,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 10,
+   "new": 2
+  },
+  "kryzysowe": {
+   "ok": true,
+   "found": 5,
+   "new": 0
   },
   "policja": {
    "ok": true,
@@ -23,12 +19,17 @@
   "grodziski24": {
    "ok": true,
    "found": 15,
-   "new": 4
+   "new": 2
   },
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 5
+   "new": 3
+  },
+  "przeglad-regionalny": {
+   "ok": true,
+   "found": 15,
+   "new": 4
   },
   "grodziskinfo": {
    "ok": true,
@@ -42,21 +43,22 @@
   },
   "centrum-kultury": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 11929,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 15,
+   "new": 3
+  },
+  "mediateka": {
+   "ok": true,
+   "found": 15,
+   "new": 0
   },
   "bogoria": {
    "ok": true,
    "found": 10,
+   "new": 0
+  },
+  "budo": {
+   "ok": true,
+   "found": 8,
    "new": 0
   },
   "strefa-ruchu": {
@@ -64,28 +66,49 @@
    "found": 4,
    "new": 0
   },
+  "tenis-kozerki": {
+   "ok": true,
+   "found": 6,
+   "new": 0
+  },
+  "ngo": {
+   "ok": true,
+   "found": 10,
+   "new": 2
+  },
   "solectwa": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 11951,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 8,
+   "new": 0
   },
   "zwik": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "okinawa": {
    "ok": true,
    "found": 1,
+   "new": 0
+  },
+  "parafia-mbnp": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "parafia-przemienienia": {
+   "ok": true,
+   "found": 14,
+   "new": 0
+  },
+  "parafia-mb": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "dworek-chelmonskiego": {
+   "ok": true,
+   "found": 6,
    "new": 0
   }
  }
