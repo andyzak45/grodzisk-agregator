@@ -1,10 +1,10 @@
 {
- "run": "2026-10-31T06:31:55+01:00",
+ "run": "2026-11-01T06:54:45+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
    "found": 10,
-   "new": 2
+   "new": 0
   },
   "kryzysowe": {
    "ok": true,
@@ -19,17 +19,17 @@
   "grodziski24": {
    "ok": true,
    "found": 15,
-   "new": 2
+   "new": 1
   },
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 1
   },
   "przeglad-regionalny": {
    "ok": true,
    "found": 15,
-   "new": 4
+   "new": 2
   },
   "grodziskinfo": {
    "ok": true,
@@ -39,22 +39,22 @@
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 3
   },
   "centrum-kultury": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 1
   },
   "mediateka": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 3
   },
   "bogoria": {
    "ok": true,
    "found": 10,
-   "new": 0
+   "new": 1
   },
   "budo": {
    "ok": true,
@@ -74,12 +74,30 @@
   "ngo": {
    "ok": true,
    "found": 10,
-   "new": 2
+   "new": 0
   },
   "solectwa": {
    "ok": true,
    "found": 8,
    "new": 0
+  },
+  "palac-wieniawskich": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 48452,
+    "article": 0,
+    "naglowki": 20,
+    "feed": false,
+    "tytul": "Nocleg pod Warszawą",
+    "tekst": "Nocleg pod Warszawą Zadzwoń do nas: 5 1 3 - 3 6 9 - 2 6 7 Rezerwacja Pałac Wieniawskich Wypocznij wśród natury tuż pod Warszawą SYLWESTER 2026/27 Masz już plan "
+   }
+  },
+  "oswk": {
+   "ok": false,
+   "error": "PermissionError: robots.txt zabrania pobierania"
   },
   "zwik": {
    "ok": true,
@@ -94,12 +112,12 @@
   "parafia-mbnp": {
    "ok": true,
    "found": 1,
-   "new": 0
+   "new": 1
   },
   "parafia-przemienienia": {
    "ok": true,
    "found": 14,
-   "new": 0
+   "new": 2
   },
   "parafia-mb": {
    "ok": true,
