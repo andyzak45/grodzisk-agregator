@@ -40,9 +40,9 @@
         .terminy { border-top: 3px solid var(--text-main); background: #f8fafc; padding: 0.8rem 1rem 0.9rem; margin-bottom: 1.75rem; }
         .terminy h2 { font-family: var(--cond); text-transform: uppercase; letter-spacing: 0.04em; font-size: 1.05rem; margin: 0 0 0.55rem; }
         .terminy .dni { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.1rem 1.6rem; align-items: start; }
-        .dzien h3 { margin: 0 0 0.55rem; padding-bottom: 0.25rem; border-bottom: 2px solid var(--text-main); font-family: var(--cond); font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
-        .dzien.dzis h3 { color: #e11d48; border-color: #e11d48; }
-        .dzien ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; }
+        .dzien-kol h3 { margin: 0 0 0.55rem; padding-bottom: 0.25rem; border-bottom: 2px solid var(--text-main); font-family: var(--cond); font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+        .dzien-kol.dzis h3 { color: #e11d48; border-color: #e11d48; }
+        .dzien-kol ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; }
         .termin .meta { display: block; margin-bottom: 0.1rem; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); }
         .termin a { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main); font-size: 0.92rem; font-weight: 600; line-height: 1.25; text-decoration: none; }
         .termin a:hover { text-decoration: underline; }
@@ -149,7 +149,7 @@
             var term = document.querySelector(".terminy");
             if (term) {
                 term.querySelectorAll(".termin").forEach(function (c) { c.hidden = !match(c); });
-                term.querySelectorAll(".dzien").forEach(function (d) { d.hidden = !d.querySelector(".termin:not([hidden])"); });
+                term.querySelectorAll(".dzien-kol").forEach(function (d) { d.hidden = !d.querySelector(".termin:not([hidden])"); });
                 term.hidden = kind !== "" || !term.querySelector(".termin:not([hidden])");
             }
             var n = 0, start = sekcja ? +sekcja.dataset.start : 0;
@@ -206,4 +206,4 @@
     </script>
 </body>
 </html>
-<!-- wersja-kompletu: 2026-10-25-5 -->
+<!-- wersja-kompletu: 2026-10-25-6 -->

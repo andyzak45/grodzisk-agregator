@@ -5,7 +5,7 @@ from pathlib import Path
 
 import grafiki
 from klasyfikacja import klucz_miejsca, miejsce_wpisu, w_gminie
-from redakcja import data_ui, dzien, godzina, inny_region, miejsce_ui, opis, termin_ui
+from redakcja import data_ui, dzien, godzina, inny_region, miejsce_ui, opis, podobne, podobne_luzno, termin_ui, wspolne_rdzenie
 
 # Kolejność sekcji na stronie i w menu: najpierw to, co dzieje się w okolicy (wydarzenia), potem wiadomości.
 # Puste kategorie nie są pokazywane (ostrzeżenie o dużej wadze i tak trafia na górę jako główny temat strony).
@@ -220,7 +220,7 @@ def terminy(pool, today):
             wpisy += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
                       + (f'<span class="meta">{e(meta)}</span>' if meta else "")
                       + f'<a href="{e(i["url"])}" target="_blank" rel="noopener">{e(tytul(i))}</a></li>')
-        kolumny += (f'<div class="dzien{" dzis" if iso == od else ""}"><h3><time datetime="{e(iso)}">{e(data_ui(iso, today))}</time></h3>'
+        kolumny += (f'<div class="dzien-kol{" dzis" if iso == od else ""}"><h3><time datetime="{e(iso)}">{e(data_ui(iso, today))}</time></h3>'
                     f'<ul>{wpisy}</ul></div>')
     if not kolumny:
         return ""
@@ -260,12 +260,31 @@ def kolejnosc(kind, items, today):
     return nadchodzace + reszta
 
 
+def to_samo(a, b):
+    """Czy dwa wpisy z różnych źródeł opisują tę samą sprawę (np. przerwę w dostawie wody opisaną przez ZWiK i przez portal).
+    Warunki: to samo miejsce, ten sam termin (albo oba bez terminu) i publikacja w odstępie do 3 dni, a tytuły mają wspólny trzon.
+    To zabezpieczenie na etapie układania strony: scalanie w danych nie zawsze wyłapuje odmienione tytuły."""
+    if (a.get("source_id") or a.get("source")) == (b.get("source_id") or b.get("source")) or a["place"].split("|")[0] != b["place"].split("|")[0]:
+        return False
+    ea, eb = a.get("event_iso"), b.get("event_iso")
+    if ea and eb and ea != eb:
+        return False
+    if abs((date.fromisoformat(data_wpisu(a)) - date.fromisoformat(data_wpisu(b))).days) > 3:
+        return False
+    return podobne(a["title"], b["title"]) or podobne_luzno(a["title"], b["title"]) or wspolne_rdzenie(a["title"], b["title"]) >= 3
+
+
 def strumien(pokazane, wyrozniane, today):
     """Jeden strumień aktualności: ważność i świeżość decydują o kolejności, kategoria to tylko znacznik na karcie."""
     if not pokazane:
         return ""
     uporzadkowane = sorted(pokazane, key=lambda i: (-_punkty(i, today), -date.fromisoformat(data_wpisu(i)).toordinal()))
-    reszta = [i for i in uporzadkowane if not any(i is w for w in wyrozniane)]
+    reszta, widziane = [], list(wyrozniane)
+    for i in uporzadkowane:
+        if any(i is w for w in wyrozniane) or any(to_samo(i, w) for w in widziane):      # ta sama sprawa jest już w czołówce lub wyżej w strumieniu
+            continue
+        reszta.append(i)
+        widziane.append(i)
     karty = "".join(karta(i, today, kopia=True) for i in wyrozniane) + "".join(karta(i, today) for i in reszta)
     return (f'<section class="kat c-feed" id="feed" data-start="{NA_START}">'
             f'<div class="kat-head"><h2>Aktualności</h2><span class="kat-count">{len(pokazane)}</span></div>'
@@ -431,4 +450,4 @@ def build_archive(items, shown, template_path, out_path, today=None):
     Path(out_path).write_text(page, encoding="utf-8")
     return len(reszta)
 
-# wersja-kompletu: 2026-10-25-5
+# wersja-kompletu: 2026-10-25-7

@@ -891,7 +891,7 @@ class GeminiMartweModele(unittest.TestCase):
 
 class AKomplet(unittest.TestCase):
     """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
-    WERSJE = {"grafiki.py": "2026-10-25-6", "render.py": "2026-10-25-6", "scraper.py": "2026-10-25-6", "streszczenia.py": "2026-10-25-2",
+    WERSJE = {"grafiki.py": "2026-10-25-6", "render.py": "2026-10-25-7", "scraper.py": "2026-10-25-6", "streszczenia.py": "2026-10-25-2",
               "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-6", "zdjecia_commons.py": "2026-10-25-7",
               "zdjecia_pobierz.py": "2026-10-25-6", "template.html": "2026-10-25-6"}
 
@@ -1993,6 +1993,32 @@ class TerminyZakresyIHoryzont(unittest.TestCase):
         blisko = self._wpis(id="3", url="https://x.pl/3", event_iso="2026-11-20", when="20.11")
         wynik = render.widoczne([daleko, blisko], self.TODAY)
         self.assertEqual([i["id"] for i in wynik], ["3"])
+
+
+class DuplikatyNaStronie(unittest.TestCase):
+    TODAY = date(2026, 11, 2)
+
+    def _wpis(self, **kw):
+        base = {"id": "1", "title": "Tytuł", "url": "https://x.pl/1", "source": "Źródło", "source_id": "g24", "first_seen": "2026-11-01",
+                "published": "2026-11-01", "kind": "ost", "place": "Chrzanów Duży", "when": None, "event_iso": "2026-11-03", "text": "Notka."}
+        base.update(kw)
+        return base
+
+    def test_ta_sama_sprawa_z_dwoch_zrodel_nie_powtarza_sie_pod_czolowka(self):
+        a = self._wpis(id="a", title="Planowana przerwa w dostawie wody w części Chrzanowa Dużego 3 listopada")
+        b = self._wpis(id="b", url="https://x.pl/2", source_id="zwik", title="Planowane wyłączenie wody w Chrzanowie Dużym 3 listopada")
+        html_ = render.strumien([a, b], [b], self.TODAY)
+        self.assertNotIn("Planowana przerwa w dostawie", html_.split("copy")[-1])      # poza ukrytą kopią czołówki nie ma drugiego opisu
+        self.assertEqual(html_.count("<article"), 1)
+
+    def test_inne_sprawy_zostaja(self):
+        a = self._wpis(id="a", title="Planowana przerwa w dostawie wody w Chrzanowie Dużym")
+        inne_miejsce = self._wpis(id="b", source_id="zwik", place="Kady", title="Planowana przerwa w dostawie wody w Kadach")
+        inny_termin = self._wpis(id="c", source_id="zwik", event_iso="2026-11-20", title="Planowana przerwa w dostawie wody w Chrzanowie Dużym")
+        to_samo_zrodlo = self._wpis(id="d", title="Planowana przerwa w dostawie wody w Chrzanowie Dużym i Małym")
+        zupelnie_inne = self._wpis(id="e", source_id="zwik", title="Remont drogi powiatowej w Chrzanowie Dużym")
+        for inny in (inne_miejsce, inny_termin, to_samo_zrodlo, zupelnie_inne):
+            self.assertFalse(render.to_samo(a, inny), inny["title"])
 
 
 class TerminyIDuplikaty(unittest.TestCase):
