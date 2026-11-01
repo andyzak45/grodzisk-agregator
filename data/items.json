@@ -236,7 +236,10 @@
   "when": "1.11",
   "event_iso": "2026-11-01",
   "tkey": "4ce03e8912b3",
-  "opis_proba": "v3"
+  "opis_proba": "v3",
+  "also": [
+   "Grodzisk Twoje Miasto"
+  ]
  },
  {
   "id": "8e285af7eb1d",
@@ -251,6 +254,70 @@
   "when": null,
   "event_iso": null,
   "tkey": "cde9e406abee"
+ },
+ {
+  "id": "31903e86845d",
+  "title": "Znani Krakowianie kwestują na odnowę zabytkowych nagrobków na Cmentarzu Rakowickim",
+  "url": "https://krakow.twoje-miasto.pl/art-religia/znani-krakowianie-kwestuja-na-odnowe-i1311954",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-11-01",
+  "published": "2026-11-01",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "ffe0bb5095fa",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
+  "id": "91e6ce8dde79",
+  "title": "Prof. Szukalski: będzie coraz więcej zmarłych, a coraz mniej bliskich, którzy...",
+  "url": "https://www.twoje-miasto.pl/art-spoleczne/prof-szukalski-bedzie-coraz-wiecej-i1311936",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-11-01",
+  "published": "2026-11-01",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "ea7e6bb1e27b",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
+  "id": "0a73907215b3",
+  "title": "1 listopada luteranie wspominają wiernych, którzy odeszli",
+  "url": "https://www.twoje-miasto.pl/art-religia/1-listopada-luteranie-wspominaja-wiernych-i1311930",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-11-01",
+  "published": "2026-11-01",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": "1.11",
+  "event_iso": "2026-11-01",
+  "tkey": "07af3ce72b42",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
+  "id": "7fd7fa84eadf",
+  "title": "Tatry: zimowe zamknięcie wysokogórskich szlaków na Słowacji...",
+  "url": "https://zakopane.twoje-miasto.pl/art-turystyka/tatry-zimowe-zamkniecie-wysokogorskich-szlakow-i1311918",
+  "source": "Grodzisk Twoje Miasto",
+  "source_id": "twoje-miasto",
+  "first_seen": "2026-11-01",
+  "published": "2026-11-01",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "32111f97b1b5",
+  "opis_proba": "v3",
+  "poza_okolica": true
  },
  {
   "id": "0ed338ca764c",
@@ -1264,7 +1331,8 @@
   "opis_auto": true,
   "tytul_proba": true,
   "also": [
-   "Grodzisk Twoje Miasto"
+   "Grodzisk Twoje Miasto",
+   "WPR24"
   ]
  },
  {
