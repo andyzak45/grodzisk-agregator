@@ -216,6 +216,48 @@
   "tkey": "91bc4e75a586"
  },
  {
+  "id": "2a94a2a283cc",
+  "title": "Wyjątkowa wystawa „Pruszków. Narodziny miasta” w Muzeum Hutnictwa",
+  "url": "https://wpr24.pl/wyjatkowa-wystawa-pruszkow-narodziny-miasta-w-muzeum-hutnictwa/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-11-02",
+  "published": "2026-11-02",
+  "kind": "wyd",
+  "place": "Pruszków",
+  "when": null,
+  "event_iso": null,
+  "tkey": "bf5c3798678e"
+ },
+ {
+  "id": "d2d22c5bc8fc",
+  "title": "Ile kosztuje klimatyzacja z montażem w 2026 roku? Co naprawdę wpływa na cenę?",
+  "url": "https://wpr24.pl/ile-kosztuje-klimatyzacja-z-montazem-w-2026-roku-co-naprawde-wplywa-na-cene/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-11-02",
+  "published": "2026-11-02",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "fcd2c930b029"
+ },
+ {
+  "id": "6c48d644dc3c",
+  "title": "Mrowna Jazz Festiwal – trzy dni muzyki, warsztatów i pokazów filmowych",
+  "url": "https://wpr24.pl/mrowna-jazz-festiwal-trzy-dni-muzyki-warsztatow-i-pokazow-filmowych/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-11-02",
+  "published": "2026-11-02",
+  "kind": "wyd",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "dcc36acf355a"
+ },
+ {
   "id": "eb624d790284",
   "title": "56 mln zł na zimowe drogi. Mazowieckie służby szykują się na mrozy",
   "url": "https://grodziski24.pl/20261031621450/56-mln-zl-na-zimowe-drogi-mazowieckie-sluzby-szykuja-sie-na-mrozy",
