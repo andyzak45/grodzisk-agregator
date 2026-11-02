@@ -1,19 +1,15 @@
 {
- "run": "2026-11-01T18:26:22+01:00",
+ "run": "2026-11-02T06:53:22+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 11993,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 10,
+   "new": 0
+  },
+  "kryzysowe": {
+   "ok": true,
+   "found": 5,
+   "new": 0
   },
   "policja": {
    "ok": true,
@@ -30,6 +26,11 @@
    "found": 15,
    "new": 4
   },
+  "przeglad-regionalny": {
+   "ok": true,
+   "found": 15,
+   "new": 3
+  },
   "grodziskinfo": {
    "ok": true,
    "found": 15,
@@ -38,20 +39,49 @@
   "wpr24": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 1
   },
   "centrum-kultury": {
+   "ok": true,
+   "found": 15,
+   "new": 0
+  },
+  "mediateka": {
+   "ok": true,
+   "found": 15,
+   "new": 0
+  },
+  "biblioteka": {
+   "ok": true,
+   "found": 10,
+   "new": 5
+  },
+  "grodzisksport": {
    "ok": true,
    "found": 0,
    "new": 0,
    "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
    "diag": {
-    "bajty": 11972,
+    "bajty": 145922,
     "article": 0,
-    "naglowki": 0,
+    "naglowki": 7,
     "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+    "tytul": "Portal informacyjny OSiR Grodzisk Mazowiecki - OSiR Grodzisk Mazowiecki",
+    "tekst": "Portal informacyjny OSiR Grodzisk Mazowiecki - OSiR Grodzisk Mazowiecki Strona korzysta z plików cookies w celu realizacji usług. Możesz określić warunki przech"
+   }
+  },
+  "hala-caiis": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 112405,
+    "article": 0,
+    "naglowki": 2,
+    "feed": false,
+    "tytul": "OSiR Grodzisk Mazowiecki",
+    "tekst": "OSiR Grodzisk Mazowiecki Strona korzysta z plików cookies w celu realizacji usług. Możesz określić warunki przechowywania lub dostępu do plików cookies klikając"
    }
   },
   "bogoria": {
@@ -59,24 +89,30 @@
    "found": 10,
    "new": 0
   },
+  "budo": {
+   "ok": true,
+   "found": 8,
+   "new": 0
+  },
   "strefa-ruchu": {
    "ok": true,
    "found": 4,
    "new": 0
   },
+  "tenis-kozerki": {
+   "ok": true,
+   "found": 6,
+   "new": 0
+  },
+  "ngo": {
+   "ok": true,
+   "found": 10,
+   "new": 0
+  },
   "solectwa": {
    "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 11936,
-    "article": 0,
-    "naglowki": 0,
-    "feed": false,
-    "tytul": "Proszę czekać…",
-    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
-   }
+   "found": 8,
+   "new": 0
   },
   "zwik": {
    "ok": true,
@@ -86,6 +122,26 @@
   "okinawa": {
    "ok": true,
    "found": 1,
+   "new": 0
+  },
+  "parafia-mbnp": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "parafia-przemienienia": {
+   "ok": true,
+   "found": 14,
+   "new": 0
+  },
+  "parafia-mb": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "dworek-chelmonskiego": {
+   "ok": true,
+   "found": 6,
    "new": 0
   }
  }
