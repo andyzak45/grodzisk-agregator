@@ -39,13 +39,14 @@
         .hero > .hero-fot a { color: inherit; }
         .terminy { border-top: 3px solid var(--text-main); background: #f8fafc; padding: 0.8rem 1rem 0.9rem; margin-bottom: 1.75rem; }
         .terminy h2 { font-family: var(--cond); text-transform: uppercase; letter-spacing: 0.04em; font-size: 1.05rem; margin: 0 0 0.55rem; }
-        .terminy .dni { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.1rem 1.6rem; align-items: start; }
-        .dzien-kol h3 { margin: 0 0 0.55rem; padding-bottom: 0.25rem; border-bottom: 2px solid var(--text-main); font-family: var(--cond); font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
-        .dzien-kol.dzis h3 { color: #e11d48; border-color: #e11d48; }
-        .dzien-kol ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; }
-        .termin .meta { display: block; margin-bottom: 0.1rem; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); }
-        .termin a { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main); font-size: 0.92rem; font-weight: 600; line-height: 1.25; text-decoration: none; }
+        .terminy ul.lista { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-template-rows: repeat(var(--wiersze, 5), auto); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 2.2rem; }
+        .termin { display: grid; grid-template-columns: 3.9rem minmax(0, 1fr); gap: 0.6rem; align-items: baseline; padding: 0.45rem 0; border-top: 1px solid var(--rule); font-size: 0.92rem; line-height: 1.35; }
+        .termin b { font-family: var(--cond); font-size: 0.9rem; font-weight: 700; color: var(--text-muted); }
+        .termin b.z { color: #e11d48; }
+        .termin a { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text-main); font-weight: 600; text-decoration: none; }
         .termin a:hover { text-decoration: underline; }
+        .termin .g { color: var(--text-muted); font-size: 0.82rem; font-weight: 600; }
+        @media (max-width: 800px) { .terminy ul.lista { grid-auto-flow: row; grid-template-rows: none; grid-template-columns: minmax(0, 1fr); } }
         .ticker { display: flex; align-items: stretch; gap: 1rem; background: #f3f4f6; margin-bottom: 1.25rem; overflow: hidden; }
         .ticker-label { background: #bbf7a0; color: #111; font-family: var(--cond); font-weight: 800; text-transform: uppercase; padding: 0.7rem 1rem; display: flex; align-items: center; flex-shrink: 0; letter-spacing: 0.04em; }
         .ticker-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 1.4rem; flex: 1; min-width: 0; padding: 0.6rem 1.25rem 0.6rem 0; }
@@ -149,7 +150,6 @@
             var term = document.querySelector(".terminy");
             if (term) {
                 term.querySelectorAll(".termin").forEach(function (c) { c.hidden = !match(c); });
-                term.querySelectorAll(".dzien-kol").forEach(function (d) { d.hidden = !d.querySelector(".termin:not([hidden])"); });
                 term.hidden = kind !== "" || !term.querySelector(".termin:not([hidden])");
             }
             var n = 0, start = sekcja ? +sekcja.dataset.start : 0;
@@ -194,6 +194,11 @@
         apply();
         pustaStrona();
         var now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        document.querySelectorAll(".termin b[data-iso]").forEach(function (b) {      // etykieta dnia liczona w przeglądarce, żeby "Dziś" było dziś także na nieprzebudowanej stronie
+            var p = b.dataset.iso.split("-"), diff = Math.round((new Date(+p[0], p[1] - 1, +p[2]) - today) / 864e5);
+            if (diff === 0) b.textContent = "Dziś"; else if (diff === 1) b.textContent = "Jutro";
+            b.classList.toggle("z", diff === 0);
+        });
         document.querySelectorAll("time[datetime]").forEach(function (t) {
             var p = t.getAttribute("datetime").split("-");
             var diff = Math.round((new Date(+p[0], p[1] - 1, +p[2]) - today) / 864e5);
@@ -206,4 +211,4 @@
     </script>
 </body>
 </html>
-<!-- wersja-kompletu: 2026-10-25-6 -->
+<!-- wersja-kompletu: 2026-10-25-8 -->

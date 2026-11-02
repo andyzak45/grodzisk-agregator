@@ -1,5 +1,6 @@
 """Buduje index.html z zapisanych wpisów: jeden strumień od najważniejszych i najświeższych (bez losowania). Archiwum dzieli wpisy na kategorie."""
 import html
+import math
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -39,8 +40,7 @@ MAX_W_KATEGORII = 12      # tyle najwyżej z jednej kategorii na stronie (reszta
 SHOW_DAYS = 14
 HORYZONT_ZAPOWIEDZI_DNI = 60      # wpis z terminem dalszym niż tyle dni jeszcze nie jest aktualnością: pojawi się, gdy termin się zbliży
 TERMINY_DNI = 14         # blok "Najbliższe terminy" obejmuje tyle dni do przodu
-TERMINY_DNI_W_BLOKU = 5   # tyle kolejnych dni z terminami pokazujemy (każdy dzień to osobna kolumna)
-TERMINY_NA_DZIEN = 4      # tyle terminów w jednym dniu
+TERMINY_MAX = 10          # tyle terminów w bloku (dwie kolumny po 5 wierszy)
 ZAWSZE_W_MENU = {"ost", "zdr"}   # te kategorie zostają w menu nawet puste (przyciemnione, z zerem); sekcji bez wpisów i tak nie ma
 DNI_OSTRZEZEN = 3        # ostrzeżenia (pogoda, komunikaty kryzysowe) są aktualne krótko: potem idą do archiwum
 BEZ_TERMINU_DNI = 3      # zapowiedź bez terminu pokazujemy tylko tuż po pojawieniu się
@@ -202,29 +202,36 @@ def pierwsza_strona(pool, today):
     return html_, [glowny] + reszta
 
 
+DNI_TYGODNIA = ("Pn", "Wt", "Śr", "Czw", "Pt", "Sob", "Nd")
+
+
+def krotka_data(iso, today):
+    """Krótka etykieta dnia w bloku terminów: Dziś, Jutro, a dalej dzień tygodnia i data (Wt 3.11)."""
+    d = date.fromisoformat(iso)
+    r = (d - today).days
+    return "Dziś" if r == 0 else "Jutro" if r == 1 else f"{DNI_TYGODNIA[d.weekday()]} {d.day}.{d.month}"
+
+
 def terminy(pool, today):
-    """Najbliższe terminy: wydarzenia, nabory, zapisy, utrudnienia, pogrupowane po dniach. Każdy dzień to kolumna z nagłówkiem
-    (Dzisiaj, Jutro, Czw. 29.10), a pod nim terminy: linijka z godziną i miejscowością oraz tytuł. Bez plakietek na końcu wiersza."""
+    """Najbliższe terminy: zwarta lista w dwóch kolumnach (kolejność jak w kalendarzu, w dół lewej kolumny, potem prawej). Wiersz to
+    data, a po niej tytuł w jednej linii (długi jest skracany; pełny w podpowiedzi). Przed tytułem szara godzina i miejscowość,
+    jeśli to nie samo miasto."""
     od, do = today.isoformat(), (today + timedelta(days=TERMINY_DNI)).isoformat()
     kand = [i for i in pool if i["kind"] != "zdr" and i.get("event_iso") and od <= i["event_iso"] <= do]
     kand.sort(key=lambda i: (i["event_iso"], (godzina(i.get("when")) or "99:99").zfill(5), tytul(i)))      # "9:00" ma być przed "19:00"
-    po_dniach = {}
-    for i in kand:
-        po_dniach.setdefault(i["event_iso"], []).append(i)
-    kolumny = ""
-    for iso in list(po_dniach)[:TERMINY_DNI_W_BLOKU]:
-        wpisy = ""
-        for i in po_dniach[iso][:TERMINY_NA_DZIEN]:
-            miejsce = "" if i["place"] == "Grodzisk Mazowiecki" else miejsce_ui(i["place"])      # samo miasto to domyślne miejsce
-            meta = " · ".join(x for x in (godzina(i.get("when")), miejsce) if x)
-            wpisy += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
-                      + (f'<span class="meta">{e(meta)}</span>' if meta else "")
-                      + f'<a href="{e(i["url"])}" target="_blank" rel="noopener">{e(tytul(i))}</a></li>')
-        kolumny += (f'<div class="dzien-kol{" dzis" if iso == od else ""}"><h3><time datetime="{e(iso)}">{e(data_ui(iso, today))}</time></h3>'
-                    f'<ul>{wpisy}</ul></div>')
-    if not kolumny:
+    wiersze = ""
+    for i in kand[:TERMINY_MAX]:
+        miejsce = "" if i["place"] in ("Grodzisk Mazowiecki", "cała gmina") else miejsce_ui(i["place"])      # miasto i cała gmina to domyślne miejsce
+        przedrostek = " · ".join(x for x in (godzina(i.get("when")), miejsce) if x)
+        wiersze += (f'<li class="termin" data-place="{e(i["place"])}" data-kind="{e(i["kind"])}">'
+                    f'<b data-iso="{e(i["event_iso"])}"{" class=z" if i["event_iso"] == od else ""}>{e(krotka_data(i["event_iso"], today))}</b>'
+                    f'<a href="{e(i["url"])}" target="_blank" rel="noopener" title="{e(tytul(i))}">'
+                    + (f'<span class="g">{e(przedrostek)}</span> ' if przedrostek else "") + f'{e(tytul(i))}</a></li>')
+    if not wiersze:
         return ""
-    return f'<section class="terminy" id="terminy"><h2>Najbliższe terminy</h2><div class="dni">{kolumny}</div></section>'
+    ile = min(len(kand), TERMINY_MAX)
+    return (f'<section class="terminy" id="terminy"><h2>Najbliższe terminy</h2>'
+            f'<ul class="lista" style="--wiersze:{math.ceil(ile / 2)}">{wiersze}</ul></section>')
 
 
 def filtry(items):
@@ -450,4 +457,4 @@ def build_archive(items, shown, template_path, out_path, today=None):
     Path(out_path).write_text(page, encoding="utf-8")
     return len(reszta)
 
-# wersja-kompletu: 2026-10-25-7
+# wersja-kompletu: 2026-10-25-8

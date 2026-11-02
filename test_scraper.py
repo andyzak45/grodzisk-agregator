@@ -891,9 +891,9 @@ class GeminiMartweModele(unittest.TestCase):
 
 class AKomplet(unittest.TestCase):
     """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
-    WERSJE = {"grafiki.py": "2026-10-25-6", "render.py": "2026-10-25-7", "scraper.py": "2026-10-25-6", "streszczenia.py": "2026-10-25-2",
+    WERSJE = {"grafiki.py": "2026-10-25-6", "render.py": "2026-10-25-8", "scraper.py": "2026-10-25-6", "streszczenia.py": "2026-10-25-2",
               "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-6", "zdjecia_commons.py": "2026-10-25-7",
-              "zdjecia_pobierz.py": "2026-10-25-6", "template.html": "2026-10-25-6"}
+              "zdjecia_pobierz.py": "2026-10-25-6", "template.html": "2026-10-25-8"}
 
     def test_wszystkie_pliki_maja_wymagana_wersje(self):
         stare = []
@@ -2107,54 +2107,64 @@ class TerminyIDuplikaty(unittest.TestCase):
         self.assertRegex(page, r'class="termin" data-place="Szczęsne" data-kind="wyd"')
         self.assertIn('c.dataset.kind === "ost"', page)
 
-    def test_miejscowosc_w_terminach_tylko_dla_innych_miejscowosci_niz_miasto(self):
+    def test_godzina_i_miejscowosc_to_szary_przedrostek_tylko_gdy_sa_potrzebne(self):
         today = date(2026, 10, 22)
         items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", place="Grodzisk Mazowiecki", title="Koncert w mieście",
                             event_iso="2026-10-24", when="24.10"),
                  self._wpis(id="2", url="https://x.pl/2", kind="wyd", place="Szczęsne", title="Piknik na wsi",
-                            event_iso="2026-10-25", when="25.10, godz. 15:00")]
+                            event_iso="2026-10-25", when="25.10, godz. 15:00"),
+                 self._wpis(id="3", url="https://x.pl/3", kind="wyd", place="Grodzisk Mazowiecki", title="Msza o poranku",
+                            event_iso="2026-10-26", when="26.10, godz. 8:30")]
         page = self._strona(items, today)
         blok = page[page.index('id="terminy"'):]
         blok = blok[:blok.index("</section>")]
         wiersze = blok.split('<li class="termin"')[1:]
-        self.assertNotIn('class="meta"', wiersze[0])      # miasto bez godziny: nie ma linijki z godziną i miejscem
-        self.assertIn('<span class="meta">15:00 · Szczęsne</span>', wiersze[1])
-        self.assertNotIn('class="badge"', blok)
+        self.assertNotIn('class="g"', wiersze[0])      # miasto bez godziny: sam tytuł
+        self.assertIn('<span class="g">15:00 · Szczęsne</span>', wiersze[1])
+        self.assertIn('<span class="g">8:30</span>', wiersze[2])      # miasto z godziną: tylko godzina
 
-    def test_blok_terminow_ma_limit_na_dzien_i_na_liczbe_dni(self):
+    def test_blok_terminow_ma_limit_wierszy_i_dzieli_je_na_dwie_kolumny(self):
         today = date(2026, 10, 22)
         items = [self._wpis(id=str(n), url=f"https://x.pl/{n}", kind="wyd", title=f"Wydarzenie numer {n}",
-                            event_iso="2026-10-25", when="25.10") for n in range(render.TERMINY_NA_DZIEN + 4)]
-        items += [self._wpis(id=f"d{n}", url=f"https://x.pl/d{n}", kind="wyd", title=f"Inny dzień {n}",
-                             event_iso=f"2026-10-{26 + n}", when=f"{26 + n}.10") for n in range(render.TERMINY_DNI_W_BLOKU + 2)]
+                            event_iso="2026-10-25", when="25.10") for n in range(render.TERMINY_MAX + 4)]
         page = self._strona(items, today)
         blok = page[page.index('id="terminy"'):]
         blok = blok[:blok.index("</section>")]
-        self.assertEqual(blok.count('class="dzien'), render.TERMINY_DNI_W_BLOKU)
-        pierwsza = blok.split('<div class="dzien')[1]
-        self.assertEqual(pierwsza.count('class="termin"'), render.TERMINY_NA_DZIEN)
+        self.assertEqual(blok.count('<li class="termin"'), render.TERMINY_MAX)
+        self.assertIn(f'--wiersze:{(render.TERMINY_MAX + 1) // 2}', blok)
 
-    def test_kolumny_dni_nie_uzywaja_klasy_z_naglowka_strony(self):
-        """Klasa .dzien jest już użyta w nagłówku (data nad menu) i ma tam styl wielkich liter, więc kolumny muszą mieć własną nazwę."""
+    def test_nieparzysta_liczba_terminow_daje_wiecej_wierszy_w_lewej_kolumnie(self):
+        today = date(2026, 10, 22)
+        items = [self._wpis(id=str(n), url=f"https://x.pl/{n}", kind="wyd", title=f"Wydarzenie {n}", event_iso="2026-10-25", when="25.10")
+                 for n in range(5)]
+        blok = self._strona(items, today)
+        self.assertIn("--wiersze:3", blok)
+
+    def test_blok_nie_uzywa_nazw_klas_z_naglowka_strony(self):
+        """Klasa .dzien jest użyta w nagłówku (data nad menu) i ma tam styl wielkich liter, więc blok terminów nie może jej używać."""
         today = date(2026, 10, 22)
         page = self._strona([self._wpis(id="1", url="https://x.pl/1", kind="wyd", title="Termin", event_iso="2026-10-22", when="22.10")], today)
         blok = page[page.index('id="terminy"'):]
-        self.assertNotIn('class="dzien"', blok)
-        self.assertNotIn('class="dzien ', blok)
-        self.assertIn('class="dzien-kol dzis"', blok)
-        self.assertNotRegex(page[:page.index("<body>")], r"\.dzien\s+(h3|ul)")      # style kolumn nie przepisują stylu nagłówka
+        self.assertNotRegex(blok[:blok.index("</section>")], r'class="(dzien|updated|meta-bar)')
 
-    def test_terminy_sa_pogrupowane_po_dniach_z_naglowkiem_dnia(self):
-        today = date(2026, 10, 22)
-        items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", title="Dziś rano", event_iso="2026-10-22", when="22.10, godz. 9:00"),
-                 self._wpis(id="2", url="https://x.pl/2", kind="wyd", title="Dziś wieczorem", event_iso="2026-10-22", when="22.10, godz. 19:00"),
+    def test_etykiety_dni_i_kolejnosc_godzin(self):
+        today = date(2026, 10, 22)      # czwartek
+        self.assertEqual(render.krotka_data("2026-10-22", today), "Dziś")
+        self.assertEqual(render.krotka_data("2026-10-23", today), "Jutro")
+        self.assertEqual(render.krotka_data("2026-11-03", today), "Wt 3.11")
+        self.assertEqual(render.krotka_data("2026-10-25", today), "Nd 25.10")
+        items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", title="Dziś wieczorem", event_iso="2026-10-22", when="22.10, godz. 19:00"),
+                 self._wpis(id="2", url="https://x.pl/2", kind="wyd", title="Dziś rano", event_iso="2026-10-22", when="22.10, godz. 9:00"),
                  self._wpis(id="3", url="https://x.pl/3", kind="wyd", title="W sobotę", event_iso="2026-10-24", when="24.10")]
-        page = self._strona(items, today)
-        blok = page[page.index('id="terminy"'):]
-        dni = blok.split('<div class="dzien')[1:]
-        self.assertEqual(len(dni), 2)
-        self.assertIn("dzis", dni[0].split(">")[0])
-        self.assertIn("dzisiaj", dni[0])
-        self.assertLess(dni[0].index("Dziś rano"), dni[0].index("Dziś wieczorem"))
-        self.assertIn("sob. 24.10", dni[1])
+        blok = self._strona(items, today)
+        blok = blok[blok.index('id="terminy"'):]
+        self.assertLess(blok.index("Dziś rano"), blok.index("Dziś wieczorem"))      # 9:00 przed 19:00
+        self.assertLess(blok.index("Dziś wieczorem"), blok.index("W sobotę"))
+        self.assertIn('<b data-iso="2026-10-22" class=z>Dziś</b>', blok)      # dzisiejszy termin jest wyróżniony
+
+    def test_pelny_tytul_jest_w_podpowiedzi_bo_w_bloku_jest_skracany(self):
+        items = [self._wpis(id="1", url="https://x.pl/1", kind="wyd", title="Bardzo długi tytuł wydarzenia, który nie zmieści się w jednej linii",
+                            event_iso="2026-10-22", when="22.10")]
+        blok = self._strona(items, date(2026, 10, 22))
+        self.assertIn('title="Bardzo długi tytuł wydarzenia, który nie zmieści się w jednej linii"', blok)
 
