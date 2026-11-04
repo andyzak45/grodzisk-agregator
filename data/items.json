@@ -245,6 +245,34 @@
   "poza_okolica": true
  },
  {
+  "id": "b78113fee311",
+  "title": "Ostatni sezon lodowiska przy hali CAIIS",
+  "url": "https://wpr24.pl/ostatni-sezon-lodowiska-przy-hali-caiis/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-11-04",
+  "published": "2026-11-04",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "4388c4b95aa5"
+ },
+ {
+  "id": "8c95e5855c15",
+  "title": "Jarmark Mikołajkowy w Piastowie już 5 grudnia. Ruszył nabór dla wystawców",
+  "url": "https://wpr24.pl/jarmark-mikolajkowy-w-piastowie-juz-5-grudnia-ruszyl-nabor-dla-wystawcow/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-11-04",
+  "published": "2026-11-04",
+  "kind": "wyd",
+  "place": "okolica",
+  "when": "5.12",
+  "event_iso": "2026-12-05",
+  "tkey": "8d7079ad7c9b"
+ },
+ {
   "id": "5f73b63a7ff6",
   "title": "Projekt nowych zasad dla Parku Miejskiego. Organizacje mogą zgłaszać uwagi",
   "url": "https://grodziski24.pl/20261102574218/projekt-nowych-zasad-dla-parku-miejskiego-organizacje-moga-zglaszac-uwagi",
