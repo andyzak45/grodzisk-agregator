@@ -892,7 +892,7 @@ class GeminiMartweModele(unittest.TestCase):
 class AKomplet(unittest.TestCase):
     """Wszystkie pliki bota muszą pochodzić z jednego kompletu. Gdy ten test pada, wgraj ponownie wskazane pliki."""
     WERSJE = {"grafiki.py": "2026-10-25-6", "render.py": "2026-10-25-8", "scraper.py": "2026-10-25-6", "streszczenia.py": "2026-10-25-2",
-              "klasyfikacja.py": "2026-10-25-2", "redakcja.py": "2026-10-25-6", "zdjecia_commons.py": "2026-10-25-7",
+              "klasyfikacja.py": "2026-10-25-9", "redakcja.py": "2026-10-25-6", "zdjecia_commons.py": "2026-10-25-7",
               "zdjecia_pobierz.py": "2026-10-25-6", "template.html": "2026-10-25-8"}
 
     def test_wszystkie_pliki_maja_wymagana_wersje(self):
@@ -1934,6 +1934,18 @@ class PoryDnia(unittest.TestCase):
         self.assertFalse(scraper.na_czas(self._src(freq="weekly", razy=3), self.TODAY, False))      # czwartek, źródło tygodniowe
         self.assertTrue(scraper.na_czas(self._src(freq="weekly", razy=3), self.TODAY, True))       # --all
         self.assertTrue(scraper.na_czas(self._src(freq="weekly"), date(2026, 10, 26), False, 0))    # poniedziałek, rano
+
+    def test_adresy_kanalow_rss_sa_poprawne_a_zrodla_regionalne_oznaczone(self):
+        import klasyfikacja
+        zrodla = {z["id"]: z for z in json.loads((Path(__file__).resolve().parent / "sources.json").read_text(encoding="utf-8"))}
+        for z in zrodla.values():
+            if z.get("feed"):
+                self.assertTrue(z["feed"].startswith("https://"), z["id"])
+        for ogolne in ("grodzisknews", "koleje-mazowieckie", "powiat", "grodziski24"):
+            self.assertIn(ogolne, klasyfikacja.ZRODLA_OGOLNE)
+            self.assertIn(ogolne, zrodla)
+        self.assertTrue(zrodla["grodzisknews"]["enabled"])      # włączone przez kanał RSS, bez zdjęć wydawcy
+        self.assertEqual(zrodla["grodzisknews"]["feed"], "https://grodzisknews.pl/rss")
 
     def test_zrodla_w_pliku_maja_poprawne_pola(self):
         zrodla = json.loads((Path(__file__).resolve().parent / "sources.json").read_text(encoding="utf-8"))

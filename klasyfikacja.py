@@ -131,7 +131,7 @@ def w_gminie(place):
 
 # Portale ogólne: piszą też o całym kraju i innych powiatach, więc ich domyślna miejscowość nic nie znaczy.
 # Wpis z takiego portalu zostaje tylko wtedy, gdy tytuł albo treść wprost wskazuje miejscowość z gminy.
-ZRODLA_OGOLNE = {"twoje-miasto", "przeglad-regionalny", "wpr24", "grodziskinfo", "grodziski24"}
+ZRODLA_OGOLNE = {"twoje-miasto", "przeglad-regionalny", "wpr24", "grodziskinfo", "grodziski24", "grodzisknews", "koleje-mazowieckie", "powiat"}
 
 
 def miejsce_wpisu(source_id, title, text, place):
@@ -188,4 +188,4 @@ def wyciagnij_termin(text, today=None):
         label += f", godz. {int(tm.group(1))}:{tm.group(2)}"
     return label, d.isoformat()
 
-# wersja-kompletu: 2026-10-25-2
+# wersja-kompletu: 2026-10-25-9

@@ -8,7 +8,8 @@
   "kind": "inw",
   "place": "cała gmina",
   "enabled": true,
-  "razy": 2
+  "razy": 2,
+  "feed": "https://grodzisk.pl/feed"
  },
  {
   "id": "e-urzad",
@@ -91,7 +92,8 @@
   "kind": "inne",
   "place": "okolica",
   "enabled": true,
-  "note": "Głównie Raszyn i Pruszków."
+  "note": "Głównie Raszyn i Pruszków.",
+  "feed": "https://www.przegladregionalny.pl/rss/articles/pl"
  },
  {
   "id": "grodziskinfo",
@@ -113,7 +115,8 @@
   "kind": "inne",
   "place": "okolica",
   "enabled": true,
-  "razy": 3
+  "razy": 3,
+  "feed": "https://wpr24.pl/feed"
  },
  {
   "id": "centrum-kultury",
@@ -127,7 +130,8 @@
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
   "enabled": true,
-  "razy": 2
+  "razy": 2,
+  "feed": "https://www.centrumkultury.eu/feed"
  },
  {
   "id": "mediateka",
@@ -149,9 +153,10 @@
   "freq": "daily",
   "kind": "inne",
   "place": "Grodzisk Mazowiecki",
-  "enabled": false,
-  "note": "Regulamin zabrania dalszego rozpowszechniania artykułów bez zgody. Włączyć dopiero po uzyskaniu zgody redakcji. Na liście: 3 razy dziennie.",
-  "razy": 3
+  "enabled": true,
+  "note": "Tylko kanał RSS: tytuł, notka własnymi słowami i link do oryginału, bez zdjęć wydawcy (tak samo robi mGrodzisk). Regulamin serwisu zastrzega zgodę na dalsze rozpowszechnianie, więc po starcie portalu warto poprosić redakcję o zgodę. Aby wyłączyć: enabled false.",
+  "razy": 3,
+  "feed": "https://grodzisknews.pl/rss"
  },
  {
   "id": "biblioteka",
@@ -161,7 +166,8 @@
   "freq": "weekly",
   "kind": "wyd",
   "place": "Grodzisk Mazowiecki",
-  "enabled": true
+  "enabled": true,
+  "feed": "https://biblioteka.grodzisk.pl/feed"
  },
  {
   "id": "grodzisksport",
@@ -171,7 +177,8 @@
   "freq": "weekly",
   "kind": "spo",
   "place": "Grodzisk Mazowiecki",
-  "enabled": true
+  "enabled": true,
+  "feed": "https://grodzisksport.pl/rss/aktualnosci.xml"
  },
  {
   "id": "hala-caiis",
@@ -352,12 +359,14 @@
  {
   "id": "gpa",
   "name": "GPA Grodzisk",
-  "url": "https://gpagrodzisk.pl/",
-  "freq": "rare",
+  "url": "https://gpagrodzisk.pl/aktualnosci/wszystkie/",
+  "freq": "daily",
   "kind": "inw",
   "place": "cała gmina",
-  "enabled": false,
-  "note": "Z poprzedniej wersji bota, do potwierdzenia przez Ciebie."
+  "enabled": true,
+  "note": "Zmiany tras i rozkładów autobusów. Adres z listy mGrodzisk (/zrodla).",
+  "razy": 1,
+  "streszczaj": true
  },
  {
   "id": "zwik",
@@ -369,7 +378,8 @@
   "enabled": true,
   "note": "Awarie i przerwy w dostawie wody. Z listy z 23.10 (2 razy dziennie).",
   "razy": 2,
-  "streszczaj": true
+  "streszczaj": true,
+  "feed": "https://zwik-grodzisk.pl/rss/wszystkie_rss_pl.xml"
  },
  {
   "id": "mgrodzisk",
@@ -449,5 +459,107 @@
   "kind": "wyd",
   "place": "Adamowizna",
   "enabled": true
+ },
+ {
+  "id": "gospodarka-odpadow",
+  "name": "Gospodarka odpadami",
+  "url": "https://gospodarkaodpadami.grodzisk.pl/",
+  "feed": "https://gospodarkaodpadami.grodzisk.pl/feed/",
+  "kind": "inne",
+  "place": "cała gmina",
+  "freq": "daily",
+  "razy": 1,
+  "enabled": true,
+  "streszczaj": true,
+  "note": "Dodane po analizie źródeł mGrodzisk (strona /zrodla)."
+ },
+ {
+  "id": "inwestycje",
+  "name": "Inwestycje gminy",
+  "url": "https://inwestycje.grodzisk.pl/",
+  "feed": "https://inwestycje.grodzisk.pl/feed",
+  "kind": "inw",
+  "place": "cała gmina",
+  "freq": "daily",
+  "razy": 1,
+  "enabled": true,
+  "streszczaj": true,
+  "note": "Dodane po analizie źródeł mGrodzisk (strona /zrodla)."
+ },
+ {
+  "id": "strefa-biznesu",
+  "name": "Strefa Biznesu",
+  "url": "https://biznes.grodzisk.pl/",
+  "feed": "https://biznes.grodzisk.pl/feed",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "freq": "daily",
+  "razy": 1,
+  "enabled": true,
+  "streszczaj": true,
+  "note": "Dodane po analizie źródeł mGrodzisk (strona /zrodla)."
+ },
+ {
+  "id": "szpital-zachodni",
+  "name": "Szpital Zachodni",
+  "url": "https://www.szpitalzachodni.pl/",
+  "feed": "https://www.szpitalzachodni.pl/feed",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "freq": "daily",
+  "razy": 1,
+  "enabled": true,
+  "streszczaj": true,
+  "note": "Dodane po analizie źródeł mGrodzisk (strona /zrodla)."
+ },
+ {
+  "id": "powiat",
+  "name": "Starostwo Powiatowe",
+  "url": "https://www.powiat-grodziski.pl/aktualnosci/wszystkie/",
+  "kind": "inne",
+  "place": "Grodzisk Mazowiecki",
+  "freq": "daily",
+  "razy": 1,
+  "enabled": true,
+  "streszczaj": true,
+  "note": "Dodane po analizie źródeł mGrodzisk (strona /zrodla)."
+ },
+ {
+  "id": "straz-pozarna",
+  "name": "Państwowa Straż Pożarna",
+  "url": "https://www.gov.pl/web/kppsp-grodzisk-mazowiecki/aktualnosci",
+  "kind": "inne",
+  "place": "cała gmina",
+  "freq": "daily",
+  "razy": 1,
+  "enabled": true,
+  "streszczaj": true,
+  "note": "Dodane po analizie źródeł mGrodzisk (strona /zrodla)."
+ },
+ {
+  "id": "koleje-mazowieckie",
+  "name": "Koleje Mazowieckie",
+  "url": "https://www.mazowieckie.com.pl/",
+  "feed": "https://www.mazowieckie.com.pl/pl/rss.xml",
+  "kind": "inne",
+  "place": "cała gmina",
+  "freq": "daily",
+  "razy": 1,
+  "enabled": true,
+  "streszczaj": true,
+  "note": "Dodane po analizie źródeł mGrodzisk (strona /zrodla)."
+ },
+ {
+  "id": "pogon-grodzisk",
+  "name": "Pogoń Grodzisk Mazowiecki",
+  "url": "https://pogongrodzisk.pl/",
+  "feed": "https://pogongrodzisk.pl/feed",
+  "kind": "spo",
+  "place": "Grodzisk Mazowiecki",
+  "freq": "daily",
+  "razy": 1,
+  "enabled": true,
+  "streszczaj": true,
+  "note": "Dodane po analizie źródeł mGrodzisk (strona /zrodla)."
  }
 ]
