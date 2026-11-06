@@ -1,191 +1,20 @@
 {
- "run": "2026-11-06T06:51:49+01:00",
+ "run": "2026-11-06T12:45:05+01:00",
  "sources": {
-  "um-aktualnosci": {
-   "ok": true,
-   "found": 10,
-   "new": 0
-  },
-  "kryzysowe": {
-   "ok": true,
-   "found": 5,
-   "new": 0
-  },
   "policja": {
    "ok": true,
    "found": 10,
    "new": 0
   },
-  "grodziski24": {
-   "ok": true,
-   "found": 15,
-   "new": 0
-  },
-  "twoje-miasto": {
-   "ok": true,
-   "found": 15,
-   "new": 1
-  },
-  "przeglad-regionalny": {
-   "ok": true,
-   "found": 15,
-   "new": 4
-  },
-  "grodziskinfo": {
-   "ok": true,
-   "found": 15,
-   "new": 2
-  },
   "wpr24": {
    "ok": true,
    "found": 6,
-   "new": 1
-  },
-  "centrum-kultury": {
-   "ok": true,
-   "found": 6,
-   "new": 0
-  },
-  "mediateka": {
-   "ok": true,
-   "found": 15,
-   "new": 0
+   "new": 3
   },
   "grodzisknews": {
    "ok": true,
    "found": 15,
-   "new": 1
-  },
-  "bogoria": {
-   "ok": true,
-   "found": 10,
-   "new": 0
-  },
-  "budo": {
-   "ok": true,
-   "found": 8,
-   "new": 0
-  },
-  "strefa-ruchu": {
-   "ok": true,
-   "found": 4,
-   "new": 0
-  },
-  "tenis-kozerki": {
-   "ok": true,
-   "found": 6,
-   "new": 0
-  },
-  "ngo": {
-   "ok": true,
-   "found": 10,
-   "new": 0
-  },
-  "solectwa": {
-   "ok": true,
-   "found": 8,
-   "new": 0
-  },
-  "gpa": {
-   "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 33020,
-    "article": 0,
-    "naglowki": 10,
-    "feed": false,
-    "tytul": "Archiwum aktualności: Wszystkie kategorie -            Grodziskie Przewozy Autob",
-    "tekst": "Archiwum aktualności: Wszystkie kategorie - Grodziskie Przewozy Autobusowe Przejdź do treści strony Przejdź do menu głównego Przejdź do wyszukiwarki Archiwum ak"
-   }
-  },
-  "zwik": {
-   "ok": true,
-   "found": 15,
-   "new": 0
-  },
-  "okinawa": {
-   "ok": true,
-   "found": 1,
-   "new": 0
-  },
-  "parafia-mbnp": {
-   "ok": true,
-   "found": 1,
-   "new": 0
-  },
-  "parafia-przemienienia": {
-   "ok": true,
-   "found": 14,
-   "new": 0
-  },
-  "parafia-mb": {
-   "ok": true,
-   "found": 1,
-   "new": 0
-  },
-  "dworek-chelmonskiego": {
-   "ok": true,
-   "found": 8,
-   "new": 1
-  },
-  "gospodarka-odpadow": {
-   "ok": true,
-   "found": 9,
-   "new": 1
-  },
-  "inwestycje": {
-   "ok": true,
-   "found": 10,
-   "new": 0
-  },
-  "strefa-biznesu": {
-   "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 500747,
-    "article": 1,
-    "naglowki": 6,
-    "feed": true,
-    "tytul": "Biznes Grodzisk - Portal dla Przedsiębiorców | Gmina Grodzisk",
-    "tekst": "Biznes Grodzisk - Portal dla Przedsiębiorców | Gmina Grodzisk Przejdź do treści Menu Menu ☰ MENU CoWork Przydatne linki Kontakt CoWork Bezpłatna przestrzeń dla "
-   }
-  },
-  "szpital-zachodni": {
-   "ok": true,
-   "found": 6,
-   "new": 1
-  },
-  "powiat": {
-   "ok": true,
-   "found": 9,
-   "new": 0
-  },
-  "straz-pozarna": {
-   "ok": true,
-   "found": 0,
-   "new": 0,
-   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
-   "diag": {
-    "bajty": 37444,
-    "article": 1,
-    "naglowki": 6,
-    "feed": false,
-    "tytul": "Aktualności - Komenda Powiatowa Państwowej Straży Pożarnej w Grodzisku Mazowieck",
-    "tekst": "Aktualności - Komenda Powiatowa Państwowej Straży Pożarnej w Grodzisku Mazowieckim - Portal Gov.pl Przejdź do sekcji Kontakt Przejdź do sekcji Stopka gov.pl Log"
-   }
-  },
-  "koleje-mazowieckie": {
-   "ok": false,
-   "error": "HTTPError: HTTP Error 403: Forbidden"
-  },
-  "pogon-grodzisk": {
-   "ok": true,
-   "found": 15,
-   "new": 0
+   "new": 4
   }
  }
 }
