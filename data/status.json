@@ -1,10 +1,33 @@
 {
- "run": "2026-11-09T18:51:05+01:00",
+ "run": "2026-11-10T06:46:21+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
-   "found": 10,
-   "new": 0
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11947,
+    "article": 0,
+    "naglowki": 0,
+    "feed": true,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "kryzysowe": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11949,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
   },
   "policja": {
    "ok": true,
@@ -14,17 +37,22 @@
   "grodziski24": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 0
   },
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 5
+   "new": 4
+  },
+  "przeglad-regionalny": {
+   "ok": true,
+   "found": 15,
+   "new": 3
   },
   "grodziskinfo": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 1
   },
   "wpr24": {
    "ok": true,
@@ -33,17 +61,45 @@
   },
   "centrum-kultury": {
    "ok": true,
-   "found": 6,
-   "new": 0
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12048,
+    "article": 0,
+    "naglowki": 0,
+    "feed": true,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "mediateka": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11958,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
   },
   "grodzisknews": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 1
   },
   "bogoria": {
    "ok": true,
    "found": 10,
+   "new": 0
+  },
+  "budo": {
+   "ok": true,
+   "found": 8,
    "new": 0
   },
   "strefa-ruchu": {
@@ -51,20 +107,156 @@
    "found": 4,
    "new": 0
   },
+  "tenis-kozerki": {
+   "ok": true,
+   "found": 6,
+   "new": 0
+  },
+  "ngo": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11933,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
   "solectwa": {
    "ok": true,
-   "found": 8,
-   "new": 0
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12046,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "gpa": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 33123,
+    "article": 0,
+    "naglowki": 10,
+    "feed": false,
+    "tytul": "Archiwum aktualności: Wszystkie kategorie -            Grodziskie Przewozy Autob",
+    "tekst": "Archiwum aktualności: Wszystkie kategorie - Grodziskie Przewozy Autobusowe Przejdź do treści strony Przejdź do menu głównego Przejdź do wyszukiwarki Archiwum ak"
+   }
   },
   "zwik": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 0
   },
   "okinawa": {
    "ok": true,
    "found": 1,
    "new": 0
+  },
+  "parafia-mbnp": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "parafia-przemienienia": {
+   "ok": true,
+   "found": 14,
+   "new": 0
+  },
+  "parafia-mb": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "dworek-chelmonskiego": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12055,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "gospodarka-odpadow": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11974,
+    "article": 0,
+    "naglowki": 0,
+    "feed": true,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "inwestycje": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12056,
+    "article": 0,
+    "naglowki": 0,
+    "feed": true,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "strefa-biznesu": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11946,
+    "article": 0,
+    "naglowki": 0,
+    "feed": true,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "szpital-zachodni": {
+   "ok": true,
+   "found": 6,
+   "new": 0
+  },
+  "powiat": {
+   "ok": true,
+   "found": 9,
+   "new": 0
+  },
+  "straz-pozarna": {
+   "ok": false,
+   "error": "URLError: <urlopen error [Errno 101] Network is unreachable>"
+  },
+  "koleje-mazowieckie": {
+   "ok": false,
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  "pogon-grodzisk": {
+   "ok": true,
+   "found": 15,
+   "new": 1
   }
  }
 }
