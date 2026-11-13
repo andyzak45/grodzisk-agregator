@@ -29,7 +29,10 @@
   "event_iso": null,
   "tkey": "5e87d06923ad",
   "opis_proba": "v3",
-  "poza_okolica": true
+  "poza_okolica": true,
+  "also": [
+   "GrodziskNews"
+  ]
  },
  {
   "id": "480c1ae0214b",
@@ -173,6 +176,79 @@
   "tkey": "b72c13894567",
   "opis_proba": "v3",
   "poza_okolica": true
+ },
+ {
+  "id": "d5e3798081de",
+  "title": "Mercedes uderzył w słup i mur dawnego kompleksu pałacowego",
+  "url": "https://wpr24.pl/mercedes-uderzyl-w-slup-i-mur-dawnego-kompleksu-palacowego/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-11-13",
+  "published": "2026-11-13",
+  "kind": "inne",
+  "place": "okolica",
+  "when": "12.11",
+  "event_iso": "2026-11-12",
+  "tkey": "c7328cb7d55e"
+ },
+ {
+  "id": "d3006dfb3fab",
+  "title": "Już dziś Koncert Polskiej Muzyki Filmowej w MOK „Kamyk”",
+  "url": "https://wpr24.pl/juz-dzis-koncert-polskiej-muzyki-filmowej-w-mok-kamyk/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-11-13",
+  "published": "2026-11-13",
+  "kind": "wyd",
+  "place": "okolica",
+  "when": "13.11",
+  "event_iso": "2026-11-13",
+  "tkey": "7b7cef1e9c7e"
+ },
+ {
+  "id": "5e253db8778c",
+  "title": "„Ćwiczył” jazdę bez prawa jazdy, mając 1,5 promila",
+  "url": "https://wpr24.pl/cwiczyl-jazde-bez-prawa-jazdy-majac-15-promila/",
+  "source": "WPR24",
+  "source_id": "wpr24",
+  "first_seen": "2026-11-13",
+  "published": "2026-11-13",
+  "kind": "inne",
+  "place": "okolica",
+  "when": null,
+  "event_iso": null,
+  "tkey": "97e1632d77b3"
+ },
+ {
+  "id": "384bda80e71f",
+  "title": "Bogoria zawalczy o komplet punktów i awans w tabeli. Przyjdź na mecz w Grodzisku",
+  "url": "https://grodzisknews.pl/bogoria-zawalczy-o-komplet-punktow-i-awans-w-tabeli-przyjdz-na-mecz-w-grodzisku/",
+  "source": "GrodziskNews",
+  "source_id": "grodzisknews",
+  "first_seen": "2026-11-13",
+  "published": "2026-11-13",
+  "kind": "spo",
+  "place": "Grodzisk Mazowiecki",
+  "when": "18.11",
+  "event_iso": "2026-11-18",
+  "tkey": "9f3c890e56d1",
+  "opis_proba": "v3",
+  "poza_okolica": true
+ },
+ {
+  "id": "7783dfbd711b",
+  "title": "Grodziska „Jedynka” przejdzie remont. Znamy szczegóły!",
+  "url": "https://grodzisknews.pl/grodziska-jedynka-przejdzie-remont-ratusz-szuka-wykonawcy-prac/",
+  "source": "GrodziskNews",
+  "source_id": "grodzisknews",
+  "first_seen": "2026-11-13",
+  "published": "2026-11-13",
+  "kind": "inw",
+  "place": "Grodzisk Mazowiecki",
+  "when": null,
+  "event_iso": null,
+  "tkey": "ae6886a1441e",
+  "opis_proba": "v3"
  },
  {
   "id": "8e80be9542c0",
