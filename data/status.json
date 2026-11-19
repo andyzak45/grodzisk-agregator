@@ -1,70 +1,20 @@
 {
- "run": "2026-11-18T20:15:41+01:00",
+ "run": "2026-11-19T15:10:16+01:00",
  "sources": {
-  "um-aktualnosci": {
-   "ok": true,
-   "found": 10,
-   "new": 0
-  },
   "policja": {
    "ok": true,
-   "found": 6,
-   "new": 0
-  },
-  "grodziski24": {
-   "ok": true,
-   "found": 15,
+   "found": 7,
    "new": 1
-  },
-  "twoje-miasto": {
-   "ok": true,
-   "found": 15,
-   "new": 5
-  },
-  "grodziskinfo": {
-   "ok": true,
-   "found": 15,
-   "new": 0
   },
   "wpr24": {
    "ok": true,
    "found": 5,
    "new": 3
   },
-  "centrum-kultury": {
-   "ok": true,
-   "found": 6,
-   "new": 0
-  },
   "grodzisknews": {
    "ok": true,
    "found": 15,
-   "new": 7
-  },
-  "bogoria": {
-   "ok": true,
-   "found": 10,
-   "new": 0
-  },
-  "strefa-ruchu": {
-   "ok": true,
-   "found": 4,
-   "new": 0
-  },
-  "solectwa": {
-   "ok": true,
-   "found": 8,
-   "new": 0
-  },
-  "zwik": {
-   "ok": true,
-   "found": 15,
-   "new": 0
-  },
-  "okinawa": {
-   "ok": true,
-   "found": 1,
-   "new": 0
+   "new": 3
   }
  }
 }
