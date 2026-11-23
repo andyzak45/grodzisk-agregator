@@ -1,5 +1,5 @@
 {
- "run": "2026-11-22T23:19:23+01:00",
+ "run": "2026-11-23T16:43:35+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
@@ -8,7 +8,7 @@
   },
   "policja": {
    "ok": true,
-   "found": 7,
+   "found": 6,
    "new": 0
   },
   "grodziski24": {
@@ -18,7 +18,7 @@
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 1
+   "new": 6
   },
   "grodziskinfo": {
    "ok": true,
@@ -27,8 +27,8 @@
   },
   "wpr24": {
    "ok": true,
-   "found": 6,
-   "new": 1
+   "found": 5,
+   "new": 3
   },
   "centrum-kultury": {
    "ok": true,
@@ -38,7 +38,7 @@
   "grodzisknews": {
    "ok": true,
    "found": 15,
-   "new": 3
+   "new": 5
   },
   "bogoria": {
    "ok": true,
@@ -58,7 +58,7 @@
   "zwik": {
    "ok": true,
    "found": 15,
-   "new": 0
+   "new": 1
   },
   "okinawa": {
    "ok": true,
