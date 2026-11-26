@@ -1,9 +1,14 @@
 {
- "run": "2026-11-25T16:20:17+01:00",
+ "run": "2026-11-26T01:51:07+01:00",
  "sources": {
   "um-aktualnosci": {
    "ok": true,
    "found": 10,
+   "new": 0
+  },
+  "kryzysowe": {
+   "ok": true,
+   "found": 5,
    "new": 0
   },
   "policja": {
@@ -18,7 +23,12 @@
   "twoje-miasto": {
    "ok": true,
    "found": 15,
-   "new": 6
+   "new": 3
+  },
+  "przeglad-regionalny": {
+   "ok": true,
+   "found": 15,
+   "new": 8
   },
   "grodziskinfo": {
    "ok": true,
@@ -28,32 +38,75 @@
   "wpr24": {
    "ok": true,
    "found": 6,
-   "new": 3
+   "new": 2
   },
   "centrum-kultury": {
    "ok": true,
    "found": 6,
    "new": 0
   },
+  "mediateka": {
+   "ok": true,
+   "found": 9,
+   "new": 0
+  },
   "grodzisknews": {
    "ok": true,
    "found": 15,
-   "new": 4
+   "new": 2
   },
   "bogoria": {
    "ok": true,
    "found": 10,
    "new": 0
   },
+  "budo": {
+   "ok": true,
+   "found": 9,
+   "new": 2
+  },
   "strefa-ruchu": {
    "ok": true,
    "found": 4,
+   "new": 0
+  },
+  "tenis-kozerki": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 11917,
+    "article": 0,
+    "naglowki": 18,
+    "feed": false,
+    "tytul": "Rupiahtoto — Situs Toto & Toto Slot Resmi | Togel Online",
+    "tekst": "Rupiahtoto — Situs Toto & Toto Slot Resmi | Togel Online Rupiahtoto Pasaran Toto Slot Cara Daftar FAQ 14 pasaran resmi Rupiahtoto, Situs Toto dan Toto Slot deng"
+   }
+  },
+  "ngo": {
+   "ok": true,
+   "found": 10,
    "new": 0
   },
   "solectwa": {
    "ok": true,
    "found": 8,
    "new": 0
+  },
+  "gpa": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 33124,
+    "article": 0,
+    "naglowki": 10,
+    "feed": false,
+    "tytul": "Archiwum aktualności: Wszystkie kategorie -            Grodziskie Przewozy Autob",
+    "tekst": "Archiwum aktualności: Wszystkie kategorie - Grodziskie Przewozy Autobusowe Przejdź do treści strony Przejdź do menu głównego Przejdź do wyszukiwarki Archiwum ak"
+   }
   },
   "zwik": {
    "ok": true,
@@ -63,6 +116,83 @@
   "okinawa": {
    "ok": true,
    "found": 1,
+   "new": 0
+  },
+  "parafia-mbnp": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "parafia-przemienienia": {
+   "ok": true,
+   "found": 14,
+   "new": 0
+  },
+  "parafia-mb": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "dworek-chelmonskiego": {
+   "ok": true,
+   "found": 5,
+   "new": 0
+  },
+  "gospodarka-odpadow": {
+   "ok": true,
+   "found": 9,
+   "new": 0
+  },
+  "inwestycje": {
+   "ok": true,
+   "found": 10,
+   "new": 0
+  },
+  "strefa-biznesu": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 507437,
+    "article": 1,
+    "naglowki": 12,
+    "feed": true,
+    "tytul": "Biznes Grodzisk - Portal dla Przedsiębiorców | Gmina Grodzisk",
+    "tekst": "Biznes Grodzisk - Portal dla Przedsiębiorców | Gmina Grodzisk Przejdź do treści Menu Menu ☰ MENU CoWork Przydatne linki Kontakt Ważna informacja dla nowych prze"
+   }
+  },
+  "szpital-zachodni": {
+   "ok": true,
+   "found": 5,
+   "new": 0
+  },
+  "powiat": {
+   "ok": true,
+   "found": 10,
+   "new": 0
+  },
+  "straz-pozarna": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 37810,
+    "article": 1,
+    "naglowki": 6,
+    "feed": false,
+    "tytul": "Aktualności - Komenda Powiatowa Państwowej Straży Pożarnej w Grodzisku Mazowieck",
+    "tekst": "Aktualności - Komenda Powiatowa Państwowej Straży Pożarnej w Grodzisku Mazowieckim - Portal Gov.pl Przejdź do sekcji Kontakt Przejdź do sekcji Stopka gov.pl Log"
+   }
+  },
+  "koleje-mazowieckie": {
+   "ok": false,
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  "pogon-grodzisk": {
+   "ok": true,
+   "found": 15,
    "new": 0
   }
  }
