@@ -1,20 +1,271 @@
 {
- "run": "2026-11-27T15:44:58+01:00",
+ "run": "2026-11-28T01:22:56+01:00",
  "sources": {
+  "um-aktualnosci": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12201,
+    "article": 0,
+    "naglowki": 0,
+    "feed": true,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "kryzysowe": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12190,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
   "policja": {
    "ok": true,
    "found": 5,
+   "new": 0
+  },
+  "grodziski24": {
+   "ok": false,
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  "twoje-miasto": {
+   "ok": true,
+   "found": 15,
+   "new": 7
+  },
+  "przeglad-regionalny": {
+   "ok": true,
+   "found": 15,
+   "new": 8
+  },
+  "grodziskinfo": {
+   "ok": true,
+   "found": 15,
    "new": 1
   },
   "wpr24": {
    "ok": true,
    "found": 6,
-   "new": 5
+   "new": 1
+  },
+  "centrum-kultury": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12158,
+    "article": 0,
+    "naglowki": 0,
+    "feed": true,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "mediateka": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12183,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
   },
   "grodzisknews": {
    "ok": true,
    "found": 15,
-   "new": 4
+   "new": 3
+  },
+  "bogoria": {
+   "ok": true,
+   "found": 10,
+   "new": 0
+  },
+  "budo": {
+   "ok": true,
+   "found": 9,
+   "new": 0
+  },
+  "strefa-ruchu": {
+   "ok": true,
+   "found": 4,
+   "new": 0
+  },
+  "tenis-kozerki": {
+   "ok": true,
+   "found": 6,
+   "new": 0
+  },
+  "ngo": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12153,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "solectwa": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12043,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "gpa": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 33125,
+    "article": 0,
+    "naglowki": 10,
+    "feed": false,
+    "tytul": "Archiwum aktualności: Wszystkie kategorie -            Grodziskie Przewozy Autob",
+    "tekst": "Archiwum aktualności: Wszystkie kategorie - Grodziskie Przewozy Autobusowe Przejdź do treści strony Przejdź do menu głównego Przejdź do wyszukiwarki Archiwum ak"
+   }
+  },
+  "zwik": {
+   "ok": true,
+   "found": 15,
+   "new": 2
+  },
+  "okinawa": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "parafia-mbnp": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "parafia-przemienienia": {
+   "ok": true,
+   "found": 14,
+   "new": 0
+  },
+  "parafia-mb": {
+   "ok": true,
+   "found": 1,
+   "new": 0
+  },
+  "dworek-chelmonskiego": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12109,
+    "article": 0,
+    "naglowki": 0,
+    "feed": false,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "gospodarka-odpadow": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12183,
+    "article": 0,
+    "naglowki": 0,
+    "feed": true,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "inwestycje": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12059,
+    "article": 0,
+    "naglowki": 0,
+    "feed": true,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "strefa-biznesu": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 12116,
+    "article": 0,
+    "naglowki": 0,
+    "feed": true,
+    "tytul": "Proszę czekać…",
+    "tekst": "Proszę czekać… Loader Proszę czekać na weryfikację żądania…"
+   }
+  },
+  "szpital-zachodni": {
+   "ok": true,
+   "found": 4,
+   "new": 0
+  },
+  "powiat": {
+   "ok": true,
+   "found": 10,
+   "new": 2
+  },
+  "straz-pozarna": {
+   "ok": true,
+   "found": 0,
+   "new": 0,
+   "uwaga": "strona odpowiada, ale parser nie znalazł wpisów",
+   "diag": {
+    "bajty": 37810,
+    "article": 1,
+    "naglowki": 6,
+    "feed": false,
+    "tytul": "Aktualności - Komenda Powiatowa Państwowej Straży Pożarnej w Grodzisku Mazowieck",
+    "tekst": "Aktualności - Komenda Powiatowa Państwowej Straży Pożarnej w Grodzisku Mazowieckim - Portal Gov.pl Przejdź do sekcji Kontakt Przejdź do sekcji Stopka gov.pl Log"
+   }
+  },
+  "koleje-mazowieckie": {
+   "ok": false,
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  "pogon-grodzisk": {
+   "ok": true,
+   "found": 15,
+   "new": 1
   }
  }
 }
